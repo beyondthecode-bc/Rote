@@ -31,6 +31,16 @@ final class MenuItemIdentityTests: XCTestCase {
         XCTAssertEqual(a, "a|File›Open Recent›“Doc A”")
     }
 
+    func testIdentityIsDerivedNotPersisted() throws {
+        let json = #"{"bundleID":"com.apple.Safari","path":["View","Reload Page “Now”"],"shortcut":null}"#
+        let record = try JSONDecoder().decode(MenuItemRecord.self, from: Data(json.utf8))
+        XCTAssertEqual(record.identity, "com.apple.Safari|View›Reload Page")
+        XCTAssertTrue(record.isEnabled, "isEnabled defaults to true when absent")
+        XCTAssertFalse(record.hasUnrenderableShortcut)
+        let encoded = String(decoding: try JSONEncoder().encode(record), as: UTF8.self)
+        XCTAssertFalse(encoded.contains("identity"), "identity must not be written to disk")
+    }
+
     func testIdentityCombinesBundleAndPath() {
         let id = MenuItemIdentity.make(bundleID: "com.apple.Safari", path: ["File", "Close Tab “Example”"])
         XCTAssertEqual(id, "com.apple.Safari|File›Close Tab")
