@@ -20,6 +20,17 @@ final class MenuItemIdentityTests: XCTestCase {
         XCTAssertEqual(MenuItemIdentity.normalize("Don't Save"), "Don't Save")
     }
 
+    func testApostrophesAreNeverQuotes() {
+        XCTAssertEqual(MenuItemIdentity.normalize("Can't Undo Today's Edit"), "Can't Undo Today's Edit")
+    }
+
+    func testFullyQuotedTitlesKeepTheirRawTitle() {
+        let a = MenuItemIdentity.make(bundleID: "a", path: ["File", "Open Recent", "“Doc A”"])
+        let b = MenuItemIdentity.make(bundleID: "a", path: ["File", "Open Recent", "“Doc B”"])
+        XCTAssertNotEqual(a, b)
+        XCTAssertEqual(a, "a|File›Open Recent›“Doc A”")
+    }
+
     func testIdentityCombinesBundleAndPath() {
         let id = MenuItemIdentity.make(bundleID: "com.apple.Safari", path: ["File", "Close Tab “Example”"])
         XCTAssertEqual(id, "com.apple.Safari|File›Close Tab")

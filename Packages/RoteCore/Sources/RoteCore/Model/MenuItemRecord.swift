@@ -2,17 +2,25 @@ import Foundation
 
 /// Stable identity for a menu item across launches and dynamic titles.
 public enum MenuItemIdentity {
-    /// Strips quoted substrings ("…", '…', “…”, ‘…’), collapses whitespace, trims.
-    /// "Close Tab “Example”" and "Close Tab" normalize to the same string.
+    /// Strips quoted substrings ("…", “…”, ‘…’), collapses whitespace, trims.
+    /// "Close Tab “Example”" and "Close Tab" normalize to the same string. Straight
+    /// single quotes are left alone: in menu titles they are apostrophes
+    /// ("Don't Save", "Can't Undo Today's Edit").
     public static func normalize(_ title: String) -> String {
         var text = title
-        text = text.replacing(/"[^"]*"|'[^']*'|“[^”]*”|‘[^’]*’/, with: "")
+        text = text.replacing(/"[^"]*"|“[^”]*”|‘[^’]*’/, with: "")
         text = text.replacing(/\s+/, with: " ")
         return text.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
+    /// A path component that is nothing but a quoted name (a recent document) keeps
+    /// its raw title, so two such items never share an identity.
     public static func make(bundleID: String, path: [String]) -> String {
-        bundleID + "|" + path.map(normalize).joined(separator: "›")
+        let parts = path.map { component -> String in
+            let normalized = normalize(component)
+            return normalized.isEmpty ? component.trimmingCharacters(in: .whitespacesAndNewlines) : normalized
+        }
+        return bundleID + "|" + parts.joined(separator: "›")
     }
 }
 
