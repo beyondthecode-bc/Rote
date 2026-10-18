@@ -34,6 +34,14 @@ final class ShortcutDecodingTests: XCTestCase {
         XCTAssertEqual(decode("\u{8}", 0, glyph: 23), .shortcut(Shortcut(modifiers: [.command], key: .special(.delete))))
     }
 
+    func testGlyphFunctionKeysAboveTwelve() {
+        // Carbon Menus.h: kMenuF12Glyph = 122, kMenuF13Glyph = 135 (0x87), kMenuF15Glyph = 137, kMenuF16Glyph = 143.
+        XCTAssertEqual(decode("", 8, glyph: 122), .shortcut(Shortcut(modifiers: [], key: .special(.f12))))
+        XCTAssertEqual(decode("", 8, glyph: 135), .shortcut(Shortcut(modifiers: [], key: .special(.f13))))
+        XCTAssertEqual(decode("", 8, glyph: 137), .shortcut(Shortcut(modifiers: [], key: .special(.f15))))
+        XCTAssertEqual(decode("", 8, glyph: 143), .shortcut(Shortcut(modifiers: [], key: .special(.f16))))
+    }
+
     func testFunctionKeyScalar() {
         XCTAssertEqual(decode("\u{F704}", 8), .shortcut(Shortcut(modifiers: [], key: .special(.f1))))
     }
