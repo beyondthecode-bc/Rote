@@ -75,4 +75,49 @@ final class ShortcutDecodingTests: XCTestCase {
         let data = try JSONEncoder().encode(original)
         XCTAssertEqual(try JSONDecoder().decode(Shortcut.self, from: data), original)
     }
+
+    func testPrintableBoundaries() {
+        for value: UInt32 in [0x20, 0x7F, 0x85, 0xA0, 0xAD, 0x200B, 0x2028, 0xE000, 0xF700, 0x0301] {
+            XCTAssertFalse(KeyTables.isPrintable(Unicode.Scalar(value)!), String(format: "U+%04X should not be printable", value))
+        }
+        for character in ["A", "[", "é", "9", "€", "ß", "あ"] {
+            XCTAssertTrue(KeyTables.isPrintable(character.unicodeScalars.first!), "\(character) should be printable")
+        }
+    }
+
+    func testSharpSStaysSingleScalar() {
+        XCTAssertEqual(decode("ß"), .shortcut(Shortcut(modifiers: [.command], key: .character("ß"))))
+        XCTAssertEqual(KeyTables.keycapCharacter(for: "ß"), "ß")
+        XCTAssertEqual(KeyTables.keycapCharacter(for: "r"), "R")
+        XCTAssertNil(KeyTables.keycapCharacter(for: "\u{85}"))
+    }
+
+    func testBackTabImpliesShift() {
+        XCTAssertEqual(decode("\u{19}", 8), .shortcut(Shortcut(modifiers: [.shift], key: .special(.tab))))
+        XCTAssertEqual(decode("", 0, glyph: 3), .shortcut(Shortcut(modifiers: [.shift, .command], key: .special(.tab))))
+    }
+
+    func testDecomposedCharacterIsPrecomposed() {
+        XCTAssertEqual(decode("e\u{301}"), .shortcut(Shortcut(modifiers: [.command], key: .character("É"))))
+    }
+
+    func testC1ControlIsUnrenderable() {
+        XCTAssertEqual(decode("\u{85}"), .unrenderable)
+        XCTAssertEqual(decode("\u{A0}"), .unrenderable)
+    }
+
+    func testIsFunctionKey() {
+        XCTAssertTrue(SpecialKey.f13.isFunctionKey)
+        XCTAssertFalse(SpecialKey.forwardDelete.isFunctionKey)
+        XCTAssertEqual(SpecialKey.allCases.filter(\.isFunctionKey).count, 20)
+    }
+
+    func testShortcutWireFormatIsStable() throws {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+        let data = try encoder.encode(Shortcut(modifiers: [.shift, .command], key: .character("N")))
+        XCTAssertEqual(String(decoding: data, as: UTF8.self), #"{"key":{"character":{"_0":"N"}},"modifiers":12}"#)
+        let special = try encoder.encode(Shortcut(modifiers: [], key: .special(.f1)))
+        XCTAssertEqual(String(decoding: special, as: UTF8.self), #"{"key":{"special":{"_0":"f1"}},"modifiers":0}"#)
+    }
 }

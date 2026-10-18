@@ -2,9 +2,14 @@ import Foundation
 
 /// Lookup tables shared by decoding (AX attributes) and matching (NSEvent key codes).
 public enum KeyTables {
+    /// Carbon `kMenuTabLeftGlyph`: Shift-Tab.
+    public static let backTabGlyph = 3
+    /// AppKit `NSBackTabCharacter`: Shift-Tab.
+    public static let backTabScalar: UInt32 = 0x19
+
     /// Carbon `kMenu*Glyph` values exposed through `AXMenuItemCmdGlyph`.
     private static let glyphTable: [Int: SpecialKey] = [
-        2: .tab, 4: .enter, 9: .space, 10: .forwardDelete, 11: .returnKey,
+        2: .tab, 3: .tab, 4: .enter, 9: .space, 10: .forwardDelete, 11: .returnKey,
         23: .delete, 27: .escape, 28: .clear,
         98: .pageUp, 100: .leftArrow, 101: .rightArrow, 102: .home, 103: .help,
         104: .upArrow, 105: .end, 106: .downArrow, 107: .pageDown,
@@ -40,8 +45,26 @@ public enum KeyTables {
     public static func special(forScalar scalar: Unicode.Scalar) -> SpecialKey? { scalarTable[scalar.value] }
     public static func special(forKeyCode keyCode: Int) -> SpecialKey? { keyCodeTable[keyCode] }
 
-    /// True for characters that can be drawn on a keycap as themselves.
+    /// True for characters that can be drawn on a keycap as themselves: letters, digits,
+    /// punctuation and symbols. Controls, format characters, separators, combining marks,
+    /// private-use (including AppKit's F700–F8FF function keys) and unassigned scalars are not.
     public static func isPrintable(_ scalar: Unicode.Scalar) -> Bool {
-        scalar.value > 0x20 && scalar.value != 0x7F && !(0xF700...0xF8FF).contains(scalar.value)
+        switch scalar.properties.generalCategory {
+        case .control, .format, .surrogate, .privateUse, .unassigned,
+             .spaceSeparator, .lineSeparator, .paragraphSeparator,
+             .nonspacingMark, .spacingMark, .enclosingMark:
+            return false
+        default:
+            return true
+        }
+    }
+
+    /// The keycap legend for a printable scalar, shared by the AX decoder and the key-event
+    /// matcher so both sides agree: uppercased when that stays one scalar ("r" → "R"),
+    /// otherwise unchanged ("ß" stays "ß"). Nil when the scalar is not printable.
+    public static func keycapCharacter(for scalar: Unicode.Scalar) -> String? {
+        guard isPrintable(scalar) else { return nil }
+        let upper = String(scalar).uppercased()
+        return upper.unicodeScalars.count == 1 ? upper : String(scalar)
     }
 }

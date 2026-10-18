@@ -28,10 +28,22 @@ public enum SpecialKey: String, Codable, Hashable, Sendable, CaseIterable {
     case pageUp, pageDown, home, end, help, clear
     case f1, f2, f3, f4, f5, f6, f7, f8, f9, f10
     case f11, f12, f13, f14, f15, f16, f17, f18, f19, f20
+
+    /// F1–F20: the only keys that count as a shortcut with no modifier held.
+    public var isFunctionKey: Bool {
+        switch self {
+        case .f1, .f2, .f3, .f4, .f5, .f6, .f7, .f8, .f9, .f10,
+             .f11, .f12, .f13, .f14, .f15, .f16, .f17, .f18, .f19, .f20:
+            return true
+        default:
+            return false
+        }
+    }
 }
 
 public enum Key: Codable, Hashable, Sendable {
-    /// A single printable character, stored uppercased ("R", "[", "1").
+    /// A single printable scalar as drawn on the keycap: uppercased when that stays one
+    /// scalar ("R", "[", "1"), otherwise as-is ("ß"). Built through `KeyTables.keycapCharacter`.
     case character(String)
     case special(SpecialKey)
 }
@@ -56,13 +68,15 @@ public enum ShortcutDecoding {
         case unrenderable
     }
 
+    /// Precedence: glyph table, then the scalar table (control and function-key scalars),
+    /// then a printable character, then the virtual key code.
     /// - Parameters:
     ///   - cmdChar: `AXMenuItemCmdChar`
     ///   - modifierMask: `AXMenuItemCmdModifiers`
     ///   - virtualKey: `AXMenuItemCmdVirtualKey`
     ///   - glyph: `AXMenuItemCmdGlyph`
     public static func decode(cmdChar: String?, modifierMask: Int?, virtualKey: Int?, glyph: Int?) -> Result {
-        let char = cmdChar ?? ""
+        let char = (cmdChar ?? "").precomposedStringWithCanonicalMapping
         let glyphCode = glyph ?? 0
         let keyCode = virtualKey ?? 0
         guard !char.isEmpty || glyphCode > 0 || keyCode > 0 else { return .none }
@@ -70,17 +84,21 @@ public enum ShortcutDecoding {
         var modifiers = Modifiers.fromAXMask(modifierMask ?? 0)
 
         if glyphCode > 0, let special = KeyTables.special(forGlyph: glyphCode) {
+            // kMenuTabLeftGlyph is Shift-Tab even when the mask omits Shift.
+            if glyphCode == KeyTables.backTabGlyph { modifiers.insert(.shift) }
             return .shortcut(Shortcut(modifiers: modifiers, key: .special(special)))
         }
         if let scalar = char.unicodeScalars.first {
             if let special = KeyTables.special(forScalar: scalar) {
+                // NSBackTabCharacter is Shift-Tab even when the mask omits Shift.
+                if scalar.value == KeyTables.backTabScalar { modifiers.insert(.shift) }
                 return .shortcut(Shortcut(modifiers: modifiers, key: .special(special)))
             }
-            if KeyTables.isPrintable(scalar) {
-                // AppKit treats an uppercase key equivalent as "needs Shift" even when
-                // the modifier mask does not say so; the menu bar draws ⇧ for it.
+            if let legend = KeyTables.keycapCharacter(for: scalar) {
+                // AppKit treats an uppercase key equivalent as "needs Shift" even when the
+                // modifier mask does not say so; the menu bar draws ⇧ for it.
                 if scalar.properties.isUppercase { modifiers.insert(.shift) }
-                return .shortcut(Shortcut(modifiers: modifiers, key: .character(String(scalar).uppercased())))
+                return .shortcut(Shortcut(modifiers: modifiers, key: .character(legend)))
             }
         }
         if keyCode > 0, let special = KeyTables.special(forKeyCode: keyCode) {

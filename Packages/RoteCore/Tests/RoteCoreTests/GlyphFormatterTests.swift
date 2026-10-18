@@ -16,11 +16,15 @@ final class GlyphFormatterTests: XCTestCase {
         XCTAssertEqual(GlyphFormatter.display(Shortcut(modifiers: [.command], key: .special(.delete))), "⌘⌫")
         XCTAssertEqual(GlyphFormatter.display(Shortcut(modifiers: [], key: .special(.f1))), "F1")
         XCTAssertEqual(GlyphFormatter.display(Shortcut(modifiers: [.command], key: .special(.returnKey))), "⌘↩")
+        XCTAssertEqual(GlyphFormatter.display(Shortcut(modifiers: [.command], key: .special(.help))), "⌘Help")
     }
 
-    func testEverySpecialKeyHasASymbol() {
+    func testNoSpecialKeyLooksUnrenderable() {
         for key in SpecialKey.allCases {
-            XCTAssertFalse(GlyphFormatter.keySymbol(.special(key)).isEmpty, "\(key) has no symbol")
+            let symbol = GlyphFormatter.keySymbol(.special(key))
+            XCTAssertFalse(symbol.isEmpty, "\(key) has no symbol")
+            XCTAssertNotEqual(symbol, GlyphFormatter.unrenderableSymbol, "\(key) collides with the unrenderable symbol")
+            XCTAssertFalse(GlyphFormatter.spokenName(for: key).isEmpty, "\(key) has no spoken name")
         }
     }
 

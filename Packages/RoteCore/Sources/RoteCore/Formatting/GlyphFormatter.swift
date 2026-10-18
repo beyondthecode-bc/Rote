@@ -16,7 +16,7 @@ public enum GlyphFormatter {
     public static func keySymbol(_ key: Key) -> String {
         switch key {
         case .character(let c): return c
-        case .special(let s): return specialSymbols[s] ?? s.rawValue.uppercased()
+        case .special(let s): return symbol(for: s)
         }
     }
 
@@ -38,23 +38,59 @@ public enum GlyphFormatter {
         if shortcut.modifiers.contains(.command) { words.append("Command") }
         switch shortcut.key {
         case .character(let c): words.append(c)
-        case .special(let s): words.append(spokenSpecial[s] ?? s.rawValue.uppercased())
+        case .special(let s): words.append(spokenName(for: s))
         }
         return words.joined(separator: " ")
     }
 
-    private static let specialSymbols: [SpecialKey: String] = [
-        .escape: "⎋", .tab: "⇥", .space: "␣", .delete: "⌫", .forwardDelete: "⌦",
-        .returnKey: "↩", .enter: "⌤", .upArrow: "↑", .downArrow: "↓", .leftArrow: "←",
-        .rightArrow: "→", .pageUp: "⇞", .pageDown: "⇟", .home: "↖", .end: "↘",
-        .help: "?", .clear: "⌧",
-    ]
+    /// Exhaustive on purpose: adding a `SpecialKey` without a symbol fails to compile.
+    public static func symbol(for key: SpecialKey) -> String {
+        switch key {
+        case .escape: return "⎋"
+        case .tab: return "⇥"
+        case .space: return "␣"
+        case .delete: return "⌫"
+        case .forwardDelete: return "⌦"
+        case .returnKey: return "↩"
+        case .enter: return "⌤"
+        case .upArrow: return "↑"
+        case .downArrow: return "↓"
+        case .leftArrow: return "←"
+        case .rightArrow: return "→"
+        case .pageUp: return "⇞"
+        case .pageDown: return "⇟"
+        case .home: return "↖"
+        case .end: return "↘"
+        case .help: return "Help"
+        case .clear: return "⌧"
+        case .f1, .f2, .f3, .f4, .f5, .f6, .f7, .f8, .f9, .f10,
+             .f11, .f12, .f13, .f14, .f15, .f16, .f17, .f18, .f19, .f20:
+            return key.rawValue.uppercased()
+        }
+    }
 
-    private static let spokenSpecial: [SpecialKey: String] = [
-        .escape: "Escape", .tab: "Tab", .space: "Space", .delete: "Delete",
-        .forwardDelete: "Forward Delete", .returnKey: "Return", .enter: "Enter",
-        .upArrow: "Up Arrow", .downArrow: "Down Arrow", .leftArrow: "Left Arrow",
-        .rightArrow: "Right Arrow", .pageUp: "Page Up", .pageDown: "Page Down",
-        .home: "Home", .end: "End", .help: "Help", .clear: "Clear",
-    ]
+    public static func spokenName(for key: SpecialKey) -> String {
+        switch key {
+        case .escape: return "Escape"
+        case .tab: return "Tab"
+        case .space: return "Space"
+        case .delete: return "Delete"
+        case .forwardDelete: return "Forward Delete"
+        case .returnKey: return "Return"
+        case .enter: return "Enter"
+        case .upArrow: return "Up Arrow"
+        case .downArrow: return "Down Arrow"
+        case .leftArrow: return "Left Arrow"
+        case .rightArrow: return "Right Arrow"
+        case .pageUp: return "Page Up"
+        case .pageDown: return "Page Down"
+        case .home: return "Home"
+        case .end: return "End"
+        case .help: return "Help"
+        case .clear: return "Clear"
+        case .f1, .f2, .f3, .f4, .f5, .f6, .f7, .f8, .f9, .f10,
+             .f11, .f12, .f13, .f14, .f15, .f16, .f17, .f18, .f19, .f20:
+            return key.rawValue.uppercased()
+        }
+    }
 }
