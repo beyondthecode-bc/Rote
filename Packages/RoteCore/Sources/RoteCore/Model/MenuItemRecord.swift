@@ -39,7 +39,9 @@ public enum MenuItemIdentity {
     }
 
     /// The first accepted closing quote after `opener`, or nil when the quote is unbalanced.
-    /// A ’ followed by a letter is an apostrophe (‘Today’s Notes’), not the close of a ‘…’ quote.
+    /// A ’ followed by a cased letter is an apostrophe (‘Today’s Notes’), not the close of
+    /// a ‘…’ quote; Korean particles follow the quote directly (‘Backup’은), and Hangul,
+    /// kana and Han are uncased, so the quote still closes there.
     private static func closingIndex(for closers: [Character], in title: String, after opener: String.Index) -> String.Index? {
         var index = title.index(after: opener)
         while index < title.endIndex {
@@ -47,7 +49,7 @@ public enum MenuItemIdentity {
             if closers.contains(candidate) {
                 if candidate != "’" { return index }
                 let next = title.index(after: index)
-                if next == title.endIndex || !title[next].isLetter { return index }
+                if next == title.endIndex || !(title[next].isLetter && title[next].isCased) { return index }
             }
             index = title.index(after: index)
         }

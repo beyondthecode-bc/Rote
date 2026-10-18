@@ -54,6 +54,8 @@ final class MenuItemIdentityTests: XCTestCase {
         XCTAssertEqual(MenuItemIdentity.normalize("打开「测试」"), "打开")
         XCTAssertEqual(MenuItemIdentity.normalize("Odtwarzaj „Nazwa”"), "Odtwarzaj")
         XCTAssertEqual(MenuItemIdentity.normalize("Traduceți „Document”"), "Traduceți")
+        XCTAssertEqual(MenuItemIdentity.normalize("볼륨 ‘Backup’은(는) 삭제"), "볼륨 은(는) 삭제")
+        XCTAssertEqual(MenuItemIdentity.normalize("‘Backup’을 삭제"), "을 삭제")
     }
 
     func testUnbalancedAndNestedQuotes() {
