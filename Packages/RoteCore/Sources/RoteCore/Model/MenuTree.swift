@@ -36,12 +36,12 @@ public struct MenuTree: Codable, Sendable, Equatable {
 
     public var shortcutCount: Int { allItems.filter { $0.shortcut != nil }.count }
 
-    /// First enabled item bound to `shortcut`, in menu order.
+    /// First enabled item bound to `shortcut`, in menu order (the order AppKit fires).
     public func item(for shortcut: Shortcut) -> MenuItemRecord? {
-        allItems.first { $0.isEnabled && $0.shortcut == shortcut }
+        menus.lazy.flatMap(\.items).first { $0.isEnabled && $0.shortcut == shortcut }
     }
 
     public func contains(identity: String) -> Bool {
-        allItems.contains { $0.identity == identity }
+        menus.contains { $0.items.contains { $0.identity == identity } }
     }
 }

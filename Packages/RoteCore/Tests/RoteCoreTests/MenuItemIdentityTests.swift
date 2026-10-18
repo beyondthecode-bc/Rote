@@ -41,6 +41,30 @@ final class MenuItemIdentityTests: XCTestCase {
         XCTAssertFalse(encoded.contains("identity"), "identity must not be written to disk")
     }
 
+    func testTypographicApostropheSurvives() {
+        XCTAssertEqual(MenuItemIdentity.normalize("Can’t Undo"), "Can’t Undo")
+        XCTAssertEqual(MenuItemIdentity.normalize("Open ‘Today’s Notes’"), "Open")
+    }
+
+    func testLocalizedQuotePairs() {
+        XCTAssertEqual(MenuItemIdentity.normalize("Datenträger „Backup“ löschen"), "Datenträger löschen")
+        XCTAssertEqual(MenuItemIdentity.normalize("Effacer « Sauvegarde »"), "Effacer")
+        XCTAssertEqual(MenuItemIdentity.normalize("Radera skivan ”Backup”"), "Radera skivan")
+        XCTAssertEqual(MenuItemIdentity.normalize("ファイル“テスト”を開く"), "ファイルを開く")
+        XCTAssertEqual(MenuItemIdentity.normalize("打开「测试」"), "打开")
+    }
+
+    func testUnbalancedAndNestedQuotes() {
+        XCTAssertEqual(MenuItemIdentity.normalize("Open “Unfinished"), "Open “Unfinished")
+        XCTAssertEqual(MenuItemIdentity.normalize("Show “Outer ‘inner’ outer” Now"), "Show Now")
+    }
+
+    func testStaleIdentityKeyInJSONIsIgnored() throws {
+        let json = #"{"bundleID":"a","path":["File","Save"],"identity":"stale|value","hasUnrenderableShortcut":false,"isEnabled":true}"#
+        let record = try JSONDecoder().decode(MenuItemRecord.self, from: Data(json.utf8))
+        XCTAssertEqual(record.identity, "a|File›Save")
+    }
+
     func testIdentityCombinesBundleAndPath() {
         let id = MenuItemIdentity.make(bundleID: "com.apple.Safari", path: ["File", "Close Tab “Example”"])
         XCTAssertEqual(id, "com.apple.Safari|File›Close Tab")

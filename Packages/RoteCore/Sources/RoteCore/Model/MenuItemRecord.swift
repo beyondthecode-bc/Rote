@@ -2,15 +2,53 @@ import Foundation
 
 /// Stable identity for a menu item across launches and dynamic titles.
 public enum MenuItemIdentity {
-    /// Strips quoted substrings ("…", “…”, ‘…’), collapses whitespace, trims.
-    /// "Close Tab “Example”" and "Close Tab" normalize to the same string. Straight
-    /// single quotes are left alone: in menu titles they are apostrophes
-    /// ("Don't Save", "Can't Undo Today's Edit").
+    /// Opening quote → closing quote, covering the conventions Apple's localizations use
+    /// for dynamic names: English and Japanese “…”, straight "…", single ‘…’, German „…“
+    /// and »…«, French «…», Swedish ”…”, CJK 「…」 and 『…』. Straight apostrophes are
+    /// never quotes ("Don't Save", "Can't Undo Today's Edit").
+    private static let closers: [Character: Character] = [
+        "\"": "\"", "“": "”", "‘": "’", "„": "“", "»": "«", "«": "»", "”": "”", "「": "」", "『": "』",
+    ]
+
+    /// Strips quoted substrings, collapses whitespace runs to one space, trims.
+    /// "Close Tab “Example”" and "Close Tab" normalize to the same string.
+    /// Single pass, no regex: this runs for every item of every scanned menu.
     public static func normalize(_ title: String) -> String {
-        var text = title
-        text = text.replacing(/"[^"]*"|“[^”]*”|‘[^’]*’/, with: "")
-        text = text.replacing(/\s+/, with: " ")
-        return text.trimmingCharacters(in: .whitespacesAndNewlines)
+        var out = ""
+        out.reserveCapacity(title.utf8.count)
+        var pendingSpace = false
+        var index = title.startIndex
+        while index < title.endIndex {
+            let character = title[index]
+            if let closer = closers[character], let close = closingIndex(for: closer, in: title, after: index) {
+                index = title.index(after: close)
+                continue
+            }
+            if character.isWhitespace {
+                pendingSpace = true
+            } else {
+                if pendingSpace && !out.isEmpty { out.append(" ") }
+                pendingSpace = false
+                out.append(character)
+            }
+            index = title.index(after: index)
+        }
+        return out
+    }
+
+    /// The closing quote after `opener`, or nil when the quote is unbalanced. A ’ followed
+    /// by a letter is an apostrophe (‘Today’s Notes’), not the close of a ‘…’ quote.
+    private static func closingIndex(for closer: Character, in title: String, after opener: String.Index) -> String.Index? {
+        var index = title.index(after: opener)
+        while index < title.endIndex {
+            if title[index] == closer {
+                if closer != "’" { return index }
+                let next = title.index(after: index)
+                if next == title.endIndex || !title[next].isLetter { return index }
+            }
+            index = title.index(after: index)
+        }
+        return nil
     }
 
     /// A path component that is nothing but a quoted name (a recent document) keeps
@@ -33,8 +71,8 @@ public struct MenuItemRecord: Codable, Hashable, Sendable, Identifiable {
     /// The item reports a key equivalent Rote cannot draw. Shown as "?", never coached.
     public var hasUnrenderableShortcut: Bool
     public var isEnabled: Bool
-    /// Computed once at creation (normalization runs two regexes per path component)
-    /// and never persisted, so a change to the rule applies to old state on the next load.
+    /// Computed once at creation and never written by this type; the coach re-keys its
+    /// records on load, so a change to the rule applies to old state as well.
     public let identity: String
 
     public init(bundleID: String, path: [String], shortcut: Shortcut?, hasUnrenderableShortcut: Bool = false, isEnabled: Bool = true) {
