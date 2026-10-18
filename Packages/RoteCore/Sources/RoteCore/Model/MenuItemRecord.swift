@@ -2,12 +2,14 @@ import Foundation
 
 /// Stable identity for a menu item across launches and dynamic titles.
 public enum MenuItemIdentity {
-    /// Opening quote → closing quote, covering the conventions Apple's localizations use
-    /// for dynamic names: English and Japanese “…”, straight "…", single ‘…’, German „…“
-    /// and »…«, French «…», Swedish ”…”, CJK 「…」 and 『…』. Straight apostrophes are
-    /// never quotes ("Don't Save", "Can't Undo Today's Edit").
-    private static let closers: [Character: Character] = [
-        "\"": "\"", "“": "”", "‘": "’", "„": "“", "»": "«", "«": "»", "”": "”", "「": "」", "『": "』",
+    /// Opening quote → accepted closing quotes, covering the conventions Apple's
+    /// localizations use for dynamic names: English and Japanese “…”, straight "…",
+    /// single ‘…’, German „…“, Polish, Hungarian and Romanian „…”, German »…«, French «…»,
+    /// Swedish ”…”, CJK 「…」 and 『…』. Straight apostrophes are never quotes
+    /// ("Don't Save", "Can't Undo Today's Edit").
+    private static let closers: [Character: [Character]] = [
+        "\"": ["\""], "“": ["”"], "‘": ["’"], "„": ["“", "”"], "»": ["«"], "«": ["»"],
+        "”": ["”"], "「": ["」"], "『": ["』"],
     ]
 
     /// Strips quoted substrings, collapses whitespace runs to one space, trims.
@@ -20,7 +22,7 @@ public enum MenuItemIdentity {
         var index = title.startIndex
         while index < title.endIndex {
             let character = title[index]
-            if let closer = closers[character], let close = closingIndex(for: closer, in: title, after: index) {
+            if let closers = closers[character], let close = closingIndex(for: closers, in: title, after: index) {
                 index = title.index(after: close)
                 continue
             }
@@ -36,13 +38,14 @@ public enum MenuItemIdentity {
         return out
     }
 
-    /// The closing quote after `opener`, or nil when the quote is unbalanced. A ’ followed
-    /// by a letter is an apostrophe (‘Today’s Notes’), not the close of a ‘…’ quote.
-    private static func closingIndex(for closer: Character, in title: String, after opener: String.Index) -> String.Index? {
+    /// The first accepted closing quote after `opener`, or nil when the quote is unbalanced.
+    /// A ’ followed by a letter is an apostrophe (‘Today’s Notes’), not the close of a ‘…’ quote.
+    private static func closingIndex(for closers: [Character], in title: String, after opener: String.Index) -> String.Index? {
         var index = title.index(after: opener)
         while index < title.endIndex {
-            if title[index] == closer {
-                if closer != "’" { return index }
+            let candidate = title[index]
+            if closers.contains(candidate) {
+                if candidate != "’" { return index }
                 let next = title.index(after: index)
                 if next == title.endIndex || !title[next].isLetter { return index }
             }

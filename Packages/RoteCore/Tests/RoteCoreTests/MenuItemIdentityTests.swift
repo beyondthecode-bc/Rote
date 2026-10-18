@@ -52,6 +52,8 @@ final class MenuItemIdentityTests: XCTestCase {
         XCTAssertEqual(MenuItemIdentity.normalize("Radera skivan ”Backup”"), "Radera skivan")
         XCTAssertEqual(MenuItemIdentity.normalize("ファイル“テスト”を開く"), "ファイルを開く")
         XCTAssertEqual(MenuItemIdentity.normalize("打开「测试」"), "打开")
+        XCTAssertEqual(MenuItemIdentity.normalize("Odtwarzaj „Nazwa”"), "Odtwarzaj")
+        XCTAssertEqual(MenuItemIdentity.normalize("Traduceți „Document”"), "Traduceți")
     }
 
     func testUnbalancedAndNestedQuotes() {
