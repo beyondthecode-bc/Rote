@@ -1,0 +1,48 @@
+import XCTest
+@testable import RoteCore
+
+final class MenuItemIdentityTests: XCTestCase {
+    func testQuotedSubstringsAreStripped() {
+        XCTAssertEqual(MenuItemIdentity.normalize("Close Tab “Example”"), "Close Tab")
+        XCTAssertEqual(MenuItemIdentity.normalize("Close Tab \"Example\""), "Close Tab")
+        XCTAssertEqual(MenuItemIdentity.normalize("Open ‘Notes’ in New Window"), "Open in New Window")
+    }
+
+    func testWhitespaceCollapses() {
+        XCTAssertEqual(MenuItemIdentity.normalize("  Save   As…  "), "Save As…")
+    }
+
+    func testEllipsisIsKept() {
+        XCTAssertEqual(MenuItemIdentity.normalize("Print…"), "Print…")
+    }
+
+    func testSingleApostropheSurvives() {
+        XCTAssertEqual(MenuItemIdentity.normalize("Don't Save"), "Don't Save")
+    }
+
+    func testIdentityCombinesBundleAndPath() {
+        let id = MenuItemIdentity.make(bundleID: "com.apple.Safari", path: ["File", "Close Tab “Example”"])
+        XCTAssertEqual(id, "com.apple.Safari|File›Close Tab")
+    }
+
+    func testRecordDerivedProperties() {
+        let record = MenuItemRecord(
+            bundleID: "com.apple.Safari",
+            path: ["Edit", "Find", "Find Next"],
+            shortcut: Shortcut(modifiers: [.command], key: .character("G"))
+        )
+        XCTAssertEqual(record.title, "Find Next")
+        XCTAssertEqual(record.menuTitle, "Edit")
+        XCTAssertEqual(record.parentPath, ["Find"])
+        XCTAssertEqual(record.identity, "com.apple.Safari|Edit›Find›Find Next")
+        XCTAssertTrue(record.isCoachable)
+    }
+
+    func testDisabledOrShortcutlessIsNotCoachable() {
+        var record = MenuItemRecord(bundleID: "a", path: ["File", "Save"], shortcut: nil)
+        XCTAssertFalse(record.isCoachable)
+        record.shortcut = Shortcut(modifiers: [.command], key: .character("S"))
+        record.isEnabled = false
+        XCTAssertFalse(record.isCoachable)
+    }
+}
