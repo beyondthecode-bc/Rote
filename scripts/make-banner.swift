@@ -19,9 +19,10 @@ NSGradient(
     ending: NSColor(calibratedRed: 0.05, green: 0.05, blue: 0.08, alpha: 1)
 )?.draw(in: canvas, angle: -20)
 
-if let logo = NSImage(contentsOfFile: logoPath) {
-    logo.draw(in: NSRect(x: 160, y: 110, width: 380, height: 380), from: .zero, operation: .sourceOver, fraction: 1)
+guard let logo = NSImage(contentsOfFile: logoPath) else {
+    fatalError("logo not found at \(logoPath); run from the repo root or pass its path")
 }
+logo.draw(in: NSRect(x: 160, y: 110, width: 380, height: 380), from: .zero, operation: .sourceOver, fraction: 1)
 
 func text(_ string: String, size: CGFloat, weight: NSFont.Weight, color: NSColor, y: CGFloat) {
     let descriptor = NSFont.systemFont(ofSize: size, weight: weight).fontDescriptor.withDesign(.rounded)

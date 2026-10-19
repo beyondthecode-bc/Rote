@@ -10,7 +10,8 @@ Rote ships with 8 languages: English (source), French, German, Spanish, Japanese
 2. Edit an existing file in the `languages/` folder, or create a new one by copying `English.xml`
 3. Translate the string values (the text between `<string>` tags) -- **do not** change the `key` attributes
 4. Keep any `%1`, `%2`, `%@`, `%d` placeholders in place -- the app needs them
-5. Submit a pull request with a brief description of changes
+5. Run `python3 scripts/check-languages.py` and fix anything it reports -- it checks keys, placeholders, the ⌘ ⌥ ⌃ ⇧ symbols, "Esc" and "Rote" against `English.xml`
+6. Submit a pull request with a brief description of changes
 
 ### Adding a new language
 

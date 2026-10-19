@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 # Builds Rote/Assets.xcassets/AppIcon.appiconset from images/logo.png (1024x1024).
 set -euo pipefail
-cd "$(dirname "$0")/.."
 SRC="${1:-images/logo.png}"
+# A path given on the command line is relative to the caller; the default is relative to the repo root.
+if [[ $# -gt 0 && "$SRC" != /* ]]; then SRC="$PWD/$SRC"; fi
+cd "$(dirname "$0")/.."
+# sips only warns and exits 0 for a missing or unreadable source, so check it first.
+[[ -f "$SRC" ]] || { echo "error: $SRC not found" >&2; exit 1; }
+[[ "$(sips -g pixelWidth -g pixelHeight "$SRC" 2>/dev/null | awk '/pixelWidth:/ {w=$2} /pixelHeight:/ {h=$2} END {print w "x" h}')" == 1024x1024 ]] \
+  || { echo "error: $SRC is not a 1024x1024 image" >&2; exit 1; }
 OUT="Rote/Assets.xcassets/AppIcon.appiconset"
 mkdir -p "$OUT"
 for pt in 16 32 128 256 512; do
