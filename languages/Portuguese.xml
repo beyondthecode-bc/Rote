@@ -2,6 +2,7 @@
 <strings>
   <!-- App -->
   <string key="app.name">Rote</string>
+  <string key="menubar.paused">Rote, pausado</string>
   <string key="app.quit">Encerrar Rote</string>
   <string key="general.ok">OK</string>
   <string key="general.cancel">Cancelar</string>

@@ -365,5 +365,13 @@ final class CoachEngine {
     #if DEBUG
     /// Feeds a fake event through the real pipeline, for screenshots and manual testing.
     func simulate(_ event: CoachEvent) { process(event) }
+
+    /// Forgets one item, the last nudge and today's nudge count, so an earlier simulated nudge,
+    /// snooze or mute cannot hold the next one back.
+    func debugForget(_ identity: String) {
+        state.items[identity] = nil
+        state.lastNudgeAt = nil
+        state.nudgesByDay[coach.dayKey(Date())] = nil
+    }
     #endif
 }

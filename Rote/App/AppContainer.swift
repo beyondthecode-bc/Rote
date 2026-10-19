@@ -65,9 +65,11 @@ final class AppContainer {
     }
 
     #if DEBUG
-    /// Three fake mouse uses of Safari › View › Reload Page, through the real coach.
+    /// Three fake mouse uses of Safari › View › Reload Page, through the real coach. The item's
+    /// history is forgotten first, so every run nudges unless a pause, an exclusion or a HUD on screen stops it.
     func simulateNudge() {
         let item = MenuItemRecord(bundleID: "com.apple.Safari", path: ["View", "Reload Page"], shortcut: Shortcut(modifiers: [.command], key: .character("R")))
+        engine.debugForget(item.identity)
         let now = Date()
         for offset in [-120.0, -60.0, 0.0] {
             engine.simulate(CoachEvent(kind: .menuUsed, item: item, at: now.addingTimeInterval(offset)))
