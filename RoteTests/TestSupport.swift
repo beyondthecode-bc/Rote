@@ -5,18 +5,26 @@ import XCTest
 @testable import RoteAX
 import RoteCore
 
-/// A throwaway UserDefaults suite. Never the app's own domain; `remove()` deletes it.
+/// A throwaway UserDefaults suite. Its name is an absolute path, so CFPreferences keeps it in a
+/// plist inside its own temporary directory: never the app's domain, and nothing is left in
+/// ~/Library/Preferences (a named suite leaves an empty plist there even after its domain is
+/// removed). `remove()` deletes the domain and the directory.
 struct TestDefaults: @unchecked Sendable {   // UserDefaults is thread-safe
     let name: String
     let defaults: UserDefaults
+    let directory: URL
 
     init() {
-        name = "com.beyondthecode.rote.tests.\(UUID().uuidString)"
+        directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("RoteTests-defaults-\(UUID().uuidString)", isDirectory: true)
+        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        name = directory.appendingPathComponent("defaults").path
         defaults = UserDefaults(suiteName: name)!
     }
 
     func remove() {
         defaults.removePersistentDomain(forName: name)
+        try? FileManager.default.removeItem(at: directory)
     }
 }
 

@@ -11,12 +11,7 @@ final class CoachEngineStateTests: XCTestCase {
 
     private func makeHarness(pruneInterval: TimeInterval = 86_400) throws -> EngineHarness {
         let harness = try EngineHarness(pruneInterval: pruneInterval)
-        let defaults = harness.testDefaults
-        let directory = harness.directory
-        addTeardownBlock {
-            defaults.remove()
-            directory.remove()
-        }
+        addTeardownBlock { @MainActor in await harness.tearDown() }
         return harness
     }
 

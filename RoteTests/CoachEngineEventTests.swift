@@ -14,12 +14,7 @@ final class CoachEngineEventTests: XCTestCase {
 
     private func makeHarness(menuCloseGrace: Duration = .milliseconds(300)) async throws -> EngineHarness {
         let harness = try EngineHarness(menuCloseGrace: menuCloseGrace)
-        let defaults = harness.testDefaults
-        let directory = harness.directory
-        addTeardownBlock {
-            defaults.remove()
-            directory.remove()
-        }
+        addTeardownBlock { @MainActor in await harness.tearDown() }
         await harness.engine.start()
         return harness
     }

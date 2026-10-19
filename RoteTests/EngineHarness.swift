@@ -51,6 +51,14 @@ final class EngineHarness {
         directory.remove()
     }
 
+    /// Lets queued saves reach the store, writes them, then deletes everything: a debounced save
+    /// that fired after the directory was gone would create it again.
+    func tearDown() async {
+        await settle()
+        await store.flush()
+        cleanup()
+    }
+
     /// Writes `state` where the engine's store will load it from, through a separate store.
     func save(_ state: CoachState) async throws {
         try await StateStore(fileURL: stateURL).saveNow(state)
