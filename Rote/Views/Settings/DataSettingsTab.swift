@@ -20,8 +20,12 @@ struct DataSettingsTab: View {
                     Text("—").foregroundStyle(.secondary)
                 } else {
                     ForEach(engine.mutedItems) { record in
+                        // Identity includes the app, so the same title can be muted in two apps.
+                        let app = AppInfo.resolve(record.item.bundleID)
                         HStack {
+                            Image(nsImage: app.icon).resizable().frame(width: 16, height: 16)
                             Text(record.item.title).lineLimit(1)
+                            Text(app.name).foregroundStyle(.secondary).lineLimit(1)
                             Spacer()
                             KeycapGroupView(shortcut: record.item.shortcut, size: .popover)
                             Button(l("settings.unmute")) { engine.unmute(record.identity) }

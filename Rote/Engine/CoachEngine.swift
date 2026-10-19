@@ -376,7 +376,7 @@ final class CoachEngine {
     }
 
     func resetStatistics() {
-        state = CoachState()
+        coach.resetStatistics(state: &state)
         persist()
     }
 

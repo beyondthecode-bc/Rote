@@ -8,12 +8,13 @@ enum UpdateCheckState: Equatable {
     case available(version: String, downloadURL: URL)
     case downloading
     case downloaded(path: String)
+    case installing
     case error(String)
 }
 
 struct AboutView: View {
+    @Environment(AppContainer.self) private var container
     @State private var updateState: UpdateCheckState = .idle
-    @State private var downloadProgress: Double?
 
     private let shortVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
     private let repoURL = "https://github.com/beyondthecode-bc/Rote"
@@ -34,6 +35,8 @@ struct AboutView: View {
             .padding(22)
         }
         .frame(width: DesignTokens.settingsWidth)
+        .onAppear(perform: showUpdateFoundAtLaunch)
+        .onChange(of: container.updateAvailable?.version) { showUpdateFoundAtLaunch() }
     }
 
     private var header: some View {
@@ -73,10 +76,7 @@ struct AboutView: View {
                         .buttonStyle(.bordered).controlSize(.small)
                 }
             case .checking:
-                HStack(spacing: 6) {
-                    ProgressView().controlSize(.small)
-                    Text(l("update.checking")).font(.system(size: 11)).foregroundStyle(.secondary)
-                }
+                progressRow(l("update.checking"))
             case .upToDate:
                 HStack(spacing: 6) {
                     Circle().fill(DesignTokens.learned).frame(width: 5, height: 5)
@@ -89,21 +89,20 @@ struct AboutView: View {
                 HStack {
                     Text(l("update.version", version)).font(.system(size: 12, weight: .medium))
                     Spacer()
-                    Button(l("update.download")) { Task { await download(from: url) } }
+                    Button(l("update.download")) { download(from: url) }
                         .buttonStyle(.borderedProminent).controlSize(.small).tint(DesignTokens.accent)
                 }
             case .downloading:
-                VStack(alignment: .leading, spacing: 4) {
-                    ProgressView(value: downloadProgress ?? 0)
-                    Text(l("update.downloading")).font(.system(size: 11)).foregroundStyle(.secondary)
-                }
+                progressRow(l("update.downloading"))
             case .downloaded(let path):
                 HStack {
                     Text(l("update.ready")).font(.system(size: 12))
                     Spacer()
-                    Button(l("update.install")) { Task { await install(from: path) } }
+                    Button(l("update.install")) { install(from: path) }
                         .buttonStyle(.borderedProminent).controlSize(.small).tint(DesignTokens.accent)
                 }
+            case .installing:
+                progressRow(l("update.installing"))
             case .error(let message):
                 VStack(alignment: .leading, spacing: 4) {
                     Text(l("update.error")).font(.system(size: 12)).foregroundStyle(.red)
@@ -112,6 +111,14 @@ struct AboutView: View {
                         .buttonStyle(.borderless).controlSize(.small)
                 }
             }
+        }
+    }
+
+    /// A step in progress shows no button, so it cannot be started twice.
+    private func progressRow(_ label: String) -> some View {
+        HStack(spacing: 6) {
+            ProgressView().controlSize(.small)
+            Text(label).font(.system(size: 11)).foregroundStyle(.secondary)
         }
     }
 
@@ -157,6 +164,13 @@ struct AboutView: View {
 
     // MARK: Update actions (template GitHubUpdateChecker: check, download, install)
 
+    /// The popover's "Rote X is available" opens this tab, so the launch check's find shows here
+    /// with its Download button instead of asking the user to check again.
+    private func showUpdateFoundAtLaunch() {
+        guard updateState == .idle, let update = container.updateAvailable else { return }
+        updateState = .available(version: update.version, downloadURL: update.url)
+    }
+
     private func checkForUpdates() {
         updateState = .checking
         Task {
@@ -173,24 +187,31 @@ struct AboutView: View {
         }
     }
 
-    private func download(from url: URL) async {
+    /// Like `checkForUpdates`, each step changes the state before its first await, so its button
+    /// is gone before a second click can start it again: a second install would delete the folder
+    /// the first one copies from and ask for the administrator password again. The download
+    /// reports progress only when it ends, so it shows a spinner rather than a bar.
+    private func download(from url: URL) {
         updateState = .downloading
-        downloadProgress = 0
-        do {
-            let path = try await GitHubUpdateChecker.downloadUpdate(from: url) { @Sendable progress in
-                Task { @MainActor in self.downloadProgress = progress }
+        Task {
+            do {
+                let path = try await GitHubUpdateChecker.downloadUpdate(from: url) { @Sendable _ in }
+                updateState = .downloaded(path: path)
+            } catch {
+                updateState = .error(error.localizedDescription)
             }
-            updateState = .downloaded(path: path)
-        } catch {
-            updateState = .error(error.localizedDescription)
         }
     }
 
-    private func install(from path: String) async {
-        do {
-            try await GitHubUpdateChecker.installUpdate(fromZip: path)
-        } catch {
-            updateState = .error(error.localizedDescription)
+    /// On success the installer relaunches Rote, so `.installing` stays until the app quits.
+    private func install(from path: String) {
+        updateState = .installing
+        Task {
+            do {
+                try await GitHubUpdateChecker.installUpdate(fromZip: path)
+            } catch {
+                updateState = .error(error.localizedDescription)
+            }
         }
     }
 }

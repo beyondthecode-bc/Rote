@@ -282,6 +282,22 @@ final class CoachRulesTests: XCTestCase {
         XCTAssertEqual(s.items[a.identity]?.phase, .coaching, "the shortcut count restarted at unmute: one use after the new nudge is not three")
     }
 
+    /// Settings › Data › Reset statistics promises "Settings stay", and a mute is a choice the
+    /// user makes and undoes there (spec §6.1), so a reset keeps it while every count goes.
+    func testResetStatisticsKeepsMutesAndDropsEverythingElse() {
+        let c = Fx.coach()
+        var s = Fx.everyFieldState()
+        c.resetStatistics(state: &s)
+        var muted = ItemRecord(item: Fx.paste)
+        muted.phase = .muted
+        var expected = CoachState()
+        expected.items = [Fx.paste.identity: muted]
+        XCTAssertEqual(s, expected, "lessons, snoozes, the log, the day counters and the nudge clock go; the mute stays, without its counts")
+        c.prune(state: &s, now: Fx.base.addingTimeInterval(60 * Fx.day))
+        XCTAssertEqual(s.items[Fx.paste.identity]?.phase, .muted, "a kept mute has no uses left and still survives housekeeping")
+        XCTAssertFalse(isNudge(Fx.use(Fx.paste, times: 5, from: 61 * Fx.day, coach: c, state: &s)), "the muted item is still never nudged")
+    }
+
     func testUnmuteLeavesItemsThatAreNotMutedAlone() {
         for phase in [ItemPhase.observed, .coaching, .learned] {
             var state = CoachState()

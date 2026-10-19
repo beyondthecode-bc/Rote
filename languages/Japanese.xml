@@ -120,6 +120,7 @@
   <string key="update.downloading">ダウンロード中…</string>
   <string key="update.ready">インストールの準備ができました</string>
   <string key="update.install">インストールして再起動</string>
+  <string key="update.installing">インストール中…</string>
   <string key="update.error">アップデートを確認できませんでした</string>
   <string key="update.retry">再試行</string>
 </strings>

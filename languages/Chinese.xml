@@ -120,6 +120,7 @@
   <string key="update.downloading">正在下载…</string>
   <string key="update.ready">已准备好安装</string>
   <string key="update.install">安装并重新启动</string>
+  <string key="update.installing">正在安装…</string>
   <string key="update.error">检查更新失败</string>
   <string key="update.retry">重试</string>
 </strings>
