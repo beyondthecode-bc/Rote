@@ -1,6 +1,8 @@
 import Foundation
 
-/// Every tunable of the patient coach (spec §6.4). Settings mirror the first five.
+/// Every tunable of the patient coach (spec §6.4). Settings mirror `nudgeAfter`,
+/// `itemSpacing` and `dailyCap`; values are clamped to sane minimums so a bad
+/// preference cannot disable the coach.
 public struct CoachPolicy: Codable, Sendable, Equatable {
     /// Menu uses within `window` before the first nudge.
     public var nudgeAfter: Int
@@ -29,14 +31,14 @@ public struct CoachPolicy: Codable, Sendable, Equatable {
         regressAfter: Int = 5,
         logRetention: TimeInterval = 30 * 86_400
     ) {
-        self.nudgeAfter = nudgeAfter
-        self.window = window
-        self.itemSpacing = itemSpacing
-        self.globalSpacing = globalSpacing
-        self.dailyCap = dailyCap
-        self.learnAfter = learnAfter
-        self.regressAfter = regressAfter
-        self.logRetention = logRetention
+        self.nudgeAfter = max(1, nudgeAfter)
+        self.window = max(60, window)
+        self.itemSpacing = max(0, itemSpacing)
+        self.globalSpacing = max(0, globalSpacing)
+        self.dailyCap = max(0, dailyCap)
+        self.learnAfter = max(1, learnAfter)
+        self.regressAfter = max(1, regressAfter)
+        self.logRetention = max(86_400, logRetention)
     }
 
     public static let `default` = CoachPolicy()

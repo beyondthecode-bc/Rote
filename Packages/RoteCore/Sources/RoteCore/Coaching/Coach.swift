@@ -102,6 +102,7 @@ public struct Coach: Sendable {
         record.shortcutUsesSinceCoaching = 0
         record.lastNudgeAt = nil
         record.snoozedUntil = nil
+        record.learnedAt = nil
         state.items[identity] = record
     }
 
@@ -128,9 +129,13 @@ public struct Coach: Sendable {
         if let until = record.snoozedUntil, until <= now { record.snoozedUntil = nil }
     }
 
-    /// Local calendar day as "yyyy-MM-dd"; string order equals date order.
+    /// Local calendar day as "yyyy-MM-dd", always in the Gregorian calendar of
+    /// `calendar`'s time zone, so string order equals date order whatever calendar the
+    /// user prefers (Japanese era years would otherwise restart the numbering).
     public func dayKey(_ date: Date) -> String {
-        let parts = calendar.dateComponents([.year, .month, .day], from: date)
+        var gregorian = Calendar(identifier: .gregorian)
+        gregorian.timeZone = calendar.timeZone
+        let parts = gregorian.dateComponents([.year, .month, .day], from: date)
         return String(format: "%04d-%02d-%02d", parts.year ?? 0, parts.month ?? 0, parts.day ?? 0)
     }
 }

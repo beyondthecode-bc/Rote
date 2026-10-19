@@ -141,12 +141,22 @@ public struct CoachState: Codable, Sendable, Equatable {
     }
 
     /// Re-keys `items` by each record's current identity, merging duplicates that an
-    /// identity-rule change may have produced. The record that carries more of the user's
-    /// decisions wins (muted, then learned, then coaching), busyness breaks ties.
+    /// identity-rule change may have produced. Call once after loading from disk.
     public mutating func rekeyItems() {
-        items = Dictionary(items.values.map { ($0.identity, $0) }, uniquingKeysWith: { a, b in
-            if a.phase.mergeRank != b.phase.mergeRank { return a.phase.mergeRank > b.phase.mergeRank ? a : b }
-            return (a.menuUses.count + a.shortcutUses.count) >= (b.menuUses.count + b.shortcutUses.count) ? a : b
-        })
+        var merged: [String: ItemRecord] = [:]
+        for (_, record) in items.sorted(by: { $0.key < $1.key }) {
+            let key = record.identity
+            merged[key] = merged[key].map { Self.preferred($0, record) } ?? record
+        }
+        items = merged
+    }
+
+    /// The record that carries more of the user's decisions wins (muted, then learned,
+    /// then coaching); busyness breaks ties; an exact tie keeps the first by key order.
+    private static func preferred(_ a: ItemRecord, _ b: ItemRecord) -> ItemRecord {
+        if a.phase.mergeRank != b.phase.mergeRank { return a.phase.mergeRank > b.phase.mergeRank ? a : b }
+        let busyA = a.menuUses.count + a.shortcutUses.count
+        let busyB = b.menuUses.count + b.shortcutUses.count
+        return busyB > busyA ? b : a
     }
 }
