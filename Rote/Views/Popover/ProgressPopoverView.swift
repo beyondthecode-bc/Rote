@@ -153,8 +153,10 @@ struct ProgressPopoverView: View {
             #if DEBUG
             Menu("Debug") {
                 Button("Simulate nudge") { container.simulateNudge() }
-                Button("Simulate overlay") { container.simulateOverlay() }
-                    .disabled(!container.engine.permissionGranted)
+                Button(container.engine.permissionGranted ? "Simulate overlay" : "Simulate overlay (needs Accessibility)") {
+                    container.simulateOverlay()
+                }
+                .disabled(!container.engine.permissionGranted)
                 Button("Export menu snapshot") { container.exportSnapshot() }
             }
             .fixedSize()

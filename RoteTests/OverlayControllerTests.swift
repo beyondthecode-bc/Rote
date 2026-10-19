@@ -160,7 +160,9 @@ final class OverlayControllerTests: XCTestCase {
         assertClosed(h, overlay, "an app switch")
     }
 
-    /// Closing on any key belongs to the simulated sheet only.
+    /// Closing on any key belongs to the simulated sheet only: once it has closed, a key or a click
+    /// opens nothing, and a real sticky sheet ignores both again. Each is checked on its own, since a
+    /// key and a click that both toggled the sheet would cancel out.
     func testAfterASimulatedSheetARealStickySheetIgnoresKeysAndClicksAgain() async throws {
         let (h, overlay) = try await makeOverlay(.stickyHotkey)
         overlay.simulate()
@@ -168,11 +170,17 @@ final class OverlayControllerTests: XCTestCase {
         send(.mouseDown, to: h)
         assertClosed(h, overlay)
 
+        h.press(pressS)
+        assertClosed(h, overlay, "a key with no sheet up")
+        send(.mouseDown, to: h)
+        assertClosed(h, overlay, "a click with no sheet up")
+
         h.press(hotkey)
         XCTAssertEqual(overlay.presentedTree?.bundleID, Fixtures.appA.bundleID)
         h.press(pressS)
+        XCTAssertTrue(overlay.isShowing, "a key")
         send(.mouseDown, to: h)
-        XCTAssertTrue(overlay.isShowing)
+        XCTAssertTrue(overlay.isShowing, "a click")
 
         h.press(escape)
         assertClosed(h, overlay)
