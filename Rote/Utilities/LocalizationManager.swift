@@ -18,18 +18,31 @@ final class LocalizationManager {
 
     private(set) var strings: [String: String] = [:]
     @ObservationIgnored private var fallback: [String: String] = [:]
+    @ObservationIgnored private let defaults: UserDefaults
+    /// Holds `languages/<Name>.xml`.
+    @ObservationIgnored private let bundle: Bundle
+    /// The system's languages, read on every reload while the choice is "system".
+    @ObservationIgnored private let preferredLanguages: () -> [String]
 
     /// "system" or one of `supportedCodes`.
     var languageCode: String {
         didSet {
-            UserDefaults.standard.set(languageCode, forKey: Self.defaultsKey)
+            defaults.set(languageCode, forKey: Self.defaultsKey)
             reload()
         }
     }
 
-    private init() {
-        languageCode = UserDefaults.standard.string(forKey: Self.defaultsKey) ?? "system"
-        fallback = Self.loadXML("English")
+    /// The app uses `shared`; tests pass their own defaults, string tables and system languages.
+    init(
+        defaults: UserDefaults = .standard,
+        bundle: Bundle = .main,
+        preferredLanguages: @escaping () -> [String] = { Locale.preferredLanguages }
+    ) {
+        self.defaults = defaults
+        self.bundle = bundle
+        self.preferredLanguages = preferredLanguages
+        languageCode = defaults.string(forKey: Self.defaultsKey) ?? "system"
+        fallback = Self.loadXML("English", in: bundle)
         reload()
     }
 
@@ -57,8 +70,8 @@ final class LocalizationManager {
     }
 
     private func reload() {
-        let code = languageCode == "system" ? Self.systemCode() : languageCode
-        strings = Self.loadXML(Self.fileMap[code] ?? "English")
+        let code = languageCode == "system" ? Self.systemCode(preferred: preferredLanguages()) : languageCode
+        strings = Self.loadXML(Self.fileMap[code] ?? "English", in: bundle)
         Logger.ui.info("Loaded \(self.strings.count) strings for \(code, privacy: .public)")
     }
 
@@ -69,8 +82,8 @@ final class LocalizationManager {
         Bundle.preferredLocalizations(from: supportedCodes, forPreferences: preferred).first ?? "en"
     }
 
-    nonisolated private static func loadXML(_ filename: String) -> [String: String] {
-        guard let url = Bundle.main.url(forResource: filename, withExtension: "xml", subdirectory: "languages"),
+    nonisolated private static func loadXML(_ filename: String, in bundle: Bundle) -> [String: String] {
+        guard let url = bundle.url(forResource: filename, withExtension: "xml", subdirectory: "languages"),
               let data = try? Data(contentsOf: url)
         else { return [:] }
         let delegate = StringsXMLParserDelegate()

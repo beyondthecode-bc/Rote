@@ -17,7 +17,7 @@ final class AppContainer {
     let overlay: OverlayController
 
     var updateAvailable: (version: String, url: URL)?
-    @ObservationIgnored private var started = false
+    @ObservationIgnored private(set) var started = false
 
     private init() {
         settings = AppSettings()

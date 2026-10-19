@@ -23,7 +23,7 @@ final class KeyEventMonitor {
     private var globalToken: Any?
     private var localToken: Any?
 
-    private static let mask: NSEvent.EventTypeMask = [
+    static let mask: NSEvent.EventTypeMask = [
         .keyDown, .flagsChanged,
         .leftMouseDown, .rightMouseDown, .otherMouseDown,
         .leftMouseDragged, .rightMouseDragged, .otherMouseDragged,
