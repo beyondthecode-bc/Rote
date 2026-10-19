@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<strings>
+  <!-- App -->
+  <string key="app.name">Rote</string>
+  <string key="app.quit">Encerrar Rote</string>
+  <string key="general.ok">OK</string>
+  <string key="general.cancel">Cancelar</string>
+  <string key="general.done">OK</string>
+  <string key="general.next">Avançar</string>
+  <string key="general.remove">Remover</string>
+
+  <!-- Menu bar popover -->
+  <string key="menu.settings">Ajustes…</string>
+  <string key="menu.about">Sobre</string>
+  <string key="popover.thisWeek">Esta semana</string>
+  <string key="popover.coachingNow">Aprendendo agora</string>
+  <string key="popover.learned">Aprendidos</string>
+  <string key="popover.empty">Nada ainda. Use o Mac normalmente. O Rote avisa depois de alguns cliques repetidos nos menus.</string>
+  <string key="popover.pause">Pausar as dicas</string>
+  <string key="popover.pauseHour">Pausar por 1 hora</string>
+  <string key="popover.pauseToday">Pausar até amanhã</string>
+  <string key="popover.resume">Retomar as dicas</string>
+  <string key="popover.pausedUntil">Pausado até %1</string>
+  <string key="popover.updateAvailable">O Rote %1 está disponível</string>
+  <string key="popover.recovered">O Rote não conseguiu ler o progresso salvo e recomeçou do zero. O arquivo antigo foi mantido como %1.</string>
+  <string key="popover.uses">%1×</string>
+  <string key="stats.learned">atalhos aprendidos</string>
+  <string key="stats.menuClicks">cliques em menus que tinham atalho</string>
+  <string key="stats.shortcutsUsed">atalhos usados</string>
+
+  <!-- Nudge HUD -->
+  <string key="nudge.subtitle">%1 · %2 usos pelo menu esta semana</string>
+  <string key="nudge.snooze">Adiar</string>
+  <string key="nudge.snoozeWeek">Adiar por uma semana</string>
+  <string key="nudge.stopItem">Parar as dicas deste item</string>
+  <string key="nudge.pauseHour">Pausar o Rote por uma hora</string>
+  <string key="nudge.announcement">Atalho para %1: %2</string>
+
+  <!-- Keycaps -->
+  <string key="keycap.unknown">Atalho desconhecido</string>
+
+  <!-- Overlay -->
+  <string key="overlay.count">%1 atalhos</string>
+  <string key="overlay.partial">Ainda lendo os menus…</string>
+  <string key="overlay.releaseHint">Solte %1 para fechar</string>
+  <string key="overlay.stickyHint">Pressione Esc ou ⌃⌥⌘K para fechar</string>
+  <string key="overlay.scrollHint">Role para ver mais</string>
+
+  <!-- Permission and onboarding -->
+  <string key="permission.title">O Rote precisa de acesso à Acessibilidade</string>
+  <string key="permission.body">O Rote lê os menus dos apps e percebe quais itens de menu você escolhe. Ele nunca lê o que você digita, e nada sai deste Mac.</string>
+  <string key="permission.open">Abrir Ajustes do Sistema</string>
+  <string key="permission.granted">Acesso à Acessibilidade concedido</string>
+  <string key="permission.waiting">Aguardando acesso… ative o Rote em Privacidade e Segurança › Acessibilidade</string>
+  <string key="onboarding.title1">Aprenda os atalhos que você sempre deixa passar</string>
+  <string key="onboarding.body1">Quando você escolhe o mesmo item de menu com o mouse algumas vezes, o Rote mostra as teclas. Use-as, e ele fica em silêncio.</string>
+  <string key="onboarding.title3">Experimente</string>
+  <string key="onboarding.body3">Mantenha a tecla ⌘ pressionada por um instante em qualquer app para ver todos os atalhos dele.</string>
+  <string key="onboarding.tried">Você já viu a visão geral. Está tudo pronto.</string>
+
+  <!-- Settings -->
+  <string key="settings.title">Ajustes</string>
+  <string key="settings.general">Geral</string>
+  <string key="settings.coaching">Dicas</string>
+  <string key="settings.overlay">Visão geral</string>
+  <string key="settings.apps">Apps</string>
+  <string key="settings.data">Dados</string>
+  <string key="settings.launchAtLogin">Abrir ao iniciar sessão</string>
+  <string key="settings.language">Idioma</string>
+  <string key="settings.language.system">Padrão do sistema</string>
+  <string key="settings.checkUpdatesOnLaunch">Verificar atualizações ao abrir</string>
+  <string key="settings.updatesHint">“Verificar agora” fica na aba “Sobre”.</string>
+  <string key="settings.nudgeAfter">Dar dica após %1 usos do menu</string>
+  <string key="settings.itemSpacing">Pelo menos %1 horas entre dicas do mesmo item</string>
+  <string key="settings.dailyCap">No máximo %1 dicas por dia</string>
+  <string key="settings.hudDuration">Mostrar a dica por %1 segundos</string>
+  <string key="settings.sound">Tocar um som discreto</string>
+  <string key="settings.trigger">Mostrar a visão geral</string>
+  <string key="settings.trigger.command">Mantendo ⌘ pressionada</string>
+  <string key="settings.trigger.option">Mantendo ⌥ pressionada</string>
+  <string key="settings.trigger.sticky">Pressionando ⌃⌥⌘K (fica aberta)</string>
+  <string key="settings.holdDelay">Manter por %1 ms</string>
+  <string key="settings.showNoShortcut">Mostrar itens sem atalho</string>
+  <string key="settings.showAppleMenu">Mostrar o menu Apple</string>
+  <string key="settings.excluded">Nunca dar dicas nestes apps</string>
+  <string key="settings.paused">Apps pausados</string>
+  <string key="settings.addApp">Adicionar app</string>
+  <string key="settings.runningApps">Apps abertos</string>
+  <string key="settings.chooseApp">Escolher…</string>
+  <string key="settings.privacy">Tudo fica neste Mac. O Rote guarda apenas títulos de menu e equivalentes de teclado, nunca o que você digita.</string>
+  <string key="settings.muted">Itens sem dicas</string>
+  <string key="settings.unmute">Voltar a dar dicas</string>
+  <string key="settings.reset">Redefinir estatísticas</string>
+  <string key="settings.resetConfirm">Isso apaga todas as contagens e lições. Os ajustes são mantidos.</string>
+  <string key="settings.export">Exportar JSON…</string>
+
+  <!-- About -->
+  <string key="about.title">Sobre</string>
+  <string key="about.tagline">O treinador de atalhos de teclado para o seu Mac</string>
+  <string key="about.version">Versão</string>
+  <string key="about.version.label">Rote</string>
+  <string key="about.github">GitHub</string>
+  <string key="about.githubProject">Rote no GitHub</string>
+  <string key="about.githubProject.subtitle">Código aberto sob a licença MIT</string>
+  <string key="about.support">Apoie o Rote</string>
+  <string key="about.sponsor">GitHub Sponsors</string>
+  <string key="about.sponsor.subtitle">Apoie o desenvolvimento contínuo</string>
+  <string key="about.coffee">Buy Me a Coffee</string>
+  <string key="about.coffee.subtitle">Um agradecimento único</string>
+  <string key="update.title">Atualizações</string>
+  <string key="update.check">Verificar agora</string>
+  <string key="update.checking">Verificando…</string>
+  <string key="update.upToDate">O Rote está atualizado</string>
+  <string key="update.recheck">Verificar novamente</string>
+  <string key="update.version">A versão %1 está disponível</string>
+  <string key="update.download">Baixar</string>
+  <string key="update.downloading">Baixando…</string>
+  <string key="update.ready">Pronto para instalar</string>
+  <string key="update.install">Instalar e reabrir</string>
+  <string key="update.error">Falha ao verificar atualizações</string>
+  <string key="update.retry">Tentar novamente</string>
+</strings>
