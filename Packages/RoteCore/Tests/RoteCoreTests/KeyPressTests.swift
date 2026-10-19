@@ -91,6 +91,18 @@ final class KeyPressTests: XCTestCase {
         XCTAssertNil(tree([back]).item(for: press("\u{F702}", keyCode: 123, [])), "an arrow alone is not a shortcut")
     }
 
+    func testAutoRepeatMatchesNothing() {
+        // One held shortcut is one use: the first press counts, its auto-repeats do not.
+        let save = item("Save", [.command], .character("S"))
+        let fullScreen = item("Full Screen", [], .special(.f11))
+        let repeated = KeyPress(characters: "s", commandCharacters: "s", keyCode: 1, modifiers: [.command], isRepeat: true)
+        XCTAssertTrue(repeated.candidateShortcuts.isEmpty)
+        XCTAssertNil(tree([save]).item(for: repeated))
+        let repeatedF11 = KeyPress(characters: "\u{F70E}", commandCharacters: "", keyCode: 103, modifiers: [], isRepeat: true)
+        XCTAssertNil(tree([fullScreen]).item(for: repeatedF11))
+        XCTAssertFalse(press("s", command: "s", [.command]).isRepeat)
+    }
+
     func testCandidatesAreUniqueAndOrdered() {
         XCTAssertEqual(press("?", command: "/", keyCode: 44, [.shift, .command]).candidateShortcuts, [
             Shortcut(modifiers: [.shift, .command], key: .character("/")),

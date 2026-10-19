@@ -13,12 +13,16 @@ public struct KeyPress: Sendable, Equatable {
     public var keyCode: UInt16
     /// Masked to ⌃⌥⇧⌘.
     public var modifiers: Modifiers
+    /// An auto-repeat of a held key. It still cancels a hold or closes the sheet like any press,
+    /// but it fires no shortcut here: one held shortcut is one use.
+    public var isRepeat: Bool
 
-    public init(characters: String, commandCharacters: String, keyCode: UInt16, modifiers: Modifiers) {
+    public init(characters: String, commandCharacters: String, keyCode: UInt16, modifiers: Modifiers, isRepeat: Bool = false) {
         self.characters = characters
         self.commandCharacters = commandCharacters
         self.keyCode = keyCode
         self.modifiers = modifiers
+        self.isRepeat = isRepeat
     }
 
     /// The shortcuts this press can fire, most specific first. Modifier-less presses only count
@@ -26,7 +30,9 @@ public struct KeyPress: Sendable, Equatable {
     /// and is final for letters: on Dvorak - QWERTY ⌘ the key that types "o" fires ⌘S, never ⌘O.
     /// A symbol typed with ⇧ is then tried as typed, and again without ⇧, because AppKit reports
     /// items such as Help "⌘?" and Zoom In "⌘+" without the ⇧ that typing them needs.
+    /// Auto-repeats have no candidates.
     public var candidateShortcuts: [Shortcut] {
+        guard !isRepeat else { return [] }
         if let special = KeyTables.special(forKeyCode: Int(keyCode)) {
             guard !modifiers.isEmpty || special.isFunctionKey else { return [] }
             return [Shortcut(modifiers: modifiers, key: .special(special))]
