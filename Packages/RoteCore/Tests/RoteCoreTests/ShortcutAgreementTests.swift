@@ -74,4 +74,25 @@ final class ShortcutAgreementTests: XCTestCase {
     func testPlainTypingFiresNothing() {
         XCTAssertTrue(press("r", command: "", keyCode: 15, []).candidateShortcuts.isEmpty)
     }
+
+    // MARK: Observability: Rote only coaches what it can see being used (spec §5.5, §6.2 rule 3).
+
+    func testShiftOnlyPressesAreTyping() {
+        XCTAssertTrue(press("A", command: "", keyCode: 0, [.shift]).candidateShortcuts.isEmpty, "⇧A types a capital")
+        XCTAssertTrue(press("\u{F703}", command: "", keyCode: 124, [.shift]).candidateShortcuts.isEmpty, "⇧→ extends a text selection")
+        XCTAssertFalse(press("a", command: "", keyCode: 0, [.option]).candidateShortcuts.isEmpty, "⌥ counts as a shortcut modifier")
+        XCTAssertFalse(press("\u{F708}", command: "", keyCode: 96, [.shift]).candidateShortcuts.isEmpty, "⇧F5 is still an F-key")
+    }
+
+    func testOnlyObservableShortcutsAreCoachable() {
+        func record(_ shortcut: Shortcut) -> MenuItemRecord {
+            MenuItemRecord(bundleID: "com.example", path: ["Menu", "Item"], shortcut: shortcut)
+        }
+        XCTAssertFalse(record(Shortcut(modifiers: [], key: .special(.delete))).isCoachable, "plain ⌫ looks like typing")
+        XCTAssertFalse(record(Shortcut(modifiers: [.shift], key: .character("A"))).isCoachable, "⇧A looks like typing")
+        XCTAssertFalse(record(Shortcut(modifiers: [.shift], key: .special(.rightArrow))).isCoachable, "⇧→ looks like typing")
+        XCTAssertTrue(record(Shortcut(modifiers: [], key: .special(.f5))).isCoachable)
+        XCTAssertTrue(record(Shortcut(modifiers: [.option], key: .character("A"))).isCoachable)
+        XCTAssertTrue(record(item("R")).isCoachable)
+    }
 }

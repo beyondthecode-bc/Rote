@@ -56,6 +56,15 @@ public struct Shortcut: Codable, Hashable, Sendable {
         self.modifiers = modifiers
         self.key = key
     }
+
+    /// Whether a press of this shortcut can be told apart from typing: it needs ⌘, ⌃ or ⌥,
+    /// or an F-key. Plain ⌫ or ⇧→ in a text field look exactly like editing, so Rote neither
+    /// counts such presses nor coaches such items (spec §5.5, §6.2 rule 3).
+    public var isObservable: Bool {
+        if !modifiers.subtracting(.shift).isEmpty { return true }
+        if case .special(let special) = key { return special.isFunctionKey }
+        return false
+    }
 }
 
 /// Turns raw Accessibility menu-item attributes into a `Shortcut`.

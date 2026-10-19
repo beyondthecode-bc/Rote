@@ -124,5 +124,6 @@ public struct MenuItemRecord: Codable, Hashable, Sendable, Identifiable {
     /// Submenu titles between the top-level menu and the item.
     public var parentPath: [String] { path.count > 2 ? Array(path[1..<(path.count - 1)]) : [] }
     public var id: String { identity }
-    public var isCoachable: Bool { shortcut != nil && isEnabled }
+    /// Enabled, with a shortcut Rote can see being used (`Shortcut.isObservable`).
+    public var isCoachable: Bool { (shortcut?.isObservable ?? false) && isEnabled }
 }

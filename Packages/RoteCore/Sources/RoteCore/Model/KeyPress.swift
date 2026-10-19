@@ -25,8 +25,9 @@ public struct KeyPress: Sendable, Equatable {
         self.isRepeat = isRepeat
     }
 
-    /// The shortcuts this press can fire, most specific first. Modifier-less presses only count
-    /// for F-keys, so ordinary typing never matches an item. With ⌘ held the ⌘ table comes first
+    /// The shortcuts this press can fire, most specific first. Only presses with ⌘, ⌃ or ⌥, and
+    /// F-keys, count (`Shortcut.isObservable`): plain or ⇧-only keys are typing and never match
+    /// an item. With ⌘ held the ⌘ table comes first
     /// and is final for letters: on Dvorak - QWERTY ⌘ the key that types "o" fires ⌘S, never ⌘O.
     /// A symbol typed with ⇧ is then tried as typed, and again without ⇧, because AppKit reports
     /// items such as Help "⌘?" and Zoom In "⌘+" without the ⇧ that typing them needs.
@@ -34,10 +35,10 @@ public struct KeyPress: Sendable, Equatable {
     public var candidateShortcuts: [Shortcut] {
         guard !isRepeat else { return [] }
         if let special = KeyTables.special(forKeyCode: Int(keyCode)) {
-            guard !modifiers.isEmpty || special.isFunctionKey else { return [] }
-            return [Shortcut(modifiers: modifiers, key: .special(special))]
+            let shortcut = Shortcut(modifiers: modifiers, key: .special(special))
+            return shortcut.isObservable ? [shortcut] : []
         }
-        guard !modifiers.isEmpty else { return [] }
+        guard !modifiers.subtracting(.shift).isEmpty else { return [] }
         var result: [Shortcut] = []
         func add(_ scalar: Unicode.Scalar?, _ modifiers: Modifiers) {
             guard let scalar, let legend = KeyTables.keycapCharacter(for: scalar) else { return }
