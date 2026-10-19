@@ -20,8 +20,10 @@
   <string key="popover.pause">Pausar as dicas</string>
   <string key="popover.pauseHour">Pausar por 1 hora</string>
   <string key="popover.pauseToday">Pausar até amanhã</string>
+  <string key="popover.pauseUntilResumed">Pausar até retomar</string>
   <string key="popover.resume">Retomar as dicas</string>
   <string key="popover.pausedUntil">Pausado até %1</string>
+  <string key="popover.pausedIndefinitely">Pausado</string>
   <string key="popover.updateAvailable">O Rote %1 está disponível</string>
   <string key="popover.recovered">O Rote não conseguiu ler o progresso salvo e recomeçou do zero. O arquivo antigo foi mantido como %1.</string>
   <string key="popover.uses">%1×</string>

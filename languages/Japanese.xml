@@ -20,8 +20,10 @@
   <string key="popover.pause">ヒントを一時停止</string>
   <string key="popover.pauseHour">1時間一時停止</string>
   <string key="popover.pauseToday">明日まで一時停止</string>
+  <string key="popover.pauseUntilResumed">再開するまで一時停止</string>
   <string key="popover.resume">ヒントを再開</string>
   <string key="popover.pausedUntil">%1まで一時停止中</string>
+  <string key="popover.pausedIndefinitely">一時停止中</string>
   <string key="popover.updateAvailable">Rote %1を利用できます</string>
   <string key="popover.recovered">Roteは保存された進捗を読み込めなかったため、最初からやり直しました。古いファイルは%1として残してあります。</string>
   <string key="popover.uses">%1×</string>

@@ -20,8 +20,10 @@
   <string key="popover.pause">코칭 일시 정지</string>
   <string key="popover.pauseHour">1시간 동안 일시 정지</string>
   <string key="popover.pauseToday">내일까지 일시 정지</string>
+  <string key="popover.pauseUntilResumed">재개할 때까지 일시 정지</string>
   <string key="popover.resume">코칭 재개</string>
   <string key="popover.pausedUntil">%1까지 일시 정지됨</string>
+  <string key="popover.pausedIndefinitely">일시 정지됨</string>
   <string key="popover.updateAvailable">Rote %1 사용 가능</string>
   <string key="popover.recovered">Rote가 저장된 진행 상황을 읽을 수 없어 처음부터 다시 시작했습니다. 이전 파일은 %1(으)로 보관되었습니다.</string>
   <string key="popover.uses">%1×</string>

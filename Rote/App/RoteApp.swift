@@ -7,7 +7,7 @@ struct RoteApp: App {
 
     var body: some Scene {
         MenuBarExtra {
-            StatusPopoverView()
+            ProgressPopoverView()
                 .environment(container)
         } label: {
             Image(nsImage: MenuBarIcon.image(for: container.iconState))
