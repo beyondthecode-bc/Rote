@@ -59,7 +59,6 @@
   <string key="onboarding.title1">Aprenda os atalhos que você sempre deixa passar</string>
   <string key="onboarding.body1">Quando você escolhe o mesmo item de menu com o mouse algumas vezes, o Rote mostra as teclas. Use-as, e ele fica em silêncio.</string>
   <string key="onboarding.title3">Experimente</string>
-  <string key="onboarding.body3">Mantenha a tecla ⌘ pressionada por um instante em qualquer app para ver todos os atalhos dele.</string>
   <string key="onboarding.tried">Você já viu a visão geral. Está tudo pronto.</string>
   <string key="onboarding.menubarHint">Se você não vir o ícone em forma de tecla na barra de menus, o macOS pode tê-lo ocultado com outros itens da barra de menus. Clique no botão com duas setas apontando para a esquerda (“Mostrar Itens Ocultos da Barra de Menus”), na extremidade esquerda dos ícones do lado direito da barra de menus, para exibi-lo.</string>
 
@@ -98,6 +97,13 @@
   <string key="settings.reset">Redefinir estatísticas</string>
   <string key="settings.resetConfirm">Isso apaga todas as contagens e lições. Os ajustes são mantidos.</string>
   <string key="settings.export">Exportar JSON…</string>
+
+  <!-- Onboarding and overlay polish -->
+  <string key="onboarding.tryIt">Mude para outro app, por exemplo o Finder, e %1 para ver todos os atalhos dele.</string>
+  <string key="onboarding.trigger.command">mantenha a tecla ⌘ pressionada por um instante</string>
+  <string key="onboarding.trigger.option">mantenha a tecla ⌥ pressionada por um instante</string>
+  <string key="onboarding.trigger.sticky">pressione ⌃⌥⌘K</string>
+  <string key="onboarding.needsAccess">A demonstração precisa primeiro de acesso à Acessibilidade. Ative o Rote em Privacidade e Segurança › Acessibilidade, e a demonstração aparecerá aqui.</string>
 
   <!-- About -->
   <string key="about.title">Sobre</string>

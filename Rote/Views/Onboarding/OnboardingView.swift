@@ -52,19 +52,51 @@ struct OnboardingView: View {
         }
     }
 
+    /// Rote's own window is frontmost here, so the step sends the user to another app first. Until
+    /// Accessibility is granted no key reaches Rote, so the step says so instead of a prompt that
+    /// would do nothing; the check appears once the sheet has been shown.
     private var tryItStep: some View {
         let shown = container.overlay.hasShownOnce
+        let granted = container.engine.permissionGranted
+        let trigger = container.settings.overlayTrigger
         return VStack(alignment: .leading, spacing: 18) {
             Text(l("onboarding.title3")).font(.system(size: 20, weight: .bold))
-            Text(l("onboarding.body3")).font(.system(size: 13)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
-            HStack(spacing: 12) {
-                KeycapView(symbol: "⌘", size: .hud)
-                Image(systemName: shown ? "checkmark.circle.fill" : "arrow.left")
-                    .foregroundStyle(shown ? DesignTokens.learned : .secondary)
-                if shown { Text(l("onboarding.tried")).font(.system(size: 12)) }
+            Text(Self.tryItText(trigger: trigger, accessGranted: granted))
+                .font(.system(size: 13))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            if granted || shown {
+                HStack(spacing: 12) {
+                    triggerKeys(trigger)
+                    Image(systemName: shown ? "checkmark.circle.fill" : "arrow.left")
+                        .foregroundStyle(shown ? DesignTokens.learned : .secondary)
+                    if shown { Text(l("onboarding.tried")).font(.system(size: 12)) }
+                }
             }
             if #available(macOS 27, *) { menuBarHint }
         }
+    }
+
+    /// The keys of the trigger chosen in Settings › Overlay.
+    @ViewBuilder
+    private func triggerKeys(_ trigger: AppSettings.OverlayTrigger) -> some View {
+        switch trigger {
+        case .holdCommand: KeycapView(symbol: "⌘", size: .hud)
+        case .holdOption: KeycapView(symbol: "⌥", size: .hud)
+        case .stickyHotkey: KeycapGroupView(shortcut: HoldDetector.stickyHotkey, size: .hud)
+        }
+    }
+
+    /// Step 3's instruction for `trigger`, or, while Accessibility is missing, the note that the demo needs it.
+    static func tryItText(trigger: AppSettings.OverlayTrigger, accessGranted: Bool, strings: LocalizationManager = .shared) -> String {
+        guard accessGranted else { return strings.string(for: "onboarding.needsAccess") }
+        let action: String
+        switch trigger {
+        case .holdCommand: action = strings.string(for: "onboarding.trigger.command")
+        case .holdOption: action = strings.string(for: "onboarding.trigger.option")
+        case .stickyHotkey: action = strings.string(for: "onboarding.trigger.sticky")
+        }
+        return strings.string(for: "onboarding.tryIt", [action])
     }
 
     /// On macOS 27 a new menu bar app can start among the hidden items. The system's own button, two

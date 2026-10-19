@@ -59,7 +59,6 @@
   <string key="onboarding.title1">Learn the shortcuts you keep skipping</string>
   <string key="onboarding.body1">When you pick the same menu item with the mouse a few times, Rote shows you the keys. Use them, and it goes quiet.</string>
   <string key="onboarding.title3">Try it</string>
-  <string key="onboarding.body3">Hold ⌘ for a moment in any app to see every shortcut it has.</string>
   <string key="onboarding.tried">You have seen the overlay. You are all set.</string>
   <string key="onboarding.menubarHint">If you don’t see the keycap icon in the menu bar, macOS may have hidden it with other menu bar items. Click the button with two left-pointing arrows (“Show Hidden Menu Bar Items”) at the left end of the icons on the right side of the menu bar to reveal it.</string>
 
@@ -98,6 +97,13 @@
   <string key="settings.reset">Reset statistics</string>
   <string key="settings.resetConfirm">This deletes every count and lesson. Settings stay.</string>
   <string key="settings.export">Export JSON…</string>
+
+  <!-- Onboarding and overlay polish -->
+  <string key="onboarding.tryIt">Switch to another app, for example Finder, then %1 to see every shortcut it has.</string>
+  <string key="onboarding.trigger.command">hold ⌘ for a moment</string>
+  <string key="onboarding.trigger.option">hold ⌥ for a moment</string>
+  <string key="onboarding.trigger.sticky">press ⌃⌥⌘K</string>
+  <string key="onboarding.needsAccess">The demo needs Accessibility access first. Turn on Rote under Privacy &amp; Security › Accessibility, and the demo appears here.</string>
 
   <!-- About -->
   <string key="about.title">About</string>

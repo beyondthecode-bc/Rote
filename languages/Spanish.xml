@@ -59,7 +59,6 @@
   <string key="onboarding.title1">Aprenda las funciones rápidas que siempre pasa por alto</string>
   <string key="onboarding.body1">Cuando elige el mismo ítem de menú con el ratón varias veces, Rote le muestra las teclas. Úselas y dejará de avisarle.</string>
   <string key="onboarding.title3">Pruébelo</string>
-  <string key="onboarding.body3">Mantenga pulsada la tecla ⌘ un momento en cualquier app para ver todas sus funciones rápidas.</string>
   <string key="onboarding.tried">Ya ha visto la vista general. Todo listo.</string>
   <string key="onboarding.menubarHint">Si no ve el icono con forma de tecla en la barra de menús, es posible que macOS lo haya ocultado junto con otros ítems de la barra de menús. Haga clic en el botón con dos flechas que apuntan a la izquierda («Mostrar los ítems ocultos de la barra de menús»), situado en el extremo izquierdo de los iconos del lado derecho de la barra de menús, para mostrarlo.</string>
 
@@ -98,6 +97,13 @@
   <string key="settings.reset">Restablecer estadísticas</string>
   <string key="settings.resetConfirm">Se eliminarán todos los recuentos y lecciones. Los ajustes se conservan.</string>
   <string key="settings.export">Exportar JSON…</string>
+
+  <!-- Onboarding and overlay polish -->
+  <string key="onboarding.tryIt">Cambie a otra app, por ejemplo el Finder, y %1 para ver todas sus funciones rápidas.</string>
+  <string key="onboarding.trigger.command">mantenga pulsada la tecla ⌘ un momento</string>
+  <string key="onboarding.trigger.option">mantenga pulsada la tecla ⌥ un momento</string>
+  <string key="onboarding.trigger.sticky">pulse ⌃⌥⌘K</string>
+  <string key="onboarding.needsAccess">La demostración necesita primero acceso a Accesibilidad. Active Rote en Privacidad y seguridad › Accesibilidad y la demostración aparecerá aquí.</string>
 
   <!-- About -->
   <string key="about.title">Acerca de</string>
