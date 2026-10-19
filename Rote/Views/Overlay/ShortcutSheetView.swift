@@ -11,6 +11,13 @@ struct ShortcutSheetView: View {
     let showAppleMenu: Bool
     let showItemsWithoutShortcuts: Bool
     let dismissHint: String
+    /// Changes on every show, so the reused sheet opens scrolled to the top.
+    let presentation: Int
+
+    @State private var viewportHeight: CGFloat = 0
+    @State private var contentHeight: CGFloat = 0
+
+    private static let top = "top"
 
     private var visibleMenus: [MenuTree.Menu] {
         tree.menus
@@ -18,19 +25,32 @@ struct ShortcutSheetView: View {
             .filter { menu in menu.items.contains { showItemsWithoutShortcuts || $0.shortcut != nil || $0.hasUnrenderableShortcut } }
     }
 
+    /// The rows drawn with keycaps, "?" ones included.
+    private var shortcutCount: Int {
+        visibleMenus.flatMap(\.items).filter { $0.shortcut != nil || $0.hasUnrenderableShortcut }.count
+    }
+
+    private var isScrollable: Bool { viewportHeight > 0 && contentHeight > viewportHeight + 1 }
+
     var body: some View {
         ZStack {
             Rectangle().fill(.ultraThinMaterial)
             Color.black.opacity(0.55)
             VStack(spacing: 0) {
-                ScrollView(.vertical) {
-                    FlowLayout(spacing: DesignTokens.overlayColumnSpacing) {
-                        ForEach(Array(visibleMenus.enumerated()), id: \.offset) { _, menu in
-                            MenuColumnView(menu: menu, coaching: coaching, learned: learned, showItemsWithoutShortcuts: showItemsWithoutShortcuts)
-                                .frame(width: DesignTokens.overlayColumnWidth, alignment: .topLeading)
+                ScrollViewReader { proxy in
+                    ScrollView(.vertical) {
+                        FlowLayout(spacing: DesignTokens.overlayColumnSpacing) {
+                            ForEach(Array(visibleMenus.enumerated()), id: \.offset) { _, menu in
+                                MenuColumnView(menu: menu, coaching: coaching, learned: learned, showItemsWithoutShortcuts: showItemsWithoutShortcuts)
+                                    .frame(width: DesignTokens.overlayColumnWidth, alignment: .topLeading)
+                            }
                         }
+                        .padding(32)
+                        .id(Self.top)
+                        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { contentHeight = $0 }
                     }
-                    .padding(32)
+                    .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { viewportHeight = $0 }
+                    .onChange(of: presentation) { proxy.scrollTo(Self.top, anchor: .top) }
                 }
                 footer
             }
@@ -45,10 +65,14 @@ struct ShortcutSheetView: View {
             Image(nsImage: appIcon).resizable().frame(width: 18, height: 18)
             Text(tree.appName).fontWeight(.semibold)
             Text("·").foregroundStyle(.tertiary)
-            Text(l("overlay.count", "\(tree.shortcutCount)"))
+            Text(l("overlay.count", "\(shortcutCount)"))
             if tree.isPartial {
                 Text("·").foregroundStyle(.tertiary)
                 Text(l("overlay.partial")).foregroundStyle(DesignTokens.accent)
+            }
+            if isScrollable {
+                Text("·").foregroundStyle(.tertiary)
+                Text(l("overlay.scrollHint"))
             }
             Spacer()
             Text(dismissHint)

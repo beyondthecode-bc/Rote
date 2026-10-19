@@ -24,12 +24,24 @@ public struct HoldDetector: Sendable, Equatable {
         case hide
     }
 
+    /// The sticky toggle (spec §7.2), matched through the layout like any key equivalent
+    /// (`KeyPress.candidateShortcuts`): on Dvorak or Colemak it is the key that types K.
+    public static let stickyHotkey = Shortcut(modifiers: [.control, .option, .command], key: .character("K"))
+
     public private(set) var isShowing = false
     public private(set) var isSticky = false
     private var armedToken: Int?
     private var nextToken = 1
 
     public init() {}
+
+    /// The input a key press makes: the sticky hotkey, or Esc while the sticky sheet is up,
+    /// toggles; any other press, auto-repeats included, is a `.keyDown`.
+    public func input(for press: KeyPress) -> Input {
+        if press.candidateShortcuts.contains(Self.stickyHotkey) { return .stickyToggle }
+        if isSticky && !press.isRepeat && KeyTables.special(forKeyCode: Int(press.keyCode)) == .escape { return .stickyToggle }
+        return .keyDown
+    }
 
     public mutating func handle(_ input: Input) -> Output {
         switch input {

@@ -12,19 +12,17 @@ final class OverlayController {
     @ObservationIgnored private var detector = HoldDetector()
     @ObservationIgnored private var timer: Task<Void, Never>?
     @ObservationIgnored private let panel = OverlayPanel()
+    /// Kept for the panel's life: a fresh hosting view lays out the whole sheet again on every hold.
+    @ObservationIgnored private var host: NSHostingView<ShortcutSheetView>?
+    @ObservationIgnored private var presentations = 0
 
     /// Onboarding step 3 watches this.
     private(set) var hasShownOnce = false
-
-    private static let hotkeyKeyCode: UInt16 = 40      // K
-    private static let escapeKeyCode: UInt16 = 53
 
     init(settings: AppSettings, engine: CoachEngine) {
         self.settings = settings
         self.engine = engine
     }
-
-    var isVisible: Bool { detector.isShowing }
 
     func handle(_ event: KeyEventMonitor.Event) {
         switch event {
@@ -39,13 +37,7 @@ final class OverlayController {
                 apply(detector.handle(.otherModifierChange))
             }
         case .keyDown(let press, _):
-            let isHotkey = !press.isRepeat && press.keyCode == Self.hotkeyKeyCode && press.modifiers == [.control, .option, .command]
-            let isEscapeWhileSticky = !press.isRepeat && press.keyCode == Self.escapeKeyCode && detector.isSticky
-            if isHotkey || isEscapeWhileSticky {
-                apply(detector.handle(.stickyToggle))
-            } else {
-                apply(detector.handle(.keyDown))
-            }
+            apply(detector.handle(detector.input(for: press)))
         case .mouseDown:
             apply(detector.handle(.mouseDown))
         }
@@ -78,7 +70,7 @@ final class OverlayController {
             detector = HoldDetector()        // nothing to show; forget the gesture
             return
         }
-        let coaching = Set(engine.state.items.values.filter { $0.phase == .coaching }.map(\.identity))
+        let coaching = Set(Stats.coachingNow(state: engine.state, now: Date()).map(\.identity))
         let learned = Set(engine.state.items.values.filter { $0.phase == .learned }.map(\.identity))
         let hint = detector.isSticky
             ? l("overlay.stickyHint")
@@ -90,16 +82,23 @@ final class OverlayController {
             learned: learned,
             showAppleMenu: settings.showAppleMenu,
             showItemsWithoutShortcuts: settings.showItemsWithoutShortcuts,
-            dismissHint: hint
+            dismissHint: hint,
+            presentation: presentations
         )
+        presentations += 1
 
         let screen = NudgeController.targetScreen()
         let menuBarHeight = screen.frame.maxY - screen.visibleFrame.maxY
         let frame = NSRect(x: screen.frame.minX, y: screen.frame.minY, width: screen.frame.width, height: screen.frame.height - menuBarHeight)
-        let host = NSHostingView(rootView: view)
-        host.frame = NSRect(origin: .zero, size: frame.size)
-        panel.contentView = host
-        panel.setFrame(frame, display: true)
+        if let host {
+            host.rootView = view
+        } else {
+            let host = NSHostingView(rootView: view)
+            host.frame = NSRect(origin: .zero, size: frame.size)
+            panel.contentView = host
+            self.host = host
+        }
+        if panel.frame != frame { panel.setFrame(frame, display: true) }
         panel.alphaValue = 0
         panel.orderFrontRegardless()
         NSAnimationContext.runAnimationGroup { context in
