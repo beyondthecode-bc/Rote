@@ -4,27 +4,33 @@ import Foundation
 public enum MenuItemIdentity {
     /// Opening quote → accepted closing quotes, covering the conventions Apple's
     /// localizations use for dynamic names: English and Japanese “…”, straight "…",
-    /// single ‘…’, German „…“, Polish, Hungarian and Romanian „…”, German »…«, French «…»,
-    /// Swedish ”…”, CJK 「…」 and 『…』. Straight apostrophes are never quotes
-    /// ("Don't Save", "Can't Undo Today's Edit").
+    /// single ‘…’ and German ‚…‘, German „…“, Polish, Hungarian and Romanian „…”,
+    /// German »…« and Swedish »…», French «…», Swedish ”…”, CJK 「…」 and 『…』.
+    /// Straight apostrophes are never quotes ("Don't Save", "Can't Undo Today's Edit").
     private static let closers: [Character: [Character]] = [
-        "\"": ["\""], "“": ["”"], "‘": ["’"], "„": ["“", "”"], "»": ["«"], "«": ["»"],
-        "”": ["”"], "「": ["」"], "『": ["』"],
+        "\"": ["\""], "“": ["”"], "‘": ["’"], "‚": ["‘", "’"], "„": ["“", "”"],
+        "»": ["«", "»"], "«": ["»"], "”": ["”"], "「": ["」"], "『": ["』"],
     ]
 
     /// Strips quoted substrings, collapses whitespace runs to one space, trims.
     /// "Close Tab “Example”" and "Close Tab" normalize to the same string.
-    /// Single pass, no regex: this runs for every item of every scanned menu.
+    /// Single pass, no regex: this runs for every item of every scanned menu. An opener
+    /// with no closer anywhere after it is remembered, so a page title made of thousands
+    /// of “ stays linear instead of rescanning to the end for each one.
     public static func normalize(_ title: String) -> String {
         var out = ""
         out.reserveCapacity(title.utf8.count)
         var pendingSpace = false
+        var exhausted = Set<Character>()
         var index = title.startIndex
         while index < title.endIndex {
             let character = title[index]
-            if let closers = closers[character], let close = closingIndex(for: closers, in: title, after: index) {
-                index = title.index(after: close)
-                continue
+            if let closers = closers[character], !exhausted.contains(character) {
+                if let close = closingIndex(for: closers, in: title, after: index) {
+                    index = title.index(after: close)
+                    continue
+                }
+                exhausted.insert(character)
             }
             if character.isWhitespace {
                 pendingSpace = true
