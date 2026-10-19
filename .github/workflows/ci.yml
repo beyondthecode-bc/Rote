@@ -9,7 +9,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.ref }}
+  # A new push to a pull request cancels its older run; every push to main keeps its own run and result.
+  group: ci-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
   cancel-in-progress: true
 
 jobs:
@@ -51,5 +52,12 @@ jobs:
       - name: Build and test the app (unsigned)
         run: |
           xcodebuild test -project Rote.xcodeproj -scheme Rote -destination 'platform=macOS' \
+            -derivedDataPath build/derived \
+            CODE_SIGN_IDENTITY="-" CODE_SIGNING_ALLOWED=NO
+
+      # release.sh builds Release; code that reaches a Debug-only symbol outside #if DEBUG fails only here.
+      - name: Build the Release configuration (unsigned)
+        run: |
+          xcodebuild build -project Rote.xcodeproj -scheme Rote -configuration Release -destination 'platform=macOS' \
             -derivedDataPath build/derived \
             CODE_SIGN_IDENTITY="-" CODE_SIGNING_ALLOWED=NO

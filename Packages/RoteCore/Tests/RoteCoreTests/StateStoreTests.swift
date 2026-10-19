@@ -151,7 +151,8 @@ final class StateStoreTests: XCTestCase {
         let store = StateStore(fileURL: fileURL)
         let result = await store.load()
         guard case .recovered(let name) = result else { return XCTFail("expected recovery, got \(result)") }
-        XCTAssertTrue(name.hasPrefix("state.corrupt-"))
+        XCTAssertNotNil(name.range(of: #"^state\.corrupt-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}Z\.json$"#, options: .regularExpression),
+                        "the name carries its date (state.corrupt-<date>.json), so a later quarantine cannot replace this one; got \(name)")
         XCTAssertFalse(FileManager.default.fileExists(atPath: fileURL.path))
         XCTAssertTrue(FileManager.default.fileExists(atPath: directory.appendingPathComponent(name).path))
     }

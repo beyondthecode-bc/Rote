@@ -50,7 +50,7 @@ Rote is Swift 6 with strict concurrency, SwiftUI, and two local packages. Keep `
    ```
 
    `RoteCore` covers the shortcut model, the coaching rules, the weekly statistics and the state file; `RoteAX` covers the Accessibility wrappers against recorded menu fixtures; `RoteTests`, run by `xcodebuild test`, covers the app target (settings, the engine, the HUD, the shortcut sheet, onboarding and the localized strings).
-3. CI runs the same checks on every pull request and on `main`, with the app built unsigned (`CODE_SIGNING_ALLOWED=NO`).
+3. CI runs the same checks on every pull request and on `main`, with the app built unsigned (`CODE_SIGNING_ALLOWED=NO`), and also builds the Release configuration, which fails when code outside `#if DEBUG` uses a Debug-only symbol.
 4. Coaching rules live in `Packages/RoteCore/Sources/RoteCore/Coaching/Coach.swift`; every rule has a test in `CoachTests.swift` or `CoachRulesTests.swift`. Change the test first.
 5. Text the app shows goes through `l("key")`, and the key goes into every file in `languages/`, translated where you can; `python3 scripts/check-languages.py` catches a key missing from a language file, and `LocalizedSourceTests` catches a key missing from `English.xml`, a plural phrase called without `count:` or without its `.one` and `.other` forms, and a shortcut spoken without `spokenShortcut`, which reads the `spoken.*` names.
 6. Debug builds are signed ad hoc, so every rebuild looks like a new app to macOS and loses Accessibility access even while System Settings still shows Rote switched on. After a rebuild, remove Rote from System Settings › Privacy & Security › Accessibility and add the new build, or run `tccutil reset Accessibility com.beyondthecode.rote` and grant access again.

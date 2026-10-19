@@ -104,6 +104,8 @@ swift test --package-path Packages/RoteCore
 swift test --package-path Packages/RoteAX
 xcodebuild test -project Rote.xcodeproj -scheme Rote -destination 'platform=macOS' \
   -derivedDataPath build/derived CODE_SIGN_IDENTITY="-"
+xcodebuild build -project Rote.xcodeproj -scheme Rote -configuration Release -destination 'platform=macOS' \
+  -derivedDataPath build/derived CODE_SIGN_IDENTITY="-"
 ```
 
 Debug builds are signed ad hoc, so every rebuild looks like a new app to macOS and loses Accessibility access even while System Settings still shows Rote switched on. After a rebuild, remove Rote from System Settings › Privacy & Security › Accessibility and add the new build, or run `tccutil reset Accessibility com.beyondthecode.rote` and grant access again. See [CONTRIBUTING.md](CONTRIBUTING.md).

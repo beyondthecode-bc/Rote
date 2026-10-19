@@ -2,7 +2,8 @@
 set -euo pipefail
 # Rote release pipeline: Developer ID build, notarize, staple, VirusTotal, GitHub release, Homebrew tap.
 # Run locally on the signing Mac. Secrets come from ./release.env (gitignored); see release.env.example.
-# Bump MARKETING_VERSION and CURRENT_PROJECT_VERSION in project.yml before releasing.
+# Bump MARKETING_VERSION and CURRENT_PROJECT_VERSION in project.yml, then commit and push to origin main
+# before releasing: the script builds HEAD and tags that same commit, so it stops on a dirty tree or unpushed HEAD.
 
 cd "$(dirname "$0")"
 [ -f release.env ] || { echo "ABORT: release.env missing (copy release.env.example)"; exit 1; }
@@ -22,13 +23,27 @@ VERSION="$(awk -F'"' '/MARKETING_VERSION:/ {print $2; exit}' project.yml)"
 [ -n "${VERSION}" ] || { echo "ABORT: could not read MARKETING_VERSION from project.yml"; exit 1; }
 TAG="v${VERSION}"
 ASSET_NAME="${APP_NAME}-v${VERSION}.zip"
-BUILD_DIR="$(mktemp -d)/build"
-TEST_DIR="$(mktemp -d)/test"
-EXPORT_DIR="$(mktemp -d)/export"
+
+# The tag and its source archives must be the commit that is built: a clean tree, pushed to origin main.
+# Untracked files count, because XcodeGen and SwiftPM compile every file in their source folders.
+[ -z "$(git status --porcelain)" ] || { echo "ABORT: uncommitted or untracked files; commit and push the release changes first"; git status --short; exit 1; }
+git fetch --quiet origin main
+COMMIT="$(git rev-parse HEAD)"
+[ "${COMMIT}" = "$(git rev-parse origin/main)" ] || { echo "ABORT: HEAD is not origin/main; push the release commit to origin main first"; exit 1; }
+remote_tag_commit() { git ls-remote origin "refs/tags/${TAG}" "refs/tags/${TAG}^{}" | awk 'END {print $1}'; }
+TAG_COMMIT="$(remote_tag_commit)"
+[ -z "${TAG_COMMIT}" ] || [ "${TAG_COMMIT}" = "${COMMIT}" ] || { echo "ABORT: ${TAG} already points at ${TAG_COMMIT}, not HEAD ${COMMIT}; bump the version"; exit 1; }
+
+# One work folder; the build, test and tap trees are removed on exit, the export folder (app, zip, .sha256) is kept.
+WORK="$(mktemp -d)"
+trap 'rm -rf "${WORK}/build" "${WORK}/test" "${WORK}/homebrew-tap"' EXIT
+BUILD_DIR="${WORK}/build"
+TEST_DIR="${WORK}/test"
+EXPORT_DIR="${WORK}/export"
 APP_PATH="${EXPORT_DIR}/${APP_NAME}.app"
 ZIP_PATH="${EXPORT_DIR}/${ASSET_NAME}"
 
-echo "==> Releasing ${APP_NAME} ${VERSION} (${TAG}) -> ${ASSET_NAME}"
+echo "==> Releasing ${APP_NAME} ${VERSION} (${TAG} at ${COMMIT}) -> ${ASSET_NAME}"
 
 echo "==> 1/9 Language check + tests (RoteCore, RoteAX, app)"
 python3 scripts/check-languages.py
@@ -111,14 +126,15 @@ NOTES="## Rote ${VERSION}
 ${SHA256}
 \`\`\`"
 if gh release view "${TAG}" --repo "${REPO}" >/dev/null 2>&1; then
+  [ "$(remote_tag_commit)" = "${COMMIT}" ] || { echo "ABORT: release ${TAG} exists but its tag is not HEAD ${COMMIT}; not replacing its assets"; exit 1; }
   echo "    Release ${TAG} exists — replacing assets; update the body's SHA-256 to ${SHA256} by hand."
   gh release upload "${TAG}" --repo "${REPO}" --clobber "${ZIP_PATH}" "${ZIP_PATH}.sha256"
 else
-  gh release create "${TAG}" --repo "${REPO}" --title "${APP_NAME} ${VERSION}" --notes "${NOTES}" "${ZIP_PATH}" "${ZIP_PATH}.sha256"
+  gh release create "${TAG}" --repo "${REPO}" --target "${COMMIT}" --title "${APP_NAME} ${VERSION}" --notes "${NOTES}" "${ZIP_PATH}" "${ZIP_PATH}.sha256"
 fi
 
 echo "==> 9/9 Homebrew tap"
-TAP_DIR="$(mktemp -d)/homebrew-tap"
+TAP_DIR="${WORK}/homebrew-tap"
 git clone --depth 1 "https://github.com/${TAP_REPO}.git" "${TAP_DIR}"
 mkdir -p "${TAP_DIR}/Casks"
 cat > "${TAP_DIR}/Casks/rote.rb" <<EOF
@@ -150,4 +166,5 @@ git -C "${TAP_DIR}" add Casks/rote.rb
 git -C "${TAP_DIR}" -c user.name="Vlad" -c user.email="62696158+beyondthecode-bc@users.noreply.github.com" commit -m "rote ${VERSION}"
 git -C "${TAP_DIR}" push
 echo "==> Done. ${APP_NAME} ${VERSION}  SHA256=${SHA256}  VT=${VT_LINK}"
+echo "    Release files: ${EXPORT_DIR}"
 echo "    Now read the live release body back and verify the update paths, asset name, VT result and checksum."
