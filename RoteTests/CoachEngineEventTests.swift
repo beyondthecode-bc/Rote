@@ -204,6 +204,19 @@ final class CoachEngineEventTests: XCTestCase {
         XCTAssertEqual(h.nudges.map(\.identity), [save.identity])
     }
 
+    func testNoNudgeWhileAnotherNudgeIsOnScreen() async throws {
+        let h = try await makeHarness()
+        await h.activate(Fixtures.appA, serving: treeA)
+        h.engine.nudgeOnScreen = true
+        for _ in 0..<3 { h.menuPick(save) }
+        XCTAssertTrue(h.nudges.isEmpty)
+        XCTAssertEqual(h.record(save)?.menuUses.count, 3)
+
+        h.engine.nudgeDismissed()
+        h.menuPick(save)
+        XCTAssertEqual(h.nudges.map(\.identity), [save.identity])
+    }
+
     func testANudgeIsSavedToTheStateFile() async throws {
         let h = try await makeHarness()
         await h.activate(Fixtures.appA, serving: treeA)
@@ -363,13 +376,18 @@ final class CoachEngineEventTests: XCTestCase {
         h.activate(Fixtures.appB)
         await waitUntil { await h.scanner.scans.count == 2 }
 
-        await h.scanner.release()
+        await h.scanner.release(Fixtures.appB.bundleID)
         await waitUntil { h.engine.currentTree == treeB }
+        await h.scanner.release(Fixtures.appA.bundleID)   // A's scan lands while B is in front
+        await waitUntil { await h.scanner.scanCount(Fixtures.appA.bundleID) == 1 }
         await settle()
         XCTAssertEqual(h.engine.currentTree, treeB)
 
         h.activate(Fixtures.appA)
         XCTAssertEqual(h.engine.currentTree, treeA, "A's scan was cached")
+        await settle()
+        let scansOfA = await h.scanner.scanCount(Fixtures.appA.bundleID)
+        XCTAssertEqual(scansOfA, 1)
     }
 
     func testTheTreeCacheKeepsTheTwentyMostRecentApps() async throws {

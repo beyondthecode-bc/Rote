@@ -59,12 +59,12 @@ func settle() async {
     try? await Task.sleep(for: .milliseconds(30))
 }
 
-/// Serves queued trees per app and records every scan. `hold()` parks scans until `release()`.
+/// Serves queued trees per app and records every scan. `hold()` parks scans until they are released.
 actor FakeScanner: MenuScanning {
     private var queued: [String: [MenuTree]] = [:]
     private(set) var scans: [String] = []
     private var held = false
-    private var parked: [CheckedContinuation<Void, Never>] = []
+    private var parked: [(bundleID: String, continuation: CheckedContinuation<Void, Never>)] = []
 
     func enqueue(_ tree: MenuTree) {
         queued[tree.bundleID, default: []].append(tree)
@@ -72,11 +72,19 @@ actor FakeScanner: MenuScanning {
 
     func hold() { held = true }
 
+    /// Lets every parked scan finish and stops holding new ones.
     func release() {
         held = false
         let waiting = parked
         parked = []
-        for continuation in waiting { continuation.resume() }
+        for entry in waiting { entry.continuation.resume() }
+    }
+
+    /// Lets the parked scans of one app finish; others stay parked.
+    func release(_ bundleID: String) {
+        let waiting = parked.filter { $0.bundleID == bundleID }
+        parked.removeAll { $0.bundleID == bundleID }
+        for entry in waiting { entry.continuation.resume() }
     }
 
     func scanCount(_ bundleID: String) -> Int {
@@ -86,7 +94,7 @@ actor FakeScanner: MenuScanning {
     func scan(app: AppIdentity) async -> MenuTree {
         scans.append(app.bundleID)
         if held {
-            await withCheckedContinuation { parked.append($0) }
+            await withCheckedContinuation { parked.append((app.bundleID, $0)) }
         }
         var trees = queued[app.bundleID] ?? []
         let tree = trees.isEmpty
