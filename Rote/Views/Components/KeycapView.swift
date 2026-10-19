@@ -78,8 +78,42 @@ struct KeycapGroupView: View {
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(shortcut.map(GlyphFormatter.spokenDescription) ?? l("keycap.unknown"))
+        .accessibilityLabel(shortcut.map { spokenShortcut($0) } ?? l("keycap.unknown"))
     }
+}
+
+/// What VoiceOver reads for a shortcut, in Rote's language: "Shift Command N", "Maj Commande N".
+/// Modifiers and named keys come from the `spoken.*` strings; F-keys and character keys are read
+/// as drawn. A table without those names reads RoteCore's English description instead.
+@MainActor
+func spokenShortcut(_ shortcut: Shortcut, localization: LocalizationManager = .shared) -> String {
+    var keys: [String] = []
+    if shortcut.modifiers.contains(.control) { keys.append("spoken.control") }
+    if shortcut.modifiers.contains(.option) { keys.append("spoken.option") }
+    if shortcut.modifiers.contains(.shift) { keys.append("spoken.shift") }
+    if shortcut.modifiers.contains(.command) { keys.append("spoken.command") }
+    var drawnKey: String?
+    switch shortcut.key {
+    case .character(let character): drawnKey = character
+    case .special(let special) where special.isFunctionKey: drawnKey = GlyphFormatter.spokenName(for: special)
+    case .special(let special): keys.append("spoken.key.\(special.rawValue)")
+    }
+
+    var words: [String] = []
+    for key in keys {
+        let word = localization.string(for: key)
+        guard word != key else { return GlyphFormatter.spokenDescription(shortcut) }
+        words.append(word)
+    }
+    if let drawnKey { words.append(drawnKey) }
+    return words.joined(separator: " ")
+}
+
+/// "Reload Page, Command R": a menu item as the HUD, the overlay and the popover speak it (spec §8).
+@MainActor
+func spokenMenuItem(_ title: String, shortcut: Shortcut?, localization: LocalizationManager = .shared) -> String {
+    guard let shortcut else { return title }
+    return title + ", " + spokenShortcut(shortcut, localization: localization)
 }
 
 #Preview("Keycaps") {

@@ -27,9 +27,6 @@
   <string key="popover.updateAvailable">Rote %1 est disponible</string>
   <string key="popover.recovered">Rote n’a pas pu lire sa progression enregistrée et est reparti de zéro. L’ancien fichier a été conservé sous le nom %1.</string>
   <string key="popover.uses">%1×</string>
-  <string key="stats.learned">raccourcis appris</string>
-  <string key="stats.menuClicks">clics de menu ayant un raccourci</string>
-  <string key="stats.shortcutsUsed">raccourcis utilisés</string>
 
   <!-- Nudge HUD -->
   <string key="nudge.subtitle">%1 · %2 utilisations du menu cette semaine</string>
@@ -43,7 +40,6 @@
   <string key="keycap.unknown">Raccourci inconnu</string>
 
   <!-- Overlay -->
-  <string key="overlay.count">%1 raccourcis</string>
   <string key="overlay.partial">Lecture des menus en cours…</string>
   <string key="overlay.releaseHint">Relâchez %1 pour fermer</string>
   <string key="overlay.stickyHint">Appuyez sur Esc ou ⌃⌥⌘K pour fermer</string>
@@ -62,6 +58,56 @@
   <string key="onboarding.tried">Vous avez vu la vue d’ensemble. Tout est prêt.</string>
   <string key="onboarding.menubarHint">Si vous ne voyez pas l’icône en forme de touche dans la barre des menus, macOS l’a peut-être masquée avec d’autres éléments. Cliquez sur le bouton aux deux flèches pointant vers la gauche (« Afficher les éléments masqués de la barre des menus »), à l’extrémité gauche des icônes situées à droite dans la barre des menus, pour la faire apparaître.</string>
 
+  <!-- Spoken names and plurals -->
+  <string key="spoken.control">Contrôle</string>
+  <string key="spoken.option">Option</string>
+  <string key="spoken.shift">Maj</string>
+  <string key="spoken.command">Commande</string>
+  <string key="spoken.key.escape">Échap</string>
+  <string key="spoken.key.tab">Tab</string>
+  <string key="spoken.key.space">Barre d’espace</string>
+  <string key="spoken.key.delete">Supprimer</string>
+  <string key="spoken.key.forwardDelete">Suppression vers l’avant</string>
+  <string key="spoken.key.returnKey">Retour</string>
+  <string key="spoken.key.enter">Entrée</string>
+  <string key="spoken.key.upArrow">Flèche vers le haut</string>
+  <string key="spoken.key.downArrow">Flèche vers le bas</string>
+  <string key="spoken.key.leftArrow">Flèche vers la gauche</string>
+  <string key="spoken.key.rightArrow">Flèche vers la droite</string>
+  <string key="spoken.key.pageUp">Page précédente</string>
+  <string key="spoken.key.pageDown">Page suivante</string>
+  <string key="spoken.key.home">Début</string>
+  <string key="spoken.key.end">Fin</string>
+  <string key="spoken.key.help">Aide</string>
+  <string key="spoken.key.clear">Effacer</string>
+  <string key="nudge.subtitle.one">%1 · %2 utilisation du menu cette semaine</string>
+  <string key="nudge.subtitle.other">%1 · %2 utilisations du menu cette semaine</string>
+  <string key="overlay.count.one">%1 raccourci</string>
+  <string key="overlay.count.other">%1 raccourcis</string>
+  <string key="stats.learned.one">raccourci appris</string>
+  <string key="stats.learned.other">raccourcis appris</string>
+  <string key="stats.menuClicks.one">clic de menu ayant un raccourci</string>
+  <string key="stats.menuClicks.other">clics de menu ayant un raccourci</string>
+  <string key="stats.shortcutsUsed.one">raccourci utilisé</string>
+  <string key="stats.shortcutsUsed.other">raccourcis utilisés</string>
+  <string key="settings.nudgeAfter.one">Suggérer après %1 utilisation du menu</string>
+  <string key="settings.nudgeAfter.other">Suggérer après %1 utilisations du menu</string>
+  <string key="settings.itemSpacing.one">Au moins %1 heure entre deux suggestions pour un même élément</string>
+  <string key="settings.itemSpacing.other">Au moins %1 heures entre deux suggestions pour un même élément</string>
+  <string key="settings.dailyCap.one">Au plus %1 suggestion par jour</string>
+  <string key="settings.dailyCap.other">Au plus %1 suggestions par jour</string>
+  <string key="general.none">Aucun</string>
+  <string key="settings.exportFilename">rote-données</string>
+  <string key="update.error.server">Impossible de joindre GitHub. Vérifiez votre connexion à Internet.</string>
+  <string key="update.error.invalidResponse">Réponse inattendue de GitHub.</string>
+  <string key="update.error.noDownload">Aucun téléchargement trouvé dans la dernière version.</string>
+  <string key="update.error.download">Échec du téléchargement.</string>
+  <string key="update.error.extract">Impossible d’extraire l’archive de la mise à jour.</string>
+  <string key="update.error.noApp">Aucune app trouvée dans l’archive téléchargée.</string>
+  <string key="update.error.install">Impossible d’installer la mise à jour.</string>
+  <string key="update.error.installDetail">Impossible d’installer la mise à jour. %1</string>
+  <string key="update.error.installCancelled">L’installation a été annulée.</string>
+
   <!-- Settings -->
   <string key="settings.title">Réglages</string>
   <string key="settings.general">Général</string>
@@ -74,9 +120,6 @@
   <string key="settings.language.system">Langue du système</string>
   <string key="settings.checkUpdatesOnLaunch">Rechercher les mises à jour au lancement</string>
   <string key="settings.updatesHint">Le bouton « Vérifier maintenant » se trouve dans l’onglet « À propos ».</string>
-  <string key="settings.nudgeAfter">Suggérer après %1 utilisations du menu</string>
-  <string key="settings.itemSpacing">Au moins %1 heures entre deux suggestions pour un même élément</string>
-  <string key="settings.dailyCap">Au plus %1 suggestions par jour</string>
   <string key="settings.hudDuration">Afficher la suggestion pendant %1 secondes</string>
   <string key="settings.sound">Émettre un son discret</string>
   <string key="settings.trigger">Afficher la vue d’ensemble</string>

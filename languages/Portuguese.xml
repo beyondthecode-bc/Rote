@@ -27,9 +27,6 @@
   <string key="popover.updateAvailable">O Rote %1 está disponível</string>
   <string key="popover.recovered">O Rote não conseguiu ler o progresso salvo e recomeçou do zero. O arquivo antigo foi mantido como %1.</string>
   <string key="popover.uses">%1×</string>
-  <string key="stats.learned">atalhos aprendidos</string>
-  <string key="stats.menuClicks">cliques em menus que tinham atalho</string>
-  <string key="stats.shortcutsUsed">atalhos usados</string>
 
   <!-- Nudge HUD -->
   <string key="nudge.subtitle">%1 · %2 usos pelo menu esta semana</string>
@@ -43,7 +40,6 @@
   <string key="keycap.unknown">Atalho desconhecido</string>
 
   <!-- Overlay -->
-  <string key="overlay.count">%1 atalhos</string>
   <string key="overlay.partial">Ainda lendo os menus…</string>
   <string key="overlay.releaseHint">Solte %1 para fechar</string>
   <string key="overlay.stickyHint">Pressione Esc ou ⌃⌥⌘K para fechar</string>
@@ -62,6 +58,56 @@
   <string key="onboarding.tried">Você já viu a visão geral. Está tudo pronto.</string>
   <string key="onboarding.menubarHint">Se você não vir o ícone em forma de tecla na barra de menus, o macOS pode tê-lo ocultado com outros itens da barra de menus. Clique no botão com duas setas apontando para a esquerda (“Mostrar Itens Ocultos da Barra de Menus”), na extremidade esquerda dos ícones do lado direito da barra de menus, para exibi-lo.</string>
 
+  <!-- Spoken names and plurals -->
+  <string key="spoken.control">Control</string>
+  <string key="spoken.option">Option</string>
+  <string key="spoken.shift">Shift</string>
+  <string key="spoken.command">Command</string>
+  <string key="spoken.key.escape">Escape</string>
+  <string key="spoken.key.tab">Tab</string>
+  <string key="spoken.key.space">Barra de espaço</string>
+  <string key="spoken.key.delete">Apagar</string>
+  <string key="spoken.key.forwardDelete">Forward Delete</string>
+  <string key="spoken.key.returnKey">Return</string>
+  <string key="spoken.key.enter">Enter</string>
+  <string key="spoken.key.upArrow">Seta para cima</string>
+  <string key="spoken.key.downArrow">Seta para baixo</string>
+  <string key="spoken.key.leftArrow">Seta para a esquerda</string>
+  <string key="spoken.key.rightArrow">Seta para a direita</string>
+  <string key="spoken.key.pageUp">Page Up</string>
+  <string key="spoken.key.pageDown">Page Down</string>
+  <string key="spoken.key.home">Home</string>
+  <string key="spoken.key.end">End</string>
+  <string key="spoken.key.help">Ajuda</string>
+  <string key="spoken.key.clear">Limpar</string>
+  <string key="nudge.subtitle.one">%1 · %2 uso pelo menu esta semana</string>
+  <string key="nudge.subtitle.other">%1 · %2 usos pelo menu esta semana</string>
+  <string key="overlay.count.one">%1 atalho</string>
+  <string key="overlay.count.other">%1 atalhos</string>
+  <string key="stats.learned.one">atalho aprendido</string>
+  <string key="stats.learned.other">atalhos aprendidos</string>
+  <string key="stats.menuClicks.one">clique em menu que tinha atalho</string>
+  <string key="stats.menuClicks.other">cliques em menus que tinham atalho</string>
+  <string key="stats.shortcutsUsed.one">atalho usado</string>
+  <string key="stats.shortcutsUsed.other">atalhos usados</string>
+  <string key="settings.nudgeAfter.one">Dar dica após %1 uso do menu</string>
+  <string key="settings.nudgeAfter.other">Dar dica após %1 usos do menu</string>
+  <string key="settings.itemSpacing.one">Pelo menos %1 hora entre dicas do mesmo item</string>
+  <string key="settings.itemSpacing.other">Pelo menos %1 horas entre dicas do mesmo item</string>
+  <string key="settings.dailyCap.one">No máximo %1 dica por dia</string>
+  <string key="settings.dailyCap.other">No máximo %1 dicas por dia</string>
+  <string key="general.none">Nenhum</string>
+  <string key="settings.exportFilename">rote-dados</string>
+  <string key="update.error.server">Não foi possível acessar o GitHub. Verifique sua conexão com a internet.</string>
+  <string key="update.error.invalidResponse">Resposta inesperada do GitHub.</string>
+  <string key="update.error.noDownload">Nenhum download encontrado na versão mais recente.</string>
+  <string key="update.error.download">Falha no download.</string>
+  <string key="update.error.extract">Não foi possível extrair o arquivo da atualização.</string>
+  <string key="update.error.noApp">Nenhum app encontrado no arquivo baixado.</string>
+  <string key="update.error.install">Não foi possível instalar a atualização.</string>
+  <string key="update.error.installDetail">Não foi possível instalar a atualização. %1</string>
+  <string key="update.error.installCancelled">A instalação foi cancelada.</string>
+
   <!-- Settings -->
   <string key="settings.title">Ajustes</string>
   <string key="settings.general">Geral</string>
@@ -74,9 +120,6 @@
   <string key="settings.language.system">Padrão do sistema</string>
   <string key="settings.checkUpdatesOnLaunch">Verificar atualizações ao abrir</string>
   <string key="settings.updatesHint">“Verificar agora” fica na aba “Sobre”.</string>
-  <string key="settings.nudgeAfter">Dar dica após %1 usos do menu</string>
-  <string key="settings.itemSpacing">Pelo menos %1 horas entre dicas do mesmo item</string>
-  <string key="settings.dailyCap">No máximo %1 dicas por dia</string>
   <string key="settings.hudDuration">Mostrar a dica por %1 segundos</string>
   <string key="settings.sound">Tocar um som discreto</string>
   <string key="settings.trigger">Mostrar a visão geral</string>

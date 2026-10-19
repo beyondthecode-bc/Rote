@@ -27,9 +27,6 @@
   <string key="popover.updateAvailable">Rote %1 ist verfügbar</string>
   <string key="popover.recovered">Rote konnte den gesicherten Fortschritt nicht lesen und hat neu begonnen. Die alte Datei wurde als %1 aufbewahrt.</string>
   <string key="popover.uses">%1×</string>
-  <string key="stats.learned">gelernte Kurzbefehle</string>
-  <string key="stats.menuClicks">Menüklicks mit Kurzbefehl</string>
-  <string key="stats.shortcutsUsed">verwendete Kurzbefehle</string>
 
   <!-- Nudge HUD -->
   <string key="nudge.subtitle">%1 · %2 Menüaufrufe diese Woche</string>
@@ -43,7 +40,6 @@
   <string key="keycap.unknown">Unbekannter Kurzbefehl</string>
 
   <!-- Overlay -->
-  <string key="overlay.count">%1 Kurzbefehle</string>
   <string key="overlay.partial">Menüs werden noch gelesen …</string>
   <string key="overlay.releaseHint">Zum Schließen %1 loslassen</string>
   <string key="overlay.stickyHint">Zum Schließen Esc oder ⌃⌥⌘K drücken</string>
@@ -62,6 +58,56 @@
   <string key="onboarding.tried">Sie haben die Übersicht gesehen. Alles ist bereit.</string>
   <string key="onboarding.menubarHint">Wenn Sie das tastenförmige Symbol in der Menüleiste nicht sehen, hat macOS es möglicherweise zusammen mit anderen Menüleistenobjekten ausgeblendet. Klicken Sie am linken Ende der Symbole auf der rechten Seite der Menüleiste auf die Schaltfläche mit den zwei nach links zeigenden Pfeilen („Ausgeblendete Menüleistenobjekte einblenden“), um es anzuzeigen.</string>
 
+  <!-- Spoken names and plurals -->
+  <string key="spoken.control">Control</string>
+  <string key="spoken.option">Wahl</string>
+  <string key="spoken.shift">Umschalt</string>
+  <string key="spoken.command">Befehl</string>
+  <string key="spoken.key.escape">Escape</string>
+  <string key="spoken.key.tab">Tabulator</string>
+  <string key="spoken.key.space">Leertaste</string>
+  <string key="spoken.key.delete">Rückschritt</string>
+  <string key="spoken.key.forwardDelete">Entfernen</string>
+  <string key="spoken.key.returnKey">Zeilenschalter</string>
+  <string key="spoken.key.enter">Eingabe</string>
+  <string key="spoken.key.upArrow">Aufwärtspfeil</string>
+  <string key="spoken.key.downArrow">Abwärtspfeil</string>
+  <string key="spoken.key.leftArrow">Linkspfeil</string>
+  <string key="spoken.key.rightArrow">Rechtspfeil</string>
+  <string key="spoken.key.pageUp">Seite nach oben</string>
+  <string key="spoken.key.pageDown">Seite nach unten</string>
+  <string key="spoken.key.home">Pos1</string>
+  <string key="spoken.key.end">Ende</string>
+  <string key="spoken.key.help">Hilfe</string>
+  <string key="spoken.key.clear">Löschen</string>
+  <string key="nudge.subtitle.one">%1 · %2 Menüaufruf diese Woche</string>
+  <string key="nudge.subtitle.other">%1 · %2 Menüaufrufe diese Woche</string>
+  <string key="overlay.count.one">%1 Kurzbefehl</string>
+  <string key="overlay.count.other">%1 Kurzbefehle</string>
+  <string key="stats.learned.one">gelernter Kurzbefehl</string>
+  <string key="stats.learned.other">gelernte Kurzbefehle</string>
+  <string key="stats.menuClicks.one">Menüklick mit Kurzbefehl</string>
+  <string key="stats.menuClicks.other">Menüklicks mit Kurzbefehl</string>
+  <string key="stats.shortcutsUsed.one">verwendeter Kurzbefehl</string>
+  <string key="stats.shortcutsUsed.other">verwendete Kurzbefehle</string>
+  <string key="settings.nudgeAfter.one">Hinweis nach %1 Menüaufruf</string>
+  <string key="settings.nudgeAfter.other">Hinweis nach %1 Menüaufrufen</string>
+  <string key="settings.itemSpacing.one">Mindestens %1 Stunde zwischen Hinweisen zum selben Objekt</string>
+  <string key="settings.itemSpacing.other">Mindestens %1 Stunden zwischen Hinweisen zum selben Objekt</string>
+  <string key="settings.dailyCap.one">Höchstens %1 Hinweis pro Tag</string>
+  <string key="settings.dailyCap.other">Höchstens %1 Hinweise pro Tag</string>
+  <string key="general.none">Keine</string>
+  <string key="settings.exportFilename">rote-daten</string>
+  <string key="update.error.server">GitHub ist nicht erreichbar. Überprüfen Sie Ihre Internetverbindung.</string>
+  <string key="update.error.invalidResponse">Unerwartete Antwort von GitHub.</string>
+  <string key="update.error.noDownload">In der neuesten Version wurde kein Download gefunden.</string>
+  <string key="update.error.download">Laden fehlgeschlagen.</string>
+  <string key="update.error.extract">Das Update-Archiv konnte nicht entpackt werden.</string>
+  <string key="update.error.noApp">Im geladenen Archiv wurde keine App gefunden.</string>
+  <string key="update.error.install">Das Update konnte nicht installiert werden.</string>
+  <string key="update.error.installDetail">Das Update konnte nicht installiert werden. %1</string>
+  <string key="update.error.installCancelled">Die Installation wurde abgebrochen.</string>
+
   <!-- Settings -->
   <string key="settings.title">Einstellungen</string>
   <string key="settings.general">Allgemein</string>
@@ -74,9 +120,6 @@
   <string key="settings.language.system">Systemsprache</string>
   <string key="settings.checkUpdatesOnLaunch">Beim Start nach Updates suchen</string>
   <string key="settings.updatesHint">„Jetzt suchen“ befindet sich im Bereich „Info“.</string>
-  <string key="settings.nudgeAfter">Hinweis nach %1 Menüaufrufen</string>
-  <string key="settings.itemSpacing">Mindestens %1 Stunden zwischen Hinweisen zum selben Objekt</string>
-  <string key="settings.dailyCap">Höchstens %1 Hinweise pro Tag</string>
   <string key="settings.hudDuration">Hinweis %1 Sekunden lang anzeigen</string>
   <string key="settings.sound">Dezenten Ton abspielen</string>
   <string key="settings.trigger">Übersicht anzeigen</string>

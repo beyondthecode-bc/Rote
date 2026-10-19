@@ -10,11 +10,11 @@ struct StatTileView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             HStack(alignment: .firstTextBaseline, spacing: 4) {
-                Text("\(value)")
+                Text(number(value))
                     .font(.system(size: 20, weight: .bold, design: .rounded))
                     .monospacedDigit()
                 if lowerIsBetter ? delta < 0 : delta > 0 {
-                    Text(delta > 0 ? "+\(delta)" : "\(delta)")
+                    Text(delta > 0 ? "+" + number(delta) : number(delta))
                         .font(.system(size: 10, weight: .semibold))
                         .foregroundStyle(DesignTokens.learned)
                 }
@@ -29,6 +29,6 @@ struct StatTileView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(DesignTokens.surfaceMuted, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(value) \(label)")
+        .accessibilityLabel(number(value) + " " + label)
     }
 }

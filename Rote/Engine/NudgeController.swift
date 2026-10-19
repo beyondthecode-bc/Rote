@@ -117,9 +117,14 @@ final class NudgeController {
         return NSScreen.main ?? NSScreen.screens[0]
     }
 
+    /// "Shortcut for Reload Page: Command R", with the keys named in Rote's language.
+    static func announcement(for record: ItemRecord, localization: LocalizationManager = .shared) -> String? {
+        guard let shortcut = record.item.shortcut else { return nil }
+        return localization.string(for: "nudge.announcement", [record.item.title, spokenShortcut(shortcut, localization: localization)])
+    }
+
     private func announce(_ record: ItemRecord) {
-        guard let shortcut = record.item.shortcut else { return }
-        let text = l("nudge.announcement", record.item.title, GlyphFormatter.spokenDescription(shortcut))
+        guard let text = Self.announcement(for: record) else { return }
         NSAccessibility.post(
             element: NSApp as Any,
             notification: .announcementRequested,

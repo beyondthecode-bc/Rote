@@ -41,7 +41,7 @@ struct CoachingRow: View {
                 .font(.system(size: 12))
                 .lineLimit(1)
                 .truncationMode(.middle)
-            Text(l("popover.uses", "\(record.menuUses.count)"))
+            Text(l("popover.uses", number(record.menuUses.count)))
                 .font(.system(size: 10, weight: .semibold))
                 .foregroundStyle(DesignTokens.accent)
                 .padding(.horizontal, 6)
@@ -63,7 +63,7 @@ struct CoachingRow: View {
         .onHover { hovering = $0 }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(record.spokenLabel)
-        .accessibilityValue(l("popover.uses", "\(record.menuUses.count)"))
+        .accessibilityValue(l("popover.uses", number(record.menuUses.count)))
         .accessibilityAction(named: l("nudge.snooze"), onSnooze)
     }
 }
@@ -93,7 +93,8 @@ struct LearnedRow: View {
 
 private extension ItemRecord {
     /// "Reload Page, Command R", the sentence the HUD and the overlay speak (spec §8).
+    @MainActor
     var spokenLabel: String {
-        item.title + (item.shortcut.map { ", " + GlyphFormatter.spokenDescription($0) } ?? "")
+        spokenMenuItem(item.title, shortcut: item.shortcut)
     }
 }

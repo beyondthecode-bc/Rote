@@ -27,9 +27,6 @@
   <string key="popover.updateAvailable">Rote %1 现已可用</string>
   <string key="popover.recovered">Rote 无法读取已存储的进度，因此已重新开始。旧文件已保留为 %1。</string>
   <string key="popover.uses">%1×</string>
-  <string key="stats.learned">已掌握的快捷键</string>
-  <string key="stats.menuClicks">有快捷键的菜单点按</string>
-  <string key="stats.shortcutsUsed">已使用的快捷键</string>
 
   <!-- Nudge HUD -->
   <string key="nudge.subtitle">%1 · 本周通过菜单使用 %2 次</string>
@@ -43,7 +40,6 @@
   <string key="keycap.unknown">未知快捷键</string>
 
   <!-- Overlay -->
-  <string key="overlay.count">%1 个快捷键</string>
   <string key="overlay.partial">仍在读取菜单…</string>
   <string key="overlay.releaseHint">松开 %1 以关闭</string>
   <string key="overlay.stickyHint">按下 Esc 或 ⌃⌥⌘K 以关闭</string>
@@ -62,6 +58,56 @@
   <string key="onboarding.tried">你已看过总览。一切就绪。</string>
   <string key="onboarding.menubarHint">如果在菜单栏中看不到按键形状的图标，可能是 macOS 把它和其他菜单栏项目一起隐藏了。请点按菜单栏右侧图标最左端、带有两个向左箭头的按钮（“显示隐藏菜单栏项目”）将其显示出来。</string>
 
+  <!-- Spoken names and plurals -->
+  <string key="spoken.control">Control</string>
+  <string key="spoken.option">Option</string>
+  <string key="spoken.shift">Shift</string>
+  <string key="spoken.command">Command</string>
+  <string key="spoken.key.escape">Escape</string>
+  <string key="spoken.key.tab">Tab</string>
+  <string key="spoken.key.space">空格键</string>
+  <string key="spoken.key.delete">Delete</string>
+  <string key="spoken.key.forwardDelete">向前删除</string>
+  <string key="spoken.key.returnKey">Return</string>
+  <string key="spoken.key.enter">Enter</string>
+  <string key="spoken.key.upArrow">上箭头</string>
+  <string key="spoken.key.downArrow">下箭头</string>
+  <string key="spoken.key.leftArrow">左箭头</string>
+  <string key="spoken.key.rightArrow">右箭头</string>
+  <string key="spoken.key.pageUp">Page Up</string>
+  <string key="spoken.key.pageDown">Page Down</string>
+  <string key="spoken.key.home">Home</string>
+  <string key="spoken.key.end">End</string>
+  <string key="spoken.key.help">帮助</string>
+  <string key="spoken.key.clear">清除</string>
+  <string key="nudge.subtitle.one">%1 · 本周通过菜单使用 %2 次</string>
+  <string key="nudge.subtitle.other">%1 · 本周通过菜单使用 %2 次</string>
+  <string key="overlay.count.one">%1 个快捷键</string>
+  <string key="overlay.count.other">%1 个快捷键</string>
+  <string key="stats.learned.one">已掌握的快捷键</string>
+  <string key="stats.learned.other">已掌握的快捷键</string>
+  <string key="stats.menuClicks.one">有快捷键的菜单点按</string>
+  <string key="stats.menuClicks.other">有快捷键的菜单点按</string>
+  <string key="stats.shortcutsUsed.one">已使用的快捷键</string>
+  <string key="stats.shortcutsUsed.other">已使用的快捷键</string>
+  <string key="settings.nudgeAfter.one">通过菜单使用 %1 次后提示</string>
+  <string key="settings.nudgeAfter.other">通过菜单使用 %1 次后提示</string>
+  <string key="settings.itemSpacing.one">同一项目的提示至少间隔 %1 小时</string>
+  <string key="settings.itemSpacing.other">同一项目的提示至少间隔 %1 小时</string>
+  <string key="settings.dailyCap.one">每天最多提示 %1 次</string>
+  <string key="settings.dailyCap.other">每天最多提示 %1 次</string>
+  <string key="general.none">无</string>
+  <string key="settings.exportFilename">rote-数据</string>
+  <string key="update.error.server">无法连接 GitHub。请检查你的互联网连接。</string>
+  <string key="update.error.invalidResponse">GitHub 返回了意外的响应。</string>
+  <string key="update.error.noDownload">最新版本中未找到下载项。</string>
+  <string key="update.error.download">下载失败。</string>
+  <string key="update.error.extract">无法解压更新归档。</string>
+  <string key="update.error.noApp">下载的归档中未找到 App。</string>
+  <string key="update.error.install">无法安装更新。</string>
+  <string key="update.error.installDetail">无法安装更新。%1</string>
+  <string key="update.error.installCancelled">安装已取消。</string>
+
   <!-- Settings -->
   <string key="settings.title">设置</string>
   <string key="settings.general">通用</string>
@@ -74,9 +120,6 @@
   <string key="settings.language.system">系统默认</string>
   <string key="settings.checkUpdatesOnLaunch">启动时检查更新</string>
   <string key="settings.updatesHint">“立即检查”位于“关于”标签页中。</string>
-  <string key="settings.nudgeAfter">通过菜单使用 %1 次后提示</string>
-  <string key="settings.itemSpacing">同一项目的提示至少间隔 %1 小时</string>
-  <string key="settings.dailyCap">每天最多提示 %1 次</string>
   <string key="settings.hudDuration">提示显示 %1 秒</string>
   <string key="settings.sound">播放轻柔的提示音</string>
   <string key="settings.trigger">显示总览的方式</string>

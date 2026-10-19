@@ -27,9 +27,6 @@
   <string key="popover.updateAvailable">Rote %1 사용 가능</string>
   <string key="popover.recovered">Rote가 저장된 진행 상황을 읽을 수 없어 처음부터 다시 시작했습니다. 이전 파일은 %1(으)로 보관되었습니다.</string>
   <string key="popover.uses">%1×</string>
-  <string key="stats.learned">익힌 단축키</string>
-  <string key="stats.menuClicks">단축키가 있는 메뉴 클릭</string>
-  <string key="stats.shortcutsUsed">사용한 단축키</string>
 
   <!-- Nudge HUD -->
   <string key="nudge.subtitle">%1 · 이번 주 메뉴 사용 %2회</string>
@@ -43,7 +40,6 @@
   <string key="keycap.unknown">알 수 없는 단축키</string>
 
   <!-- Overlay -->
-  <string key="overlay.count">단축키 %1개</string>
   <string key="overlay.partial">아직 메뉴를 읽는 중…</string>
   <string key="overlay.releaseHint">%1 키를 놓으면 닫힙니다</string>
   <string key="overlay.stickyHint">Esc 또는 ⌃⌥⌘K를 눌러 닫기</string>
@@ -62,6 +58,56 @@
   <string key="onboarding.tried">오버레이를 확인했습니다. 모든 준비가 끝났습니다.</string>
   <string key="onboarding.menubarHint">메뉴 막대에서 키 모양 아이콘이 보이지 않으면 macOS가 다른 메뉴 막대 항목과 함께 숨겼을 수 있습니다. 메뉴 막대 오른쪽 아이콘들의 왼쪽 끝에 있는 왼쪽 화살표 두 개 모양의 버튼(“가려진 메뉴 막대 항목 보기”)을 클릭하면 아이콘이 나타납니다.</string>
 
+  <!-- Spoken names and plurals -->
+  <string key="spoken.control">Control</string>
+  <string key="spoken.option">Option</string>
+  <string key="spoken.shift">Shift</string>
+  <string key="spoken.command">Command</string>
+  <string key="spoken.key.escape">Escape</string>
+  <string key="spoken.key.tab">Tab</string>
+  <string key="spoken.key.space">스페이스 바</string>
+  <string key="spoken.key.delete">Delete</string>
+  <string key="spoken.key.forwardDelete">오른쪽 방향 Delete</string>
+  <string key="spoken.key.returnKey">Return</string>
+  <string key="spoken.key.enter">Enter</string>
+  <string key="spoken.key.upArrow">위쪽 화살표</string>
+  <string key="spoken.key.downArrow">아래쪽 화살표</string>
+  <string key="spoken.key.leftArrow">왼쪽 화살표</string>
+  <string key="spoken.key.rightArrow">오른쪽 화살표</string>
+  <string key="spoken.key.pageUp">Page Up</string>
+  <string key="spoken.key.pageDown">Page Down</string>
+  <string key="spoken.key.home">Home</string>
+  <string key="spoken.key.end">End</string>
+  <string key="spoken.key.help">도움말</string>
+  <string key="spoken.key.clear">지우기</string>
+  <string key="nudge.subtitle.one">%1 · 이번 주 메뉴 사용 %2회</string>
+  <string key="nudge.subtitle.other">%1 · 이번 주 메뉴 사용 %2회</string>
+  <string key="overlay.count.one">단축키 %1개</string>
+  <string key="overlay.count.other">단축키 %1개</string>
+  <string key="stats.learned.one">익힌 단축키</string>
+  <string key="stats.learned.other">익힌 단축키</string>
+  <string key="stats.menuClicks.one">단축키가 있는 메뉴 클릭</string>
+  <string key="stats.menuClicks.other">단축키가 있는 메뉴 클릭</string>
+  <string key="stats.shortcutsUsed.one">사용한 단축키</string>
+  <string key="stats.shortcutsUsed.other">사용한 단축키</string>
+  <string key="settings.nudgeAfter.one">메뉴를 %1회 사용하면 코칭</string>
+  <string key="settings.nudgeAfter.other">메뉴를 %1회 사용하면 코칭</string>
+  <string key="settings.itemSpacing.one">같은 항목은 최소 %1시간 간격으로 코칭</string>
+  <string key="settings.itemSpacing.other">같은 항목은 최소 %1시간 간격으로 코칭</string>
+  <string key="settings.dailyCap.one">하루 최대 %1회 코칭</string>
+  <string key="settings.dailyCap.other">하루 최대 %1회 코칭</string>
+  <string key="general.none">없음</string>
+  <string key="settings.exportFilename">rote-데이터</string>
+  <string key="update.error.server">GitHub에 연결할 수 없습니다. 인터넷 연결을 확인하십시오.</string>
+  <string key="update.error.invalidResponse">GitHub에서 예기치 않은 응답을 받았습니다.</string>
+  <string key="update.error.noDownload">최신 릴리스에서 다운로드를 찾을 수 없습니다.</string>
+  <string key="update.error.download">다운로드에 실패했습니다.</string>
+  <string key="update.error.extract">업데이트 아카이브를 추출할 수 없습니다.</string>
+  <string key="update.error.noApp">다운로드한 아카이브에서 앱을 찾을 수 없습니다.</string>
+  <string key="update.error.install">업데이트를 설치할 수 없습니다.</string>
+  <string key="update.error.installDetail">업데이트를 설치할 수 없습니다. %1</string>
+  <string key="update.error.installCancelled">설치가 취소되었습니다.</string>
+
   <!-- Settings -->
   <string key="settings.title">설정</string>
   <string key="settings.general">일반</string>
@@ -74,9 +120,6 @@
   <string key="settings.language.system">시스템 기본값</string>
   <string key="settings.checkUpdatesOnLaunch">실행 시 업데이트 확인</string>
   <string key="settings.updatesHint">‘지금 확인’은 ‘정보’ 탭에 있습니다.</string>
-  <string key="settings.nudgeAfter">메뉴를 %1회 사용하면 코칭</string>
-  <string key="settings.itemSpacing">같은 항목은 최소 %1시간 간격으로 코칭</string>
-  <string key="settings.dailyCap">하루 최대 %1회 코칭</string>
   <string key="settings.hudDuration">코칭을 %1초 동안 표시</string>
   <string key="settings.sound">은은한 사운드 재생</string>
   <string key="settings.trigger">오버레이 표시 방법</string>

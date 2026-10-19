@@ -65,7 +65,7 @@ struct ShortcutSheetView: View {
             Image(nsImage: appIcon).resizable().frame(width: 18, height: 18)
             Text(tree.appName).fontWeight(.semibold)
             Text("·").foregroundStyle(.tertiary)
-            Text(l("overlay.count", "\(shortcutCount)"))
+            Text(l("overlay.count", count: shortcutCount, number(shortcutCount)))
             if tree.isPartial {
                 Text("·").foregroundStyle(.tertiary)
                 Text(l("overlay.partial")).foregroundStyle(DesignTokens.accent)
@@ -142,6 +142,6 @@ struct MenuColumnView: View {
         .background(isCoaching ? DesignTokens.accent.opacity(0.18) : .clear, in: RoundedRectangle(cornerRadius: 5, style: .continuous))
         .opacity(!hasShortcut ? 0.45 : (item.isEnabled ? 1 : 0.6))
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(item.title + (item.shortcut.map { ", " + GlyphFormatter.spokenDescription($0) } ?? ""))
+        .accessibilityLabel(spokenMenuItem(item.title, shortcut: item.shortcut))
     }
 }

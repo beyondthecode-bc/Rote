@@ -27,9 +27,6 @@
   <string key="popover.updateAvailable">Rote %1を利用できます</string>
   <string key="popover.recovered">Roteは保存された進捗を読み込めなかったため、最初からやり直しました。古いファイルは%1として残してあります。</string>
   <string key="popover.uses">%1×</string>
-  <string key="stats.learned">習得したショートカット</string>
-  <string key="stats.menuClicks">ショートカットがあるメニューのクリック</string>
-  <string key="stats.shortcutsUsed">使用したショートカット</string>
 
   <!-- Nudge HUD -->
   <string key="nudge.subtitle">%1 · 今週メニューから%2回使用</string>
@@ -43,7 +40,6 @@
   <string key="keycap.unknown">不明なショートカット</string>
 
   <!-- Overlay -->
-  <string key="overlay.count">ショートカット%1件</string>
   <string key="overlay.partial">メニューを読み込み中…</string>
   <string key="overlay.releaseHint">%1を離すと閉じます</string>
   <string key="overlay.stickyHint">Escまたは⌃⌥⌘Kを押すと閉じます</string>
@@ -62,6 +58,56 @@
   <string key="onboarding.tried">オーバーレイを確認しました。準備完了です。</string>
   <string key="onboarding.menubarHint">メニューバーにキーの形をしたアイコンが見当たらない場合は、macOSが他のメニューバー項目とともに非表示にしている可能性があります。メニューバー右側のアイコンの左端にある、左向きの矢印が2つ並んだボタン（「非表示のメニューバー項目を表示」）をクリックすると表示されます。</string>
 
+  <!-- Spoken names and plurals -->
+  <string key="spoken.control">Control</string>
+  <string key="spoken.option">Option</string>
+  <string key="spoken.shift">Shift</string>
+  <string key="spoken.command">Command</string>
+  <string key="spoken.key.escape">Escape</string>
+  <string key="spoken.key.tab">Tab</string>
+  <string key="spoken.key.space">スペースバー</string>
+  <string key="spoken.key.delete">Delete</string>
+  <string key="spoken.key.forwardDelete">Forward Delete</string>
+  <string key="spoken.key.returnKey">Return</string>
+  <string key="spoken.key.enter">Enter</string>
+  <string key="spoken.key.upArrow">上矢印</string>
+  <string key="spoken.key.downArrow">下矢印</string>
+  <string key="spoken.key.leftArrow">左矢印</string>
+  <string key="spoken.key.rightArrow">右矢印</string>
+  <string key="spoken.key.pageUp">Page Up</string>
+  <string key="spoken.key.pageDown">Page Down</string>
+  <string key="spoken.key.home">Home</string>
+  <string key="spoken.key.end">End</string>
+  <string key="spoken.key.help">ヘルプ</string>
+  <string key="spoken.key.clear">クリア</string>
+  <string key="nudge.subtitle.one">%1 · 今週メニューから%2回使用</string>
+  <string key="nudge.subtitle.other">%1 · 今週メニューから%2回使用</string>
+  <string key="overlay.count.one">ショートカット%1件</string>
+  <string key="overlay.count.other">ショートカット%1件</string>
+  <string key="stats.learned.one">習得したショートカット</string>
+  <string key="stats.learned.other">習得したショートカット</string>
+  <string key="stats.menuClicks.one">ショートカットがあるメニューのクリック</string>
+  <string key="stats.menuClicks.other">ショートカットがあるメニューのクリック</string>
+  <string key="stats.shortcutsUsed.one">使用したショートカット</string>
+  <string key="stats.shortcutsUsed.other">使用したショートカット</string>
+  <string key="settings.nudgeAfter.one">メニューを%1回使用したらヒントを表示</string>
+  <string key="settings.nudgeAfter.other">メニューを%1回使用したらヒントを表示</string>
+  <string key="settings.itemSpacing.one">同じ項目のヒントは%1時間以上空ける</string>
+  <string key="settings.itemSpacing.other">同じ項目のヒントは%1時間以上空ける</string>
+  <string key="settings.dailyCap.one">ヒントは1日最大%1回</string>
+  <string key="settings.dailyCap.other">ヒントは1日最大%1回</string>
+  <string key="general.none">なし</string>
+  <string key="settings.exportFilename">rote-データ</string>
+  <string key="update.error.server">GitHubに接続できませんでした。インターネット接続を確認してください。</string>
+  <string key="update.error.invalidResponse">GitHubから予期しない応答がありました。</string>
+  <string key="update.error.noDownload">最新リリースにダウンロードが見つかりませんでした。</string>
+  <string key="update.error.download">ダウンロードに失敗しました。</string>
+  <string key="update.error.extract">アップデートのアーカイブを展開できませんでした。</string>
+  <string key="update.error.noApp">ダウンロードしたアーカイブにアプリが見つかりませんでした。</string>
+  <string key="update.error.install">アップデートをインストールできませんでした。</string>
+  <string key="update.error.installDetail">アップデートをインストールできませんでした。%1</string>
+  <string key="update.error.installCancelled">インストールはキャンセルされました。</string>
+
   <!-- Settings -->
   <string key="settings.title">設定</string>
   <string key="settings.general">一般</string>
@@ -74,9 +120,6 @@
   <string key="settings.language.system">システムのデフォルト</string>
   <string key="settings.checkUpdatesOnLaunch">起動時にアップデートを確認</string>
   <string key="settings.updatesHint">「今すぐ確認」は「情報」タブにあります。</string>
-  <string key="settings.nudgeAfter">メニューを%1回使用したらヒントを表示</string>
-  <string key="settings.itemSpacing">同じ項目のヒントは%1時間以上空ける</string>
-  <string key="settings.dailyCap">ヒントは1日最大%1回</string>
   <string key="settings.hudDuration">ヒントを%1秒間表示</string>
   <string key="settings.sound">控えめなサウンドを再生</string>
   <string key="settings.trigger">オーバーレイの表示方法</string>

@@ -17,7 +17,7 @@ struct DataSettingsTab: View {
                 .fixedSize(horizontal: false, vertical: true)
             Section(l("settings.muted")) {
                 if engine.mutedItems.isEmpty {
-                    Text("—").foregroundStyle(.secondary)
+                    Text(l("general.none")).foregroundStyle(.secondary)
                 } else {
                     ForEach(engine.mutedItems) { record in
                         // Identity includes the app, so the same title can be muted in two apps.
@@ -54,7 +54,7 @@ struct DataSettingsTab: View {
     private func export() {
         let panel = NSSavePanel()
         panel.allowedContentTypes = [.json]
-        panel.nameFieldStringValue = "rote-state.json"
+        panel.nameFieldStringValue = l("settings.exportFilename") + ".json"
         guard panel.runModal() == .OK, let url = panel.url else { return }
         do {
             try container.engine.exportJSON().write(to: url)
