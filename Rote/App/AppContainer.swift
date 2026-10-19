@@ -51,7 +51,13 @@ final class AppContainer {
         nudges.onSnooze = { [weak self] identity in self?.engine.snooze(identity) }
         nudges.onMute = { [weak self] identity in self?.engine.mute(identity) }
         nudges.onPauseHour = { [weak self] in self?.engine.pause(for: 3_600) }
-        engine.onKeyEvent = { [weak self] event in self?.overlay.handle(event) }
+        Self.connect(overlay, to: engine)
+    }
+
+    /// Key presses, clicks and app switches drive the sheet. Tests connect a harness engine the same way.
+    static func connect(_ overlay: OverlayController, to engine: CoachEngine) {
+        engine.onKeyEvent = { [weak overlay] event in overlay?.handle(event) }
+        engine.onAppActivated = { [weak overlay] in overlay?.frontmostAppChanged() }
     }
 
     func presentNudge(_ record: ItemRecord) {
@@ -80,6 +86,17 @@ final class AppContainer {
         for offset in [-120.0, -60.0, 0.0] {
             engine.simulate(CoachEvent(kind: .menuUsed, item: item, at: now.addingTimeInterval(offset)))
         }
+    }
+
+    /// Shows the sheet with a fixture menu bar (`OverlayFixture`), for screenshots and visual review.
+    /// Esc, any other key or a click closes it, which needs the key monitor and so Accessibility:
+    /// without it the sheet would have no way to close.
+    func simulateOverlay() {
+        guard engine.permissionGranted else {
+            Logger.engine.info("Simulate overlay skipped: Accessibility is not granted")
+            return
+        }
+        overlay.simulate()
     }
 
     /// Writes the current app's raw menu snapshot to the Desktop, for test fixtures.

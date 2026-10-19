@@ -37,6 +37,9 @@ final class CoachEngine {
 
     @ObservationIgnored var onNudge: ((ItemRecord) -> Void)?
     @ObservationIgnored var onKeyEvent: ((KeyEventMonitor.Event) -> Void)?
+    /// Every frontmost-app change the tracker reports: another app, Rote itself, or an app
+    /// without a bundle ID.
+    @ObservationIgnored var onAppActivated: (() -> Void)?
 
     // MARK: Internals
 
@@ -167,6 +170,7 @@ final class CoachEngine {
     // MARK: App activation and tree cache
 
     private func appActivated(_ app: AppIdentity?) {
+        onAppActivated?()
         openMenuDepth = 0
         echoes.reset()
         guard let app else {
@@ -178,8 +182,8 @@ final class CoachEngine {
         }
         guard app.bundleID != ownBundleID else {
             // Rote itself is frontmost (onboarding, Settings). With the observer detached and its own
-            // presses never matched nothing is coached, but the hold-⌘ sheet keeps the app the user
-            // came from, so onboarding's "Hold ⌘ now" step can show it (spec §7.5).
+            // presses never matched nothing is coached, but a sheet opened from here keeps the app
+            // the user came from (spec §7.5).
             observer.detach()
             return
         }
