@@ -34,6 +34,9 @@ final class AppContainer {
         if settings.checkUpdatesOnLaunch {
             Task { await checkForUpdates() }
         }
+        if !settings.hasCompletedOnboarding {
+            OnboardingWindow.show(container: self)
+        }
     }
 
     var iconState: MenuBarIcon.State {

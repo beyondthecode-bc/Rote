@@ -55,11 +55,13 @@
   <string key="permission.open">Systemeinstellungen öffnen</string>
   <string key="permission.granted">Zugriff auf die Bedienungshilfen erteilt</string>
   <string key="permission.waiting">Warten auf Zugriff … Aktivieren Sie Rote unter Datenschutz &amp; Sicherheit › Bedienungshilfen</string>
+  <string key="onboarding.demoItem">Seite neu laden</string>
   <string key="onboarding.title1">Lernen Sie die Kurzbefehle, die Sie immer wieder auslassen</string>
   <string key="onboarding.body1">Wenn Sie dasselbe Menüobjekt mehrmals mit der Maus auswählen, zeigt Rote Ihnen die Tasten. Verwenden Sie diese, und Rote bleibt still.</string>
   <string key="onboarding.title3">Ausprobieren</string>
   <string key="onboarding.body3">Halten Sie in einer beliebigen App kurz ⌘ gedrückt, um alle ihre Kurzbefehle zu sehen.</string>
   <string key="onboarding.tried">Sie haben die Übersicht gesehen. Alles ist bereit.</string>
+  <string key="onboarding.menubarHint">Wenn Sie das tastenförmige Symbol in der Menüleiste nicht sehen, hat macOS es möglicherweise zusammen mit anderen Menüleistenobjekten ausgeblendet. Klicken Sie am linken Ende der Symbole auf der rechten Seite der Menüleiste auf die Schaltfläche mit den zwei nach links zeigenden Pfeilen („Ausgeblendete Menüleistenobjekte einblenden“), um es anzuzeigen.</string>
 
   <!-- Settings -->
   <string key="settings.title">Einstellungen</string>

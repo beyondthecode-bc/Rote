@@ -55,11 +55,13 @@
   <string key="permission.open">시스템 설정 열기</string>
   <string key="permission.granted">손쉬운 사용 접근 권한이 허용됨</string>
   <string key="permission.waiting">접근 권한을 기다리는 중… 개인정보 보호 및 보안 › 손쉬운 사용에서 Rote를 켜십시오</string>
+  <string key="onboarding.demoItem">페이지 다시 로드</string>
   <string key="onboarding.title1">늘 놓치는 단축키 익히기</string>
   <string key="onboarding.body1">같은 메뉴 항목을 마우스로 몇 번 선택하면 Rote가 해당 키를 보여 줍니다. 그 키를 사용하면 더 이상 표시하지 않습니다.</string>
   <string key="onboarding.title3">사용해 보기</string>
   <string key="onboarding.body3">아무 앱에서나 ⌘ 키를 잠시 누르고 있으면 해당 앱의 모든 단축키를 볼 수 있습니다.</string>
   <string key="onboarding.tried">오버레이를 확인했습니다. 모든 준비가 끝났습니다.</string>
+  <string key="onboarding.menubarHint">메뉴 막대에서 키 모양 아이콘이 보이지 않으면 macOS가 다른 메뉴 막대 항목과 함께 숨겼을 수 있습니다. 메뉴 막대 오른쪽 아이콘들의 왼쪽 끝에 있는 왼쪽 화살표 두 개 모양의 버튼(“가려진 메뉴 막대 항목 보기”)을 클릭하면 아이콘이 나타납니다.</string>
 
   <!-- Settings -->
   <string key="settings.title">설정</string>
