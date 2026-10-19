@@ -33,6 +33,7 @@ struct CoachingRow: View {
     let onSnooze: () -> Void
 
     @State private var hovering = false
+    @FocusState private var snoozeFocused: Bool
 
     var body: some View {
         HStack(spacing: 8) {
@@ -52,13 +53,18 @@ struct CoachingRow: View {
                 .buttonStyle(.borderless)
                 .controlSize(.small)
                 .font(.system(size: 10))
-                .opacity(hovering ? 1 : 0)
+                .focused($snoozeFocused)
+                .opacity(hovering || snoozeFocused ? 1 : 0)
         }
         .padding(.vertical, 3)
         .padding(.leading, 22)
         .padding(.trailing, 4)
         .background(hovering ? Color.primary.opacity(0.04) : .clear, in: RoundedRectangle(cornerRadius: 6, style: .continuous))
         .onHover { hovering = $0 }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(record.spokenLabel)
+        .accessibilityValue(l("popover.uses", "\(record.menuUses.count)"))
+        .accessibilityAction(named: l("nudge.snooze"), onSnooze)
     }
 }
 
@@ -80,5 +86,14 @@ struct LearnedRow: View {
         }
         .padding(.vertical, 3)
         .padding(.leading, 4)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(record.spokenLabel)
+    }
+}
+
+private extension ItemRecord {
+    /// "Reload Page, Command R", the sentence the HUD and the overlay speak (spec §8).
+    var spokenLabel: String {
+        item.title + (item.shortcut.map { ", " + GlyphFormatter.spokenDescription($0) } ?? "")
     }
 }

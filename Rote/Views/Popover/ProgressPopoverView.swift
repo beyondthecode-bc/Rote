@@ -75,12 +75,14 @@ struct ProgressPopoverView: View {
         return ScrollView {
             VStack(alignment: .leading, spacing: 14) {
                 if let update = container.updateAvailable {
-                    noticeRow(l("popover.updateAvailable", update.version), symbol: "arrow.down.circle") {
+                    noticeRow(l("popover.updateAvailable", update.version), symbol: "arrow.down.circle", button: l("menu.about")) {
                         openSettingsTab(.about)
                     }
                 }
                 if let name = engine.recoveredCorruptFile {
-                    noticeRow(l("popover.recovered", name), symbol: "exclamationmark.triangle", action: nil)
+                    noticeRow(l("popover.recovered", name), symbol: "exclamationmark.triangle", button: l("general.ok")) {
+                        engine.acknowledgeRecoveryNotice()
+                    }
                 }
                 tiles(engine.weeklyStats)
                 coachingSection(engine.coachingNow)
@@ -91,14 +93,12 @@ struct ProgressPopoverView: View {
         .frame(maxHeight: DesignTokens.popoverMaxHeight - 90)
     }
 
-    private func noticeRow(_ text: String, symbol: String, action: (() -> Void)?) -> some View {
+    private func noticeRow(_ text: String, symbol: String, button: String, action: @escaping () -> Void) -> some View {
         HStack(spacing: 8) {
             Image(systemName: symbol).foregroundStyle(DesignTokens.accent)
             Text(text).font(.system(size: 11)).fixedSize(horizontal: false, vertical: true)
             Spacer()
-            if let action {
-                Button(l("menu.about"), action: action).controlSize(.small)
-            }
+            Button(button, action: action).controlSize(.small)
         }
         .padding(10)
         .background(DesignTokens.accent.opacity(0.12), in: RoundedRectangle(cornerRadius: 8, style: .continuous))

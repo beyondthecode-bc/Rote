@@ -297,6 +297,9 @@ final class CoachEngine {
 
     func nudgeDismissed() { nudgeOnScreen = false }
 
+    /// The corrupt-file notice is one-time: the popover's OK clears it (spec §10).
+    func acknowledgeRecoveryNotice() { recoveredCorruptFile = nil }
+
     func snooze(_ identity: String, days: Int = 7) {
         coach.snooze(identity: identity, until: Date().addingTimeInterval(Double(days) * 86_400), state: &state)
         persist()
