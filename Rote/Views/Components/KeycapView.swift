@@ -33,6 +33,8 @@ struct KeycapView: View {
         Text(symbol)
             .font(.system(size: size.fontSize, weight: .semibold, design: .rounded))
             .foregroundStyle(textColor)
+            .lineLimit(1)
+            .fixedSize()
             .frame(minWidth: size.height, minHeight: size.height)
             .padding(.horizontal, size.horizontalPadding)
             .background(
@@ -76,7 +78,7 @@ struct KeycapGroupView: View {
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(shortcut.map(GlyphFormatter.spokenDescription) ?? "Unknown shortcut")
+        .accessibilityLabel(shortcut.map(GlyphFormatter.spokenDescription) ?? l("keycap.unknown"))
     }
 }
 

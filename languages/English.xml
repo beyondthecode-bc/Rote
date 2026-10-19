@@ -36,6 +36,9 @@
   <string key="nudge.pauseHour">Pause Rote for an hour</string>
   <string key="nudge.announcement">Shortcut for %1: %2</string>
 
+  <!-- Keycaps -->
+  <string key="keycap.unknown">Unknown shortcut</string>
+
   <!-- Overlay -->
   <string key="overlay.count">%1 shortcuts</string>
   <string key="overlay.partial">Still reading menus…</string>

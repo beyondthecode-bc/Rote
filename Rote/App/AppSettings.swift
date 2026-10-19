@@ -26,6 +26,13 @@ final class AppSettings {
         static let hasCompletedOnboarding = "onboarding.completed"
     }
 
+    /// Settings ranges (spec §6.4, §7.2). Stored values outside them are clamped on load.
+    static let nudgeAfterRange = 2...5
+    static let itemSpacingHoursRange = 1...24
+    static let dailyCapRange = 3...30
+    static let hudDurationRange = 1.5...5.0
+    static let holdDelayMsRange = 400...1500
+
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private var isLoading = true
 
@@ -54,19 +61,23 @@ final class AppSettings {
     }
 
     private func load() {
-        if let v = defaults.object(forKey: Keys.nudgeAfter) as? Int { nudgeAfter = v }
-        if let v = defaults.object(forKey: Keys.itemSpacingHours) as? Int { itemSpacingHours = v }
-        if let v = defaults.object(forKey: Keys.dailyCap) as? Int { dailyCap = v }
-        if let v = defaults.object(forKey: Keys.hudDuration) as? Double { hudDuration = v }
+        if let v = defaults.object(forKey: Keys.nudgeAfter) as? Int { nudgeAfter = Self.clamp(v, Self.nudgeAfterRange) }
+        if let v = defaults.object(forKey: Keys.itemSpacingHours) as? Int { itemSpacingHours = Self.clamp(v, Self.itemSpacingHoursRange) }
+        if let v = defaults.object(forKey: Keys.dailyCap) as? Int { dailyCap = Self.clamp(v, Self.dailyCapRange) }
+        if let v = defaults.object(forKey: Keys.hudDuration) as? Double, v.isFinite { hudDuration = Self.clamp(v, Self.hudDurationRange) }
         if let v = defaults.object(forKey: Keys.soundEnabled) as? Bool { soundEnabled = v }
         if let raw = defaults.string(forKey: Keys.overlayTrigger), let v = OverlayTrigger(rawValue: raw) { overlayTrigger = v }
-        if let v = defaults.object(forKey: Keys.holdDelayMs) as? Int { holdDelayMs = v }
+        if let v = defaults.object(forKey: Keys.holdDelayMs) as? Int { holdDelayMs = Self.clamp(v, Self.holdDelayMsRange) }
         if let v = defaults.object(forKey: Keys.showItemsWithoutShortcuts) as? Bool { showItemsWithoutShortcuts = v }
         if let v = defaults.object(forKey: Keys.showAppleMenu) as? Bool { showAppleMenu = v }
         if let v = defaults.array(forKey: Keys.excludedBundleIDs) as? [String] { excludedBundleIDs = v }
         if let v = defaults.array(forKey: Keys.pausedBundleIDs) as? [String] { pausedBundleIDs = v }
         if let v = defaults.object(forKey: Keys.checkUpdatesOnLaunch) as? Bool { checkUpdatesOnLaunch = v }
         if let v = defaults.object(forKey: Keys.hasCompletedOnboarding) as? Bool { hasCompletedOnboarding = v }
+    }
+
+    private static func clamp<T: Comparable>(_ value: T, _ range: ClosedRange<T>) -> T {
+        min(max(value, range.lowerBound), range.upperBound)
     }
 
     private func save(_ value: Any, _ key: String) {

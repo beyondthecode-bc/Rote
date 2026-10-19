@@ -37,11 +37,21 @@ final class LocalizationManager {
         strings[key] ?? fallback[key] ?? key
     }
 
-    /// Replaces %1, %2, … with `values` in order.
+    /// Replaces %1 … %9 with `values` in one left-to-right pass, so a "%2" inside an inserted
+    /// value (a menu title, an app name) is never substituted again. Out-of-range placeholders stay as written.
     func string(for key: String, _ values: [String]) -> String {
-        var text = string(for: key)
-        for (index, value) in values.enumerated() {
-            text = text.replacingOccurrences(of: "%\(index + 1)", with: value)
+        let template = Array(string(for: key))
+        var text = ""
+        var index = 0
+        while index < template.count {
+            if template[index] == "%", index + 1 < template.count, template[index + 1].isASCII,
+               let number = template[index + 1].wholeNumberValue, number >= 1, number <= values.count {
+                text += values[number - 1]
+                index += 2
+            } else {
+                text.append(template[index])
+                index += 1
+            }
         }
         return text
     }
@@ -52,15 +62,11 @@ final class LocalizationManager {
         Logger.ui.info("Loaded \(self.strings.count) strings for \(code, privacy: .public)")
     }
 
-    static func systemCode() -> String {
-        for language in Locale.preferredLanguages {
-            if supportedCodes.contains(language) { return language }
-            if language.hasPrefix("pt") { return "pt-BR" }
-            if language.hasPrefix("zh") { return "zh-Hans" }
-            let prefix = String(language.prefix(2))
-            if supportedCodes.contains(prefix) { return prefix }
-        }
-        return "en"
+    /// The supported code that best matches `preferred`, using Foundation's localization matching:
+    /// "kok" never becomes "ko", Traditional Chinese never becomes Simplified, and an unsupported
+    /// first choice falls through to the next preferred language. English when nothing matches.
+    static func systemCode(preferred: [String] = Locale.preferredLanguages) -> String {
+        Bundle.preferredLocalizations(from: supportedCodes, forPreferences: preferred).first ?? "en"
     }
 
     nonisolated private static func loadXML(_ filename: String) -> [String: String] {
@@ -93,7 +99,9 @@ private final class StringsXMLParserDelegate: NSObject, XMLParserDelegate {
 
     func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName: String?) {
         if elementName == "string", let key = currentKey {
-            strings[key] = currentValue
+            // An empty value would hide the English fallback behind blank text.
+            let value = currentValue.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !value.isEmpty { strings[key] = value }
             currentKey = nil
             currentValue = ""
         }
