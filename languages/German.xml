@@ -60,6 +60,7 @@
   <string key="onboarding.title3">Ausprobieren</string>
   <string key="onboarding.body3">Halten Sie in einer beliebigen App kurz ⌘ gedrückt, um alle ihre Kurzbefehle zu sehen.</string>
   <string key="onboarding.tried">Sie haben die Übersicht gesehen. Alles ist bereit.</string>
+  <string key="onboarding.menubarHint">Wenn Sie das tastenförmige Symbol in der Menüleiste nicht sehen, hat macOS es möglicherweise zusammen mit anderen Menüleistenobjekten ausgeblendet. Klicken Sie am linken Ende der Symbole auf der rechten Seite der Menüleiste auf die Schaltfläche mit den zwei nach links zeigenden Pfeilen („Ausgeblendete Menüleistenobjekte einblenden“), um es anzuzeigen.</string>
 
   <!-- Settings -->
   <string key="settings.title">Einstellungen</string>

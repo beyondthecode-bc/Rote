@@ -60,6 +60,7 @@
   <string key="onboarding.title3">Try it</string>
   <string key="onboarding.body3">Hold ⌘ for a moment in any app to see every shortcut it has.</string>
   <string key="onboarding.tried">You have seen the overlay. You are all set.</string>
+  <string key="onboarding.menubarHint">If you don’t see the keycap icon in the menu bar, macOS may have hidden it with other menu bar items. Click the button with two left-pointing arrows (“Show Hidden Menu Bar Items”) at the left end of the icons on the right side of the menu bar to reveal it.</string>
 
   <!-- Settings -->
   <string key="settings.title">Settings</string>

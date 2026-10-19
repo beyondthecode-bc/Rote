@@ -60,6 +60,7 @@
   <string key="onboarding.title3">試してみましょう</string>
   <string key="onboarding.body3">どのアプリでも⌘を少し押し続けると、そのアプリのすべてのショートカットが表示されます。</string>
   <string key="onboarding.tried">オーバーレイを確認しました。準備完了です。</string>
+  <string key="onboarding.menubarHint">メニューバーにキーの形をしたアイコンが見当たらない場合は、macOSが他のメニューバー項目とともに非表示にしている可能性があります。メニューバー右側のアイコンの左端にある、左向きの矢印が2つ並んだボタン（「非表示のメニューバー項目を表示」）をクリックすると表示されます。</string>
 
   <!-- Settings -->
   <string key="settings.title">設定</string>

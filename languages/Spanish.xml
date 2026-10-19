@@ -60,6 +60,7 @@
   <string key="onboarding.title3">Pruébelo</string>
   <string key="onboarding.body3">Mantenga pulsada la tecla ⌘ un momento en cualquier app para ver todas sus funciones rápidas.</string>
   <string key="onboarding.tried">Ya ha visto la vista general. Todo listo.</string>
+  <string key="onboarding.menubarHint">Si no ve el icono con forma de tecla en la barra de menús, es posible que macOS lo haya ocultado junto con otros ítems de la barra de menús. Haga clic en el botón con dos flechas que apuntan a la izquierda («Mostrar los ítems ocultos de la barra de menús»), situado en el extremo izquierdo de los iconos del lado derecho de la barra de menús, para mostrarlo.</string>
 
   <!-- Settings -->
   <string key="settings.title">Ajustes</string>

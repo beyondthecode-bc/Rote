@@ -60,6 +60,7 @@
   <string key="onboarding.title3">试一试</string>
   <string key="onboarding.body3">在任意 App 中按住 ⌘ 片刻，即可查看它的所有快捷键。</string>
   <string key="onboarding.tried">你已看过总览。一切就绪。</string>
+  <string key="onboarding.menubarHint">如果在菜单栏中看不到按键形状的图标，可能是 macOS 把它和其他菜单栏项目一起隐藏了。请点按菜单栏右侧图标最左端、带有两个向左箭头的按钮（“显示隐藏菜单栏项目”）将其显示出来。</string>
 
   <!-- Settings -->
   <string key="settings.title">设置</string>
