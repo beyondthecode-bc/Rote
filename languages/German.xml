@@ -59,7 +59,6 @@
   <string key="onboarding.title1">Lernen Sie die Kurzbefehle, die Sie immer wieder auslassen</string>
   <string key="onboarding.body1">Wenn Sie dasselbe Menüobjekt mehrmals mit der Maus auswählen, zeigt Rote Ihnen die Tasten. Verwenden Sie diese, und Rote bleibt still.</string>
   <string key="onboarding.title3">Ausprobieren</string>
-  <string key="onboarding.body3">Halten Sie in einer beliebigen App kurz ⌘ gedrückt, um alle ihre Kurzbefehle zu sehen.</string>
   <string key="onboarding.tried">Sie haben die Übersicht gesehen. Alles ist bereit.</string>
   <string key="onboarding.menubarHint">Wenn Sie das tastenförmige Symbol in der Menüleiste nicht sehen, hat macOS es möglicherweise zusammen mit anderen Menüleistenobjekten ausgeblendet. Klicken Sie am linken Ende der Symbole auf der rechten Seite der Menüleiste auf die Schaltfläche mit den zwei nach links zeigenden Pfeilen („Ausgeblendete Menüleistenobjekte einblenden“), um es anzuzeigen.</string>
 
@@ -98,6 +97,13 @@
   <string key="settings.reset">Statistik zurücksetzen</string>
   <string key="settings.resetConfirm">Dadurch werden alle Zählungen und Lernfortschritte gelöscht. Die Einstellungen bleiben erhalten.</string>
   <string key="settings.export">Als JSON exportieren …</string>
+
+  <!-- Onboarding and overlay polish -->
+  <string key="onboarding.tryIt">Wechseln Sie zu einer anderen App, zum Beispiel zum Finder, und %1, um alle ihre Kurzbefehle zu sehen.</string>
+  <string key="onboarding.trigger.command">halten Sie kurz ⌘ gedrückt</string>
+  <string key="onboarding.trigger.option">halten Sie kurz ⌥ gedrückt</string>
+  <string key="onboarding.trigger.sticky">drücken Sie ⌃⌥⌘K</string>
+  <string key="onboarding.needsAccess">Die Demo benötigt zuerst Zugriff auf die Bedienungshilfen. Aktivieren Sie Rote unter Datenschutz &amp; Sicherheit › Bedienungshilfen, dann erscheint die Demo hier.</string>
 
   <!-- About -->
   <string key="about.title">Info</string>

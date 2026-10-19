@@ -59,7 +59,6 @@
   <string key="onboarding.title1">学会你总是跳过的快捷键</string>
   <string key="onboarding.body1">当你多次用鼠标选择同一个菜单项时，Rote 会显示对应的按键。用上这些按键后，它就不再提示。</string>
   <string key="onboarding.title3">试一试</string>
-  <string key="onboarding.body3">在任意 App 中按住 ⌘ 片刻，即可查看它的所有快捷键。</string>
   <string key="onboarding.tried">你已看过总览。一切就绪。</string>
   <string key="onboarding.menubarHint">如果在菜单栏中看不到按键形状的图标，可能是 macOS 把它和其他菜单栏项目一起隐藏了。请点按菜单栏右侧图标最左端、带有两个向左箭头的按钮（“显示隐藏菜单栏项目”）将其显示出来。</string>
 
@@ -98,6 +97,13 @@
   <string key="settings.reset">重置统计数据</string>
   <string key="settings.resetConfirm">这将删除所有计数和学习记录。设置会保留。</string>
   <string key="settings.export">导出 JSON…</string>
+
+  <!-- Onboarding and overlay polish -->
+  <string key="onboarding.tryIt">切换到其他 App（例如“访达”），然后%1，即可查看它的所有快捷键。</string>
+  <string key="onboarding.trigger.command">按住 ⌘ 片刻</string>
+  <string key="onboarding.trigger.option">按住 ⌥ 片刻</string>
+  <string key="onboarding.trigger.sticky">按下 ⌃⌥⌘K</string>
+  <string key="onboarding.needsAccess">演示需要先获得辅助功能访问权限。请在“隐私与安全性” › “辅助功能”中打开 Rote，演示随后会显示在这里。</string>
 
   <!-- About -->
   <string key="about.title">关于</string>
