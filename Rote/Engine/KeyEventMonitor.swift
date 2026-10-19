@@ -5,9 +5,14 @@ import RoteCore
 /// Global monitors deliver events only while Accessibility is trusted.
 @MainActor
 final class KeyEventMonitor {
-    enum Event {
-        case keyDown(characters: String, keyCode: UInt16, modifiers: Modifiers)
+    enum Event: Equatable {
+        /// A fresh key press. Auto-repeats are not reported: one held shortcut is one use, and the
+        /// first press already disarms or closes the overlay. `inOwnApp` marks presses typed into
+        /// Rote's own windows, which are never shortcut uses in another app.
+        case keyDown(KeyPress, inOwnApp: Bool)
         case flagsChanged(modifiers: Modifiers)
+        /// Pointer activity that cancels a hold: a button press, a drag, a modifier change made
+        /// while a button is down, or a scroll in another app (Rote's sheet scrolls under a hold).
         case mouseDown
     }
 
@@ -16,15 +21,20 @@ final class KeyEventMonitor {
     private var globalToken: Any?
     private var localToken: Any?
 
-    private static let mask: NSEvent.EventTypeMask = [.keyDown, .flagsChanged, .leftMouseDown, .rightMouseDown, .otherMouseDown]
+    private static let mask: NSEvent.EventTypeMask = [
+        .keyDown, .flagsChanged,
+        .leftMouseDown, .rightMouseDown, .otherMouseDown,
+        .leftMouseDragged, .rightMouseDragged, .otherMouseDragged,
+        .scrollWheel,
+    ]
 
     func start() {
         guard globalToken == nil else { return }
         globalToken = NSEvent.addGlobalMonitorForEvents(matching: Self.mask) { [weak self] event in
-            MainActor.assumeIsolated { self?.handle(event) }
+            MainActor.assumeIsolated { self?.handle(event, inOwnApp: false) }
         }
         localToken = NSEvent.addLocalMonitorForEvents(matching: Self.mask) { [weak self] event in
-            MainActor.assumeIsolated { self?.handle(event) }
+            MainActor.assumeIsolated { self?.handle(event, inOwnApp: true) }
             return event
         }
     }
@@ -36,16 +46,24 @@ final class KeyEventMonitor {
         localToken = nil
     }
 
-    private func handle(_ event: NSEvent) {
+    /// `mouseButtonsDown` is read only for a modifier change; tests pass it explicitly.
+    func handle(_ event: NSEvent, inOwnApp: Bool, mouseButtonsDown: @autoclosure () -> Bool = NSEvent.pressedMouseButtons != 0) {
         switch event.type {
         case .keyDown:
-            onEvent?(.keyDown(
+            guard !event.isARepeat else { return }
+            let modifiers = Self.modifiers(from: event.modifierFlags)
+            onEvent?(.keyDown(KeyPress(
                 characters: event.charactersIgnoringModifiers ?? "",
+                commandCharacters: modifiers.contains(.command) ? event.characters(byApplyingModifiers: .command) ?? "" : "",
                 keyCode: event.keyCode,
-                modifiers: Self.modifiers(from: event.modifierFlags)
-            ))
+                modifiers: modifiers
+            ), inOwnApp: inOwnApp))
         case .flagsChanged:
             onEvent?(.flagsChanged(modifiers: Self.modifiers(from: event.modifierFlags)))
+            // ⌥ or ⌘ pressed mid-drag (Finder copy, move between volumes) must not open the sheet.
+            if mouseButtonsDown() { onEvent?(.mouseDown) }
+        case .scrollWheel:
+            if !inOwnApp { onEvent?(.mouseDown) }
         default:
             onEvent?(.mouseDown)
         }
