@@ -129,6 +129,19 @@ public struct Coach: Sendable {
         state.items[identity] = record
     }
 
+    /// Settings › Data › Reset statistics: deletes every count and lesson, and the snoozes and
+    /// nudge clocks that go with them, but keeps each mute. "Stop coaching this item" is a choice
+    /// the user undoes in Settings › Data (spec §6.1), not a statistic.
+    public func resetStatistics(state: inout CoachState) {
+        var fresh = CoachState()
+        for record in state.items.values where record.phase == .muted {
+            var kept = ItemRecord(item: record.item)
+            kept.phase = .muted
+            fresh.items[kept.identity] = kept
+        }
+        state = fresh
+    }
+
     // MARK: - Housekeeping
 
     /// Drops what the policy no longer needs. Call on load and once a day. Records are

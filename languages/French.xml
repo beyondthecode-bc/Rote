@@ -120,6 +120,7 @@
   <string key="update.downloading">Téléchargement…</string>
   <string key="update.ready">Prêt pour l’installation</string>
   <string key="update.install">Installer et relancer</string>
+  <string key="update.installing">Installation…</string>
   <string key="update.error">Échec de la recherche de mises à jour</string>
   <string key="update.retry">Réessayer</string>
 </strings>

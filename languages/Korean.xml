@@ -120,6 +120,7 @@
   <string key="update.downloading">다운로드 중…</string>
   <string key="update.ready">설치 준비 완료</string>
   <string key="update.install">설치 후 다시 시작</string>
+  <string key="update.installing">설치 중…</string>
   <string key="update.error">업데이트 확인 실패</string>
   <string key="update.retry">재시도</string>
 </strings>

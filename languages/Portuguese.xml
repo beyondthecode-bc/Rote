@@ -120,6 +120,7 @@
   <string key="update.downloading">Baixando…</string>
   <string key="update.ready">Pronto para instalar</string>
   <string key="update.install">Instalar e reabrir</string>
+  <string key="update.installing">Instalando…</string>
   <string key="update.error">Falha ao verificar atualizações</string>
   <string key="update.retry">Tentar novamente</string>
 </strings>

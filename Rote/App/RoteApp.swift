@@ -13,5 +13,10 @@ struct RoteApp: App {
             Image(nsImage: MenuBarIcon.image(for: container.iconState))
         }
         .menuBarExtraStyle(.window)
+
+        Settings {
+            SettingsView()
+                .environment(container)
+        }
     }
 }
