@@ -105,6 +105,15 @@ final class LocalizationManager {
         value.formatted(.number.precision(.fractionLength(fractionDigits)).locale(locale))
     }
 
+    /// A time of day written the display language's way, on the 12- or 24-hour clock of `clock`
+    /// (the Mac's region and its 24-hour setting): "1:05 p. m." in Spanish and "午後1:05" in
+    /// Japanese on a US Mac, "13:05" in English on a German one.
+    func time(_ date: Date, clock: Locale = .current) -> String {
+        var components = Locale.Components(locale: locale)
+        components.hourCycle = clock.hourCycle
+        return date.formatted(Date.FormatStyle(date: .omitted, time: .shortened, locale: Locale(components: components)))
+    }
+
     nonisolated private static func fill(_ template: String, _ values: [String]) -> String {
         let characters = Array(template)
         var text = ""

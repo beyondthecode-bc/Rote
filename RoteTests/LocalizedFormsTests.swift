@@ -175,6 +175,20 @@ final class LocalizedFormsTests: XCTestCase {
         XCTAssertEqual(shipped("ja").number(12), "12")
     }
 
+    /// The language writes the time; the Mac's region or 24-hour setting picks the clock.
+    func testTimesAreWrittenInTheInterfaceLanguageOnTheMacsClock() throws {
+        let afternoon = try XCTUnwrap(Calendar.current.date(bySettingHour: 13, minute: 5, second: 0, of: Date()))
+        let us = Locale(identifier: "en_US")
+        let germany = Locale(identifier: "de_DE")
+        XCTAssertEqual(shipped("ja").time(afternoon, clock: us), "午後1:05")
+        XCTAssertEqual(shipped("zh-Hans").time(afternoon, clock: us), "下午1:05")
+        let spanish = shipped("es").time(afternoon, clock: us)
+        XCTAssertTrue(spanish.hasPrefix("1:05") && spanish.contains("p.") && !spanish.contains("PM"), spanish)
+        XCTAssertTrue(shipped("en").time(afternoon, clock: us).hasSuffix("PM"))
+        XCTAssertEqual(shipped("en").time(afternoon, clock: germany), "13:05")
+        XCTAssertEqual(shipped("ja").time(afternoon, clock: germany), "13:05")
+    }
+
     // MARK: Spoken shortcuts
 
     private let shiftCommandN = Shortcut(modifiers: [.shift, .command], key: .character("N"))
@@ -238,6 +252,10 @@ final class LocalizedFormsTests: XCTestCase {
 
     // MARK: Update errors
 
+    private func message(_ error: any Error, _ step: UpdateErrorMessage.Step, in manager: LocalizationManager) -> String {
+        UpdateErrorMessage.text(for: UpdateErrorMessage.failure(for: error, during: step), localization: manager)
+    }
+
     func testEveryUpdateErrorHasAMessageInEveryLanguage() {
         let cases: [(GitHubUpdateChecker.UpdateError, String)] = [
             (.serverError, "update.error.server"),
@@ -247,40 +265,64 @@ final class LocalizedFormsTests: XCTestCase {
             (.extractFailed, "update.error.extract"),
             (.noAppInArchive, "update.error.noApp"),
             (.installFailed("Could not create installer script"), "update.error.install"),
+            (.installFailed("Unknown error"), "update.error.install"),
             (.installFailed("Authorization cancelled"), "update.error.installCancelled"),
         ]
         let english = shipped("en")
         for code in LocalizationManager.supportedCodes {
             let manager = shipped(code)
             for (error, key) in cases {
-                let message = UpdateErrorMessage.text(for: error, localization: manager)
-                XCTAssertEqual(message, manager.string(for: key), "\(code) \(key)")
+                let text = message(error, .install, in: manager)
+                XCTAssertEqual(text, manager.string(for: key), "\(code) \(key)")
                 XCTAssertNotNil(manager.strings[key], "\(code) \(key)")
                 if code != "en" {
-                    XCTAssertNotEqual(message, english.string(for: key), "\(code) \(key) is translated")
+                    XCTAssertNotEqual(text, english.string(for: key), "\(code) \(key) is translated")
                 }
             }
         }
     }
 
-    func testUpdateErrorMessagesReadInTheInterfaceLanguage() {
+    func testUpdateErrorMessagesReadInTheInterfaceLanguage() throws {
         let english = shipped("en")
         let french = shipped("fr")
-        XCTAssertEqual(UpdateErrorMessage.text(for: GitHubUpdateChecker.UpdateError.serverError, localization: english),
+        XCTAssertEqual(message(GitHubUpdateChecker.UpdateError.serverError, .check, in: english),
                        "Could not reach GitHub. Check your internet connection.")
-        XCTAssertEqual(UpdateErrorMessage.text(for: GitHubUpdateChecker.UpdateError.serverError, localization: french),
+        XCTAssertEqual(message(GitHubUpdateChecker.UpdateError.serverError, .check, in: french),
                        "Impossible de joindre GitHub. Vérifiez votre connexion à Internet.")
-        XCTAssertEqual(UpdateErrorMessage.text(for: GitHubUpdateChecker.UpdateError.installFailed("Authorization cancelled"), localization: french),
+        XCTAssertEqual(message(GitHubUpdateChecker.UpdateError.installFailed("Authorization cancelled"), .install, in: french),
                        "L’installation a été annulée.")
+        XCTAssertEqual(message(GitHubUpdateChecker.UpdateError.installFailed("Unknown error"), .install, in: french),
+                       "Impossible d’installer la mise à jour.")
         // The system's own reason for a failed install follows Rote's sentence.
-        XCTAssertEqual(UpdateErrorMessage.text(for: GitHubUpdateChecker.UpdateError.installFailed("Opération non autorisée."), localization: french),
+        XCTAssertEqual(message(GitHubUpdateChecker.UpdateError.installFailed("Opération non autorisée."), .install, in: french),
                        "Impossible d’installer la mise à jour. Opération non autorisée.")
         // Offline: URLSession's error reads as the unreachable-GitHub message, not in the system's language.
-        XCTAssertEqual(UpdateErrorMessage.text(for: URLError(.notConnectedToInternet), localization: french),
+        XCTAssertEqual(message(URLError(.notConnectedToInternet), .download, in: french),
                        french.string(for: "update.error.server"))
-        // Anything else keeps its own description.
+        // Any other error (a page that is not JSON, a file move, a process launch) reads as its
+        // step's message, never as Foundation's description in the system's language.
+        var notJSON: (any Error)?
+        XCTAssertThrowsError(try JSONSerialization.jsonObject(with: Data("<html>".utf8))) { notJSON = $0 }
+        XCTAssertEqual(message(try XCTUnwrap(notJSON), .check, in: french), "Réponse inattendue de GitHub.")
         let other = CocoaError(.fileWriteNoPermission)
-        XCTAssertEqual(UpdateErrorMessage.text(for: other, localization: french), other.localizedDescription)
+        XCTAssertEqual(message(other, .check, in: french), french.string(for: "update.error.invalidResponse"))
+        XCTAssertEqual(message(other, .download, in: french), "Échec du téléchargement.")
+        XCTAssertEqual(message(other, .install, in: french), "Impossible d’installer la mise à jour.")
+    }
+
+    /// The About tab keeps the failure, not its text, so a language chosen while the error is
+    /// on screen applies to the message as it does to the heading above it.
+    func testAFailedStepReadsInTheLanguageChosenAfterIt() {
+        let manager = shipped("en")
+        let state = UpdateCheckState.error(UpdateErrorMessage.failure(for: CocoaError(.fileNoSuchFile), during: .download))
+        guard case .error(let failure) = state else { return XCTFail("\(state)") }
+        XCTAssertEqual(UpdateErrorMessage.text(for: failure, localization: manager), "Download failed.")
+        manager.languageCode = "de"
+        XCTAssertEqual(UpdateErrorMessage.text(for: failure, localization: manager), manager.string(for: "update.error.download"))
+        XCTAssertNotEqual(UpdateErrorMessage.text(for: failure, localization: manager), "Download failed.")
+
+        let detailed = UpdateErrorMessage.failure(for: GitHubUpdateChecker.UpdateError.installFailed("Disk full."), during: .install)
+        XCTAssertEqual(UpdateErrorMessage.text(for: detailed, localization: manager), manager.string(for: "update.error.installDetail", ["Disk full."]))
     }
 
     /// The time is inserted as "13:00" or "1:00 p. m.", so no article before it may assume an hour.

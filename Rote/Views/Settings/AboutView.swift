@@ -9,42 +9,65 @@ enum UpdateCheckState: Equatable {
     case downloading
     case downloaded(path: String)
     case installing
-    case error(String)
+    case error(UpdateFailure)
+}
+
+/// A failed update step as the key of Rote's message, not its text, so the message follows a
+/// language chosen while it is on screen, like the heading above it.
+struct UpdateFailure: Equatable {
+    let key: String
+    /// The system's own reason for a failed install, inserted after Rote's sentence.
+    var detail: String?
 }
 
 /// The About tab's text for a failed update step, in Rote's language. The shared template
 /// checker keeps its English `errorDescription`; each of its cases maps to a key here.
 @MainActor
 enum UpdateErrorMessage {
-    static func text(for error: any Error, localization: LocalizationManager = .shared) -> String {
+    enum Step {
+        case check, download, install
+    }
+
+    static func failure(for error: any Error, during step: Step) -> UpdateFailure {
         switch error {
         case let error as GitHubUpdateChecker.UpdateError:
-            return text(for: error, localization: localization)
+            return failure(for: error)
         case is URLError:
             // Offline, timed out or blocked: URLSession's own text would be in the system's language.
-            return localization.string(for: "update.error.server")
+            return UpdateFailure(key: "update.error.server")
         default:
-            return error.localizedDescription
+            // A page that is not JSON, a file move or a process launch: Foundation's description
+            // would be in the system's language, so the step's own message stands in for it.
+            switch step {
+            case .check: return UpdateFailure(key: "update.error.invalidResponse")
+            case .download: return UpdateFailure(key: "update.error.download")
+            case .install: return UpdateFailure(key: "update.error.install")
+            }
         }
     }
 
-    static func text(for error: GitHubUpdateChecker.UpdateError, localization: LocalizationManager = .shared) -> String {
+    private static func failure(for error: GitHubUpdateChecker.UpdateError) -> UpdateFailure {
         switch error {
-        case .serverError: return localization.string(for: "update.error.server")
-        case .invalidResponse: return localization.string(for: "update.error.invalidResponse")
-        case .noDownloadAsset: return localization.string(for: "update.error.noDownload")
-        case .downloadFailed: return localization.string(for: "update.error.download")
-        case .extractFailed: return localization.string(for: "update.error.extract")
-        case .noAppInArchive: return localization.string(for: "update.error.noApp")
+        case .serverError: return UpdateFailure(key: "update.error.server")
+        case .invalidResponse: return UpdateFailure(key: "update.error.invalidResponse")
+        case .noDownloadAsset: return UpdateFailure(key: "update.error.noDownload")
+        case .downloadFailed: return UpdateFailure(key: "update.error.download")
+        case .extractFailed: return UpdateFailure(key: "update.error.extract")
+        case .noAppInArchive: return UpdateFailure(key: "update.error.noApp")
         case .installFailed(let reason):
             // The checker's own reasons are English literals; anything else is the system's
             // message from the administrator prompt or the copy, shown after Rote's sentence.
             switch reason {
-            case "Authorization cancelled": return localization.string(for: "update.error.installCancelled")
-            case "Could not create installer script": return localization.string(for: "update.error.install")
-            default: return localization.string(for: "update.error.installDetail", [reason])
+            case "Authorization cancelled": return UpdateFailure(key: "update.error.installCancelled")
+            case "Could not create installer script", "Unknown error": return UpdateFailure(key: "update.error.install")
+            default: return UpdateFailure(key: "update.error.installDetail", detail: reason)
             }
         }
+    }
+
+    static func text(for failure: UpdateFailure, localization: LocalizationManager = .shared) -> String {
+        guard let detail = failure.detail else { return localization.string(for: failure.key) }
+        return localization.string(for: failure.key, [detail])
     }
 }
 
@@ -139,10 +162,10 @@ struct AboutView: View {
                 }
             case .installing:
                 progressRow(l("update.installing"))
-            case .error(let message):
+            case .error(let failure):
                 VStack(alignment: .leading, spacing: 4) {
                     Text(l("update.error")).font(.system(size: 12)).foregroundStyle(.red)
-                    Text(message).font(.system(size: 11)).foregroundStyle(.secondary)
+                    Text(UpdateErrorMessage.text(for: failure)).font(.system(size: 11)).foregroundStyle(.secondary)
                     Button(l("update.retry")) { checkForUpdates() }
                         .buttonStyle(.borderless).controlSize(.small)
                 }
@@ -218,7 +241,7 @@ struct AboutView: View {
                     updateState = .available(version: version, downloadURL: url)
                 }
             } catch {
-                updateState = .error(UpdateErrorMessage.text(for: error))
+                updateState = .error(UpdateErrorMessage.failure(for: error, during: .check))
             }
         }
     }
@@ -234,7 +257,7 @@ struct AboutView: View {
                 let path = try await GitHubUpdateChecker.downloadUpdate(from: url) { @Sendable _ in }
                 updateState = .downloaded(path: path)
             } catch {
-                updateState = .error(UpdateErrorMessage.text(for: error))
+                updateState = .error(UpdateErrorMessage.failure(for: error, during: .download))
             }
         }
     }
@@ -246,7 +269,7 @@ struct AboutView: View {
             do {
                 try await GitHubUpdateChecker.installUpdate(fromZip: path)
             } catch {
-                updateState = .error(UpdateErrorMessage.text(for: error))
+                updateState = .error(UpdateErrorMessage.failure(for: error, during: .install))
             }
         }
     }

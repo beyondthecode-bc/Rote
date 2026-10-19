@@ -40,7 +40,7 @@ struct ProgressPopoverView: View {
             if engine.isPaused, let until = engine.pauseUntil {
                 Text(engine.isPausedUntilResumed
                     ? l("popover.pausedIndefinitely")
-                    : l("popover.pausedUntil", until.formatted(date: .omitted, time: .shortened)))
+                    : l("popover.pausedUntil", LocalizationManager.shared.time(until)))
                     .font(.system(size: 10))
                     .foregroundStyle(DesignTokens.accent)
             }
