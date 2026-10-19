@@ -55,6 +55,7 @@
   <string key="permission.open">Ouvrir Réglages Système</string>
   <string key="permission.granted">Accès Accessibilité autorisé</string>
   <string key="permission.waiting">En attente de l’accès… activez Rote dans Confidentialité et sécurité › Accessibilité</string>
+  <string key="onboarding.demoItem">Recharger la page</string>
   <string key="onboarding.title1">Apprenez les raccourcis que vous négligez sans cesse</string>
   <string key="onboarding.body1">Lorsque vous choisissez plusieurs fois le même élément de menu avec la souris, Rote vous montre les touches. Utilisez-les, et il se fait discret.</string>
   <string key="onboarding.title3">Essayez</string>

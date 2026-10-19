@@ -55,6 +55,7 @@
   <string key="permission.open">Open System Settings</string>
   <string key="permission.granted">Accessibility access granted</string>
   <string key="permission.waiting">Waiting for access… turn on Rote under Privacy &amp; Security › Accessibility</string>
+  <string key="onboarding.demoItem">Reload Page</string>
   <string key="onboarding.title1">Learn the shortcuts you keep skipping</string>
   <string key="onboarding.body1">When you pick the same menu item with the mouse a few times, Rote shows you the keys. Use them, and it goes quiet.</string>
   <string key="onboarding.title3">Try it</string>

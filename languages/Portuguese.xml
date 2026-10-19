@@ -55,6 +55,7 @@
   <string key="permission.open">Abrir Ajustes do Sistema</string>
   <string key="permission.granted">Acesso à Acessibilidade concedido</string>
   <string key="permission.waiting">Aguardando acesso… ative o Rote em Privacidade e Segurança › Acessibilidade</string>
+  <string key="onboarding.demoItem">Recarregar Página</string>
   <string key="onboarding.title1">Aprenda os atalhos que você sempre deixa passar</string>
   <string key="onboarding.body1">Quando você escolhe o mesmo item de menu com o mouse algumas vezes, o Rote mostra as teclas. Use-as, e ele fica em silêncio.</string>
   <string key="onboarding.title3">Experimente</string>

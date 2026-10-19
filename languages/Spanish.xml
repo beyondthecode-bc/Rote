@@ -55,6 +55,7 @@
   <string key="permission.open">Abrir Ajustes del Sistema</string>
   <string key="permission.granted">Acceso a Accesibilidad concedido</string>
   <string key="permission.waiting">Esperando acceso… active Rote en Privacidad y seguridad › Accesibilidad</string>
+  <string key="onboarding.demoItem">Volver a cargar página</string>
   <string key="onboarding.title1">Aprenda las funciones rápidas que siempre pasa por alto</string>
   <string key="onboarding.body1">Cuando elige el mismo ítem de menú con el ratón varias veces, Rote le muestra las teclas. Úselas y dejará de avisarle.</string>
   <string key="onboarding.title3">Pruébelo</string>

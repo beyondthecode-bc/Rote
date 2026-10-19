@@ -55,6 +55,7 @@
   <string key="permission.open">システム設定を開く</string>
   <string key="permission.granted">アクセシビリティへのアクセスが許可されました</string>
   <string key="permission.waiting">アクセスを待っています…「プライバシーとセキュリティ」›「アクセシビリティ」でRoteをオンにしてください</string>
+  <string key="onboarding.demoItem">ページを再読み込み</string>
   <string key="onboarding.title1">いつも使い忘れるショートカットを覚えましょう</string>
   <string key="onboarding.body1">同じメニュー項目をマウスで何度か選ぶと、Roteがキーを表示します。そのキーを使えば、表示されなくなります。</string>
   <string key="onboarding.title3">試してみましょう</string>

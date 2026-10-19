@@ -40,7 +40,7 @@ struct OnboardingView: View {
         VStack(alignment: .leading, spacing: 18) {
             VStack(spacing: 10) {
                 KeycapGroupView(shortcut: Shortcut(modifiers: [.command], key: .character("R")), size: .hud)
-                Text("Reload Page").font(.system(size: 13, weight: .semibold))
+                Text(l("onboarding.demoItem")).font(.system(size: 13, weight: .semibold))
                 Text(l("nudge.subtitle", "Safari", "3")).font(.system(size: 11)).foregroundStyle(.secondary)
             }
             .padding(.horizontal, 24)
@@ -63,12 +63,13 @@ struct OnboardingView: View {
                     .foregroundStyle(shown ? DesignTokens.learned : .secondary)
                 if shown { Text(l("onboarding.tried")).font(.system(size: 12)) }
             }
-            menuBarHint
+            if #available(macOS 27, *) { menuBarHint }
         }
     }
 
     /// On macOS 27 a new menu bar app can start among the hidden items. The system's own button, two
     /// left arrows labelled "Show Hidden Menu Bar Items", reveals them: the hint names it as the system does.
+    /// Shown on macOS 27 and later only: macOS 14 and 15 have no such button, and macOS 26 is unconfirmed.
     private var menuBarHint: some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: "chevron.left.2")
@@ -94,8 +95,8 @@ struct OnboardingView: View {
         }
     }
 
+    /// Closing the window marks onboarding completed (OnboardingWindow), however it closes.
     private func finish() {
-        container.settings.hasCompletedOnboarding = true
         OnboardingWindow.close()
     }
 }
