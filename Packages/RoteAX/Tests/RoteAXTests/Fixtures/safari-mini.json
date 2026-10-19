@@ -1,0 +1,55 @@
+{
+  "bundleID": "com.apple.Safari",
+  "appName": "Safari",
+  "isPartial": false,
+  "takenAt": "2026-10-18T10:00:00Z",
+  "barItems": [
+    { "role": "AXMenuBarItem", "title": "Apple", "isEnabled": true, "children": [
+      { "role": "AXMenu", "title": "", "isEnabled": true, "children": [
+        { "role": "AXMenuItem", "title": "About This Mac", "isEnabled": true, "children": [] },
+        { "role": "AXMenuItem", "title": "Lock Screen", "isEnabled": true, "cmdChar": "q", "cmdModifiers": 4, "children": [] }
+      ] }
+    ] },
+    { "role": "AXMenuBarItem", "title": "Safari", "isEnabled": true, "children": [
+      { "role": "AXMenu", "title": "", "isEnabled": true, "children": [
+        { "role": "AXMenuItem", "title": "About Safari", "isEnabled": true, "children": [] },
+        { "role": "AXMenuItem", "title": "", "isEnabled": true, "children": [] },
+        { "role": "AXMenuItem", "title": "Settings…", "isEnabled": true, "cmdChar": ",", "cmdModifiers": 0, "children": [] },
+        { "role": "AXMenuItem", "title": "Hide Safari", "isEnabled": true, "cmdChar": "h", "cmdModifiers": 0, "children": [] }
+      ] }
+    ] },
+    { "role": "AXMenuBarItem", "title": "File", "isEnabled": true, "children": [
+      { "role": "AXMenu", "title": "", "isEnabled": true, "children": [
+        { "role": "AXMenuItem", "title": "New Window", "isEnabled": true, "cmdChar": "n", "cmdModifiers": 0, "children": [] },
+        { "role": "AXMenuItem", "title": "New Private Window", "isEnabled": true, "cmdChar": "n", "cmdModifiers": 1, "children": [] },
+        { "role": "AXMenuItem", "title": "Close Tab", "isEnabled": false, "cmdChar": "w", "cmdModifiers": 0, "children": [] },
+        { "role": "AXMenuItem", "title": "Print…", "isEnabled": true, "cmdChar": "p", "cmdModifiers": 0, "children": [] }
+      ] }
+    ] },
+    { "role": "AXMenuBarItem", "title": "Edit", "isEnabled": true, "children": [
+      { "role": "AXMenu", "title": "", "isEnabled": true, "children": [
+        { "role": "AXMenuItem", "title": "Undo", "isEnabled": true, "cmdChar": "z", "cmdModifiers": 0, "children": [] },
+        { "role": "AXMenuItem", "title": "Find", "isEnabled": true, "children": [
+          { "role": "AXMenu", "title": "Find", "isEnabled": true, "children": [
+            { "role": "AXMenuItem", "title": "Find…", "isEnabled": true, "cmdChar": "f", "cmdModifiers": 0, "children": [] },
+            { "role": "AXMenuItem", "title": "Find Next", "isEnabled": true, "cmdChar": "g", "cmdModifiers": 0, "children": [] }
+          ] }
+        ] },
+        { "role": "AXMenuItem", "title": "Strange Item", "isEnabled": true, "cmdChar": "\u0001", "cmdModifiers": 0, "children": [] },
+        { "role": "AXMenuItem", "title": "Delete", "isEnabled": true, "cmdChar": "\b", "cmdModifiers": 0, "cmdGlyph": 23, "children": [] }
+      ] }
+    ] },
+    { "role": "AXMenuBarItem", "title": "View", "isEnabled": true, "children": [
+      { "role": "AXMenu", "title": "", "isEnabled": true, "children": [
+        { "role": "AXMenuItem", "title": "Reload Page", "isEnabled": true, "cmdChar": "r", "cmdModifiers": 0, "children": [] },
+        { "role": "AXMenuItem", "title": "Show Reader", "isEnabled": true, "cmdChar": "r", "cmdModifiers": 1, "children": [] },
+        { "role": "AXMenuItem", "title": "Enter Full Screen", "isEnabled": true, "cmdChar": "f", "cmdModifiers": 4, "children": [] },
+        { "role": "AXMenuItem", "title": "Text Encoding", "isEnabled": true, "children": [
+          { "role": "AXMenu", "title": "Text Encoding", "isEnabled": true, "children": [
+            { "role": "AXMenuItem", "title": "Default", "isEnabled": true, "children": [] }
+          ] }
+        ] }
+      ] }
+    ] }
+  ]
+}
