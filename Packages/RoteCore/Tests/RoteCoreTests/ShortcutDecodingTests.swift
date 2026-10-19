@@ -10,8 +10,29 @@ final class ShortcutDecodingTests: XCTestCase {
         XCTAssertEqual(decode("r"), .shortcut(Shortcut(modifiers: [.command], key: .character("R"))))
     }
 
-    func testUppercaseCharacterImpliesShift() {
-        XCTAssertEqual(decode("N"), .shortcut(Shortcut(modifiers: [.shift, .command], key: .character("N"))))
+    /// Accessibility reports every letter key equivalent in uppercase and Shift only through
+    /// mask bit 1, so case never implies Shift: Finder's ⌘N and ⇧⌘N arrive as ("N", 0) and ("N", 1).
+    func testUppercaseCharacterDoesNotImplyShift() {
+        XCTAssertEqual(decode("N"), .shortcut(Shortcut(modifiers: [.command], key: .character("N"))))
+        XCTAssertEqual(decode("N", 1), .shortcut(Shortcut(modifiers: [.shift, .command], key: .character("N"))))
+        XCTAssertEqual(decode("U", 12), .shortcut(Shortcut(modifiers: [.control], key: .character("U"))))
+    }
+
+    /// Mask bit 16 is fn/Globe, which Rote cannot draw or detect: fn E (Emoji & Symbols),
+    /// fn ⌃F (Fill) and fn ⌃← (Move & Resize › Left) must never be taught as E, ⌃F or ⌃←.
+    func testFunctionModifierIsUnrenderable() {
+        XCTAssertEqual(decode("E", 24), .unrenderable)
+        XCTAssertEqual(decode("F", 20), .unrenderable)
+        XCTAssertEqual(decode("F", 28), .unrenderable)
+        XCTAssertEqual(decode(nil, 28, vkey: 123), .unrenderable)
+        XCTAssertEqual(decode("", 24, glyph: 100), .unrenderable)
+        XCTAssertEqual(decode("F", 4), .shortcut(Shortcut(modifiers: [.control, .command], key: .character("F"))))
+    }
+
+    /// Accessibility uppercases "ß" to "SS"; the first scalar alone would claim ⌘S.
+    func testMultiScalarCharacterIsUnrenderable() {
+        XCTAssertEqual(decode("SS"), .unrenderable)
+        XCTAssertEqual(decode("SS", 1), .unrenderable)
     }
 
     func testMaskCombination() {

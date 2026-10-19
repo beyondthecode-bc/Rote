@@ -14,11 +14,14 @@ final class MenuTreeBuilderTests: XCTestCase {
 
     func testMenusKeepMenuBarOrderAndFlagApple() throws {
         let t = try tree()
-        XCTAssertEqual(t.menus.map(\.title), ["Apple", "Safari", "File", "Edit", "View"])
+        XCTAssertEqual(t.menus.map(\.title), ["Apple", "Safari", "File", "Edit", "View", "Window"])
         XCTAssertTrue(t.menus[0].isAppleMenu)
         XCTAssertFalse(t.menus[1].isAppleMenu)
         XCTAssertEqual(t.appName, "Safari")
+        XCTAssertEqual(t.bundleID, "com.apple.Safari")
+        XCTAssertEqual(t.scannedAt, ISO8601DateFormatter().date(from: "2026-10-18T10:00:00Z"))
         XCTAssertFalse(t.isPartial)
+        XCTAssertTrue(t.menus.allSatisfy(\.isComplete))
     }
 
     func testSeparatorsAreSkipped() throws {
@@ -26,8 +29,18 @@ final class MenuTreeBuilderTests: XCTestCase {
         XCTAssertEqual(safari.items.map(\.title), ["About Safari", "Settings…", "Hide Safari"])
     }
 
+    /// The fixture holds key equivalents as Accessibility reports them: letters in uppercase,
+    /// Shift only in mask bit 1. Finder's ⌘N / ⇧⌘N pair arrives as ("N", 0) and ("N", 1).
     func testShortcutsDecodeWithModifiers() throws {
         let t = try tree()
+        let file = t.menus[2]
+        let commandN = Shortcut(modifiers: [.command], key: .character("N"))
+        let shiftCommandN = Shortcut(modifiers: [.shift, .command], key: .character("N"))
+        XCTAssertEqual(file.items[0].shortcut, commandN)
+        XCTAssertEqual(file.items[1].shortcut, shiftCommandN)
+        XCTAssertEqual(t.item(for: commandN)?.title, "New Window")
+        XCTAssertEqual(t.item(for: shiftCommandN)?.title, "New Private Window")
+        XCTAssertEqual(t.menus[5].items[0].shortcut, Shortcut(modifiers: [.command], key: .character("M")))
         let view = t.menus[4]
         XCTAssertEqual(view.items[0].shortcut, Shortcut(modifiers: [.command], key: .character("R")))
         XCTAssertEqual(view.items[1].shortcut, Shortcut(modifiers: [.shift, .command], key: .character("R")))
@@ -46,6 +59,8 @@ final class MenuTreeBuilderTests: XCTestCase {
         let findNext = try XCTUnwrap(edit.items.first { $0.title == "Find Next" })
         XCTAssertEqual(findNext.path, ["Edit", "Find", "Find Next"])
         XCTAssertEqual(findNext.parentPath, ["Find"])
+        XCTAssertEqual(findNext.bundleID, "com.apple.Safari")
+        XCTAssertEqual(findNext.identity, "com.apple.Safari|Edit›Find›Find Next")
         XCTAssertNil(edit.items.first { $0.title == "Find" }, "a parent item with a submenu is not itself listed")
         let encodingDefault = try XCTUnwrap(try tree().menus[4].items.first { $0.title == "Default" })
         XCTAssertEqual(encodingDefault.path, ["View", "Text Encoding", "Default"])
@@ -61,14 +76,35 @@ final class MenuTreeBuilderTests: XCTestCase {
         XCTAssertEqual(delete.shortcut, Shortcut(modifiers: [.command], key: .special(.delete)))
     }
 
+    /// fn/Globe items (mask bit 16) and a "ß" that Accessibility uppercased to "SS" render as "?"
+    /// and are never coached, instead of being taught as E, ⌃F, ⌃← or ⌘S.
+    func testFunctionAndMultiCharacterItemsAreUnrenderable() throws {
+        let t = try tree()
+        for (menu, title) in [(3, "Emoji & Symbols"), (3, "Sharp S Item"), (5, "Fill"), (5, "Left")] {
+            let item = try XCTUnwrap(t.menus[menu].items.first { $0.title == title }, title)
+            XCTAssertNil(item.shortcut, title)
+            XCTAssertTrue(item.hasUnrenderableShortcut, title)
+            XCTAssertFalse(item.isCoachable, title)
+        }
+        XCTAssertEqual(t.menus[5].items.map(\.path), [["Window", "Minimize"], ["Window", "Fill"], ["Window", "Move & Resize", "Left"]])
+    }
+
     func testShortcutCount() throws {
-        // Disabled items keep their shortcut; the unrenderable one and the submenu "Default" have none.
-        XCTAssertEqual(try tree().shortcutCount, 14)
+        // Disabled items keep their shortcut; the unrenderable ones and the submenu "Default" have none.
+        XCTAssertEqual(try tree().shortcutCount, 15)
     }
 
     func testPartialFlagPropagates() throws {
         var snapshot = try loadFixture()
         snapshot.isPartial = true
         XCTAssertTrue(MenuTreeBuilder.build(snapshot).isPartial)
+    }
+
+    /// Only bar items before `completeBarItemCount` were read in full; a later menu may be cut short.
+    func testMenusPastTheCompleteCountAreIncomplete() throws {
+        var snapshot = try loadFixture()
+        snapshot.isPartial = true
+        snapshot.completeBarItemCount = 4
+        XCTAssertEqual(MenuTreeBuilder.build(snapshot).menus.map(\.isComplete), [true, true, true, true, false, false])
     }
 }

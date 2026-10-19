@@ -12,7 +12,7 @@ public enum MenuTreeBuilder {
             for menu in bar.children where menu.role == "AXMenu" {
                 collect(menu, path: [menuTitle], bundleID: snapshot.bundleID, into: &items)
             }
-            menus.append(MenuTree.Menu(title: menuTitle, isAppleMenu: isApple, items: items))
+            menus.append(MenuTree.Menu(title: menuTitle, isAppleMenu: isApple, items: items, isComplete: index < snapshot.completeBarItemCount))
         }
         return MenuTree(bundleID: snapshot.bundleID, appName: snapshot.appName, menus: menus, scannedAt: snapshot.takenAt, isPartial: snapshot.isPartial)
     }
@@ -25,11 +25,12 @@ public enum MenuTreeBuilder {
                 collect(submenu, path: path + [title], bundleID: bundleID, into: &items)
                 continue
             }
-            items.append(record(for: node, title: title, path: path + [title], bundleID: bundleID))
+            items.append(record(for: node, path: path + [title], bundleID: bundleID))
         }
     }
 
-    static func record(for node: AXMenuNode, title: String, path: [String], bundleID: String) -> MenuItemRecord {
+    /// `path` ends with the item's own title, which is also its display title.
+    static func record(for node: AXMenuNode, path: [String], bundleID: String) -> MenuItemRecord {
         let decoded = ShortcutDecoding.decode(cmdChar: node.cmdChar, modifierMask: node.cmdModifiers, virtualKey: node.cmdVirtualKey, glyph: node.cmdGlyph)
         switch decoded {
         case .none:

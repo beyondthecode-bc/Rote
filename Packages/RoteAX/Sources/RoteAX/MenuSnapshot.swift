@@ -29,13 +29,17 @@ public struct MenuSnapshot: Codable, Sendable, Equatable {
     public var appName: String
     public var barItems: [AXMenuNode]
     public var isPartial: Bool
+    /// Leading `barItems` read in full. The walk stops at the first failed read or at its budget,
+    /// so only a bar item at or past this index can be cut short.
+    public var completeBarItemCount: Int
     public var takenAt: Date
 
-    public init(bundleID: String, appName: String, barItems: [AXMenuNode], isPartial: Bool, takenAt: Date) {
+    public init(bundleID: String, appName: String, barItems: [AXMenuNode], isPartial: Bool, completeBarItemCount: Int, takenAt: Date) {
         self.bundleID = bundleID
         self.appName = appName
         self.barItems = barItems
         self.isPartial = isPartial
+        self.completeBarItemCount = completeBarItemCount
         self.takenAt = takenAt
     }
 }
