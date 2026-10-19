@@ -665,7 +665,7 @@ final class CoachRulesTests: XCTestCase {
     }
 
     func testStateRoundTripsThroughCodableWithEveryDateStrategy() throws {
-        let s = everyFieldState()
+        let s = Fx.everyFieldState()
         for strategy in [JSONEncoder.DateEncodingStrategy.deferredToDate, .iso8601, .secondsSince1970] {
             let enc = JSONEncoder()
             enc.dateEncodingStrategy = strategy
@@ -883,72 +883,18 @@ final class CoachRulesTests: XCTestCase {
 
     // MARK: - On-disk format: tolerant reads, stable keys
 
-    /// Every persisted field set to a distinct, non-default value, on whole seconds so ISO 8601
-    /// round-trips exactly: a regressed item learned again, a snoozed lesson, a muted item,
-    /// both kinds of log entry, a day counter and the global nudge clock.
-    private func everyFieldState() -> CoachState {
-        func at(_ offset: TimeInterval) -> Date { Fx.base.addingTimeInterval(offset) }
-        var relearned = ItemRecord(item: Fx.reload)
-        relearned.phase = .learned
-        relearned.menuUses = [at(300), at(700), at(800), at(900), at(1_000)]
-        relearned.shortcutUses = [at(400), at(500), at(600)]
-        relearned.menuUsesSinceLastNudge = 4
-        relearned.shortcutUsesSinceCoaching = 3
-        relearned.nudgeCount = 2
-        relearned.regressions = 1
-        relearned.lastNudgeAt = at(300)
-        relearned.learnedAt = at(600)
-        var snoozed = ItemRecord(item: Fx.printItem)
-        snoozed.phase = .coaching
-        snoozed.menuUses = [at(1_100), at(1_200), at(1_300)]
-        snoozed.shortcutUses = [at(1_400)]
-        snoozed.shortcutUsesSinceCoaching = 1
-        snoozed.nudgeCount = 1
-        snoozed.lastNudgeAt = at(1_300)
-        snoozed.snoozedUntil = at(7 * Fx.day)
-        var muted = ItemRecord(item: Fx.paste)
-        muted.phase = .muted
-        muted.menuUses = [at(1_500), at(1_600)]
-        muted.menuUsesSinceLastNudge = 2
-        var s = CoachState()
-        s.items = [relearned.identity: relearned, snoozed.identity: snoozed, muted.identity: muted]
-        s.log = [
-            LogEntry(at: at(1_000), kind: .menuUsed, identity: Fx.reload.identity, bundleID: Fx.reload.bundleID, phaseAfter: .learned),
-            LogEntry(at: at(1_400), kind: .shortcutUsed, identity: Fx.printItem.identity, bundleID: Fx.printItem.bundleID, phaseAfter: .coaching)
-        ]
-        s.nudgesByDay = ["2026-10-12": 3]
-        s.lastNudgeAt = at(1_300)
-        return s
-    }
-
-    /// The version 1 file, byte for byte. Tolerant decoding turns a renamed key into a silent
-    /// reset to defaults, so every key name and every decode line is pinned here. The store adds
-    /// `.prettyPrinted`, which changes whitespace only.
+    /// The version 1 file, byte for byte (`Fx.versionOneGolden`). Tolerant decoding turns a renamed
+    /// key into a silent reset to defaults, so every key name and every decode line is pinned here.
+    /// The store adds `.prettyPrinted`, which changes whitespace only.
     func testVersionOneFormatIsPinnedByteForByte() throws {
-        let golden = """
-        {"items":{"com.apple.Safari|Edit›Paste":{"item":{"bundleID":"com.apple.Safari","hasUnrenderableShortcut":false,"isEnabled":true,"path":["Edit","Paste"],"shortcut":{"key":{"character":{"_0":"V"}},"modifiers":8}},
-        "menuUses":["2026-10-12T00:25:00Z","2026-10-12T00:26:40Z"],"menuUsesSinceLastNudge":2,"nudgeCount":0,"phase":"muted","regressions":0,
-        "shortcutUses":[],"shortcutUsesSinceCoaching":0},
-        "com.apple.Safari|File›Print…":{"item":{"bundleID":"com.apple.Safari","hasUnrenderableShortcut":false,"isEnabled":true,"path":["File","Print…"],"shortcut":{"key":{"character":{"_0":"P"}},"modifiers":8}},
-        "lastNudgeAt":"2026-10-12T00:21:40Z",
-        "menuUses":["2026-10-12T00:18:20Z","2026-10-12T00:20:00Z","2026-10-12T00:21:40Z"],"menuUsesSinceLastNudge":0,"nudgeCount":1,"phase":"coaching","regressions":0,
-        "shortcutUses":["2026-10-12T00:23:20Z"],"shortcutUsesSinceCoaching":1,"snoozedUntil":"2026-10-19T00:00:00Z"},
-        "com.apple.Safari|View›Reload Page":{"item":{"bundleID":"com.apple.Safari","hasUnrenderableShortcut":false,"isEnabled":true,"path":["View","Reload Page"],"shortcut":{"key":{"character":{"_0":"R"}},"modifiers":8}},
-        "lastNudgeAt":"2026-10-12T00:05:00Z","learnedAt":"2026-10-12T00:10:00Z",
-        "menuUses":["2026-10-12T00:05:00Z","2026-10-12T00:11:40Z","2026-10-12T00:13:20Z","2026-10-12T00:15:00Z","2026-10-12T00:16:40Z"],"menuUsesSinceLastNudge":4,"nudgeCount":2,"phase":"learned","regressions":1,
-        "shortcutUses":["2026-10-12T00:06:40Z","2026-10-12T00:08:20Z","2026-10-12T00:10:00Z"],"shortcutUsesSinceCoaching":3}},
-        "lastNudgeAt":"2026-10-12T00:21:40Z",
-        "log":[{"at":"2026-10-12T00:16:40Z","bundleID":"com.apple.Safari","identity":"com.apple.Safari|View›Reload Page","kind":"menuUsed","phaseAfter":"learned"},
-        {"at":"2026-10-12T00:23:20Z","bundleID":"com.apple.Safari","identity":"com.apple.Safari|File›Print…","kind":"shortcutUsed","phaseAfter":"coaching"}],
-        "nudgesByDay":{"2026-10-12":3},"schemaVersion":1}
-        """.replacingOccurrences(of: "\n", with: "")
+        let golden = Fx.versionOneGolden
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
         encoder.outputFormatting = [.sortedKeys]
-        XCTAssertEqual(String(decoding: try encoder.encode(everyFieldState()), as: UTF8.self), golden)
+        XCTAssertEqual(String(decoding: try encoder.encode(Fx.everyFieldState()), as: UTF8.self), golden)
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
-        XCTAssertEqual(try decoder.decode(CoachState.self, from: Data(golden.utf8)), everyFieldState(), "every field reads back")
+        XCTAssertEqual(try decoder.decode(CoachState.self, from: Data(golden.utf8)), Fx.everyFieldState(), "every field reads back")
     }
 
     func testDecodesVersionOneFixtureWithMissingOptionalFields() throws {

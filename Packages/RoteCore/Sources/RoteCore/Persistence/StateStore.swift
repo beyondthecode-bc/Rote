@@ -10,12 +10,16 @@ public actor StateStore {
 
     private let fileURL: URL
     private let debounce: Duration
+    private let onWriteFailure: @Sendable (any Error) -> Void
     private var pending: Task<Void, Never>?
     private var latest: CoachState?
 
-    public init(fileURL: URL, debounce: Duration = .seconds(2)) {
+    /// `onWriteFailure` hears about every debounced or flushed write that fails. The state stays
+    /// in memory, so the next change or `flush()` tries again; `saveNow` throws instead.
+    public init(fileURL: URL, debounce: Duration = .seconds(2), onWriteFailure: @escaping @Sendable (any Error) -> Void = { _ in }) {
         self.fileURL = fileURL
         self.debounce = debounce
+        self.onWriteFailure = onWriteFailure
     }
 
     /// `~/Library/Application Support/Rote/state.json`
@@ -57,7 +61,7 @@ public actor StateStore {
         }
     }
 
-    /// Writes whatever is pending right now. Call on quit.
+    /// Writes whatever is pending right now. Call on quit. A failure goes to `onWriteFailure`.
     public func flush() {
         pending?.cancel()
         pending = nil
@@ -71,7 +75,11 @@ public actor StateStore {
 
     private func writeLatest() {
         guard let latest else { return }
-        try? write(latest)
+        do {
+            try write(latest)
+        } catch {
+            onWriteFailure(error)
+        }
     }
 
     private func write(_ state: CoachState) throws {
