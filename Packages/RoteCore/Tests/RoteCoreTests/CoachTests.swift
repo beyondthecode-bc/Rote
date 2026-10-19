@@ -5,16 +5,6 @@ final class CoachTests: XCTestCase {
     /// Shared fixtures (CoachTestSupport.swift), spelled short.
     private typealias Fx = CoachFixtures
 
-    /// Drives `count` menu uses `step` seconds apart starting at `start`; returns the last decision.
-    @discardableResult
-    private func use(_ item: MenuItemRecord, times count: Int, from start: TimeInterval, step: TimeInterval = 10, coach c: Coach, state: inout CoachState, context: CoachContext? = nil) -> CoachDecision {
-        var last: CoachDecision = .ignore
-        for i in 0..<count {
-            last = c.handle(Fx.menu(item, at: start + Double(i) * step), state: &state, context: context ?? Fx.ctx)
-        }
-        return last
-    }
-
     func testThirdMenuUseNudges() {
         var state = CoachState()
         let c = Fx.coach()
@@ -53,7 +43,7 @@ final class CoachTests: XCTestCase {
         var state = CoachState()
         var paused = Fx.ctx
         paused.isPaused = true
-        XCTAssertEqual(use(Fx.reload, times: 3, from: 0, coach: Fx.coach(), state: &state, context: paused), .record)
+        XCTAssertEqual(Fx.use(Fx.reload, times: 3, from: 0, coach: Fx.coach(), state: &state, context: paused), .record)
         XCTAssertEqual(state.items[Fx.reload.identity]?.phase, .observed)
         XCTAssertEqual(state.items[Fx.reload.identity]?.menuUses.count, 3)
     }
@@ -62,7 +52,7 @@ final class CoachTests: XCTestCase {
         var state = CoachState()
         var busy = Fx.ctx
         busy.isNudgeOnScreen = true
-        XCTAssertEqual(use(Fx.reload, times: 3, from: 0, coach: Fx.coach(), state: &state, context: busy), .record)
+        XCTAssertEqual(Fx.use(Fx.reload, times: 3, from: 0, coach: Fx.coach(), state: &state, context: busy), .record)
         busy.isNudgeOnScreen = false
         busy.isOverlayVisible = true
         XCTAssertEqual(Fx.coach().handle(Fx.menu(Fx.reload, at: 100), state: &state, context: busy), .record)
@@ -75,8 +65,8 @@ final class CoachTests: XCTestCase {
     func testItemSpacingBlocksRepeatNudges() {
         var state = CoachState()
         let c = Fx.coach()
-        use(Fx.reload, times: 3, from: 0, coach: c, state: &state)             // nudge at t=20
-        XCTAssertEqual(use(Fx.reload, times: 3, from: 60, coach: c, state: &state), .record)
+        Fx.use(Fx.reload, times: 3, from: 0, coach: c, state: &state)          // nudge at t=20
+        XCTAssertEqual(Fx.use(Fx.reload, times: 3, from: 60, coach: c, state: &state), .record)
         // The nudge was at t=20, so 4 h after it is t=14420; t=14430 clears the spacing.
         guard case .nudge(let record) = c.handle(Fx.menu(Fx.reload, at: 4 * Fx.hour + 30), state: &state, context: Fx.ctx) else {
             return XCTFail("expected a nudge after the item spacing elapsed")
@@ -87,8 +77,8 @@ final class CoachTests: XCTestCase {
     func testGlobalSpacingBetweenDifferentItems() {
         var state = CoachState()
         let c = Fx.coach()
-        use(Fx.reload, times: 3, from: 0, coach: c, state: &state)             // nudge at t=20
-        XCTAssertEqual(use(Fx.printItem, times: 3, from: 30, coach: c, state: &state), .record) // t=50, 30 s after
+        Fx.use(Fx.reload, times: 3, from: 0, coach: c, state: &state)          // nudge at t=20
+        XCTAssertEqual(Fx.use(Fx.printItem, times: 3, from: 30, coach: c, state: &state), .record) // t=50, 30 s after
         guard case .nudge = c.handle(Fx.menu(Fx.printItem, at: 20 + 90), state: &state, context: Fx.ctx) else {
             return XCTFail("expected a nudge once 90 s passed")
         }
@@ -97,9 +87,9 @@ final class CoachTests: XCTestCase {
     func testDailyCapResetsAtMidnight() {
         var state = CoachState()
         let c = Fx.coach(CoachPolicy(nudgeAfter: 3, itemSpacing: 0, globalSpacing: 0, dailyCap: 2))
-        guard case .nudge = use(Fx.reload, times: 3, from: 0, coach: c, state: &state) else { return XCTFail("1st nudge") }
-        guard case .nudge = use(Fx.printItem, times: 3, from: 100, coach: c, state: &state) else { return XCTFail("2nd nudge") }
-        XCTAssertEqual(use(Fx.paste, times: 3, from: 200, coach: c, state: &state), .record, "cap reached")
+        guard case .nudge = Fx.use(Fx.reload, times: 3, from: 0, coach: c, state: &state) else { return XCTFail("1st nudge") }
+        guard case .nudge = Fx.use(Fx.printItem, times: 3, from: 100, coach: c, state: &state) else { return XCTFail("2nd nudge") }
+        XCTAssertEqual(Fx.use(Fx.paste, times: 3, from: 200, coach: c, state: &state), .record, "cap reached")
         XCTAssertEqual(state.nudgesByDay["2026-10-12"], 2)
         guard case .nudge = c.handle(Fx.menu(Fx.paste, at: Fx.day + 1), state: &state, context: Fx.ctx) else {
             return XCTFail("expected a nudge on the next day")
@@ -110,7 +100,7 @@ final class CoachTests: XCTestCase {
     func testLearnedAfterThreeShortcutUsesThenRegression() {
         var state = CoachState()
         let c = Fx.coach()
-        use(Fx.reload, times: 3, from: 0, coach: c, state: &state)             // coaching
+        Fx.use(Fx.reload, times: 3, from: 0, coach: c, state: &state)          // coaching
         XCTAssertEqual(c.handle(Fx.key(Fx.reload, at: 100), state: &state, context: Fx.ctx), .record)
         XCTAssertEqual(c.handle(Fx.key(Fx.reload, at: 200), state: &state, context: Fx.ctx), .record)
         XCTAssertEqual(state.items[Fx.reload.identity]?.phase, .coaching)
@@ -119,7 +109,7 @@ final class CoachTests: XCTestCase {
         XCTAssertNotNil(state.items[Fx.reload.identity]?.learnedAt)
 
         // Three menu uses after learning stay quiet; the fifth regresses into gentle coaching.
-        XCTAssertEqual(use(Fx.reload, times: 4, from: 5 * Fx.hour, coach: c, state: &state), .record)
+        XCTAssertEqual(Fx.use(Fx.reload, times: 4, from: 5 * Fx.hour, coach: c, state: &state), .record)
         guard case .nudge(let record) = c.handle(Fx.menu(Fx.reload, at: 5 * Fx.hour + 100), state: &state, context: Fx.ctx) else {
             return XCTFail("expected a regression nudge on the fifth use")
         }
@@ -141,12 +131,14 @@ final class CoachTests: XCTestCase {
     func testShortcutUsesAreCappedAtFifty() {
         var state = CoachState()
         let c = Fx.coach()
-        use(Fx.reload, times: 3, from: 0, coach: c, state: &state) // coaching
+        Fx.use(Fx.reload, times: 3, from: 0, coach: c, state: &state) // coaching
         for i in 0..<60 {
             XCTAssertEqual(c.handle(Fx.key(Fx.reload, at: 100 + Double(i)), state: &state, context: Fx.ctx), .record)
             XCTAssertEqual(state.items[Fx.reload.identity]?.shortcutUses.count, min(i + 1, 50), "the cap trims exactly the overflow, use by use")
         }
         XCTAssertEqual(state.items[Fx.reload.identity]?.shortcutUses.count, 50, "only the latest 50 shortcut uses are kept")
+        XCTAssertEqual(state.items[Fx.reload.identity]?.shortcutUses.first, Fx.base.addingTimeInterval(110), "the oldest ten are the ones dropped")
+        XCTAssertEqual(state.items[Fx.reload.identity]?.shortcutUses.last, Fx.base.addingTimeInterval(159), "and the newest is kept")
         XCTAssertEqual(state.items[Fx.reload.identity]?.phase, .learned)
         XCTAssertEqual(state.log.filter { $0.kind == .shortcutUsed }.count, 60, "the log still records every use")
     }
@@ -154,10 +146,10 @@ final class CoachTests: XCTestCase {
     func testSnoozeBlocksUntilExpiry() {
         var state = CoachState()
         let c = Fx.coach()
-        use(Fx.reload, times: 3, from: 0, coach: c, state: &state)             // nudge
+        Fx.use(Fx.reload, times: 3, from: 0, coach: c, state: &state)          // nudge
         c.snooze(identity: Fx.reload.identity, until: Fx.base.addingTimeInterval(7 * Fx.day), state: &state)
-        XCTAssertEqual(use(Fx.reload, times: 3, from: 5 * Fx.hour, coach: c, state: &state), .record)
-        XCTAssertEqual(use(Fx.reload, times: 2, from: 8 * Fx.day, coach: c, state: &state), .record)
+        XCTAssertEqual(Fx.use(Fx.reload, times: 3, from: 5 * Fx.hour, coach: c, state: &state), .record)
+        XCTAssertEqual(Fx.use(Fx.reload, times: 2, from: 8 * Fx.day, coach: c, state: &state), .record)
         guard case .nudge = c.handle(Fx.menu(Fx.reload, at: 8 * Fx.day + 30), state: &state, context: Fx.ctx) else {
             return XCTFail("expected a nudge after the snooze expired and three fresh uses")
         }
@@ -166,9 +158,9 @@ final class CoachTests: XCTestCase {
     func testMuteAndUnmute() {
         var state = CoachState()
         let c = Fx.coach()
-        use(Fx.reload, times: 3, from: 0, coach: c, state: &state)
+        Fx.use(Fx.reload, times: 3, from: 0, coach: c, state: &state)
         c.mute(identity: Fx.reload.identity, state: &state)
-        XCTAssertEqual(use(Fx.reload, times: 6, from: 5 * Fx.hour, coach: c, state: &state), .record)
+        XCTAssertEqual(Fx.use(Fx.reload, times: 6, from: 5 * Fx.hour, coach: c, state: &state), .record)
         XCTAssertEqual(state.items[Fx.reload.identity]?.phase, .muted)
         c.unmute(identity: Fx.reload.identity, state: &state)
         XCTAssertEqual(state.items[Fx.reload.identity]?.phase, .observed)

@@ -30,4 +30,14 @@ enum CoachFixtures {
     static func key(_ item: MenuItemRecord, at offset: TimeInterval) -> CoachEvent {
         CoachEvent(kind: .shortcutUsed, item: item, at: base.addingTimeInterval(offset))
     }
+
+    /// Drives `count` menu uses `step` seconds apart starting at `start`; returns the last decision.
+    @discardableResult
+    static func use(_ item: MenuItemRecord, times count: Int, from start: TimeInterval, step: TimeInterval = 10, coach c: Coach, state: inout CoachState, context: CoachContext? = nil) -> CoachDecision {
+        var last: CoachDecision = .ignore
+        for i in 0..<count {
+            last = c.handle(menu(item, at: start + Double(i) * step), state: &state, context: context ?? ctx)
+        }
+        return last
+    }
 }

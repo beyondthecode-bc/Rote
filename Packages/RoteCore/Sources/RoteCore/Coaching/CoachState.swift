@@ -111,6 +111,20 @@ public struct LogEntry: Codable, Sendable, Equatable {
         self.bundleID = bundleID
         self.phaseAfter = phaseAfter
     }
+
+    private enum CodingKeys: String, CodingKey {
+        case at, kind, identity, bundleID, phaseAfter
+    }
+
+    /// Tolerant on read, like `ItemRecord`: only the time and the kind are required.
+    public init(from decoder: any Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        at = try c.decode(Date.self, forKey: .at)
+        kind = try c.decode(CoachEvent.Kind.self, forKey: .kind)
+        identity = try c.decodeIfPresent(String.self, forKey: .identity) ?? ""
+        bundleID = try c.decodeIfPresent(String.self, forKey: .bundleID) ?? ""
+        phaseAfter = try c.decodeIfPresent(ItemPhase.self, forKey: .phaseAfter) ?? .observed
+    }
 }
 
 /// Runtime conditions the engine knows and the coach does not store.
@@ -192,6 +206,8 @@ public struct CoachState: Codable, Sendable, Equatable {
     /// The record that carries more of the user's decisions wins (muted, then learned,
     /// then coaching); busyness breaks ties; an exact tie keeps the first by key order.
     /// Nothing the user would notice is dropped: snoozes, histories and counts carry over.
+    /// Menu uses since the last nudge (or since learning) are recounted against the merged
+    /// clock, so a loser's later nudge cannot be followed by a nudge on the very next use.
     static func merge(_ a: ItemRecord, _ b: ItemRecord) -> ItemRecord {
         let aWins: Bool
         if a.phase.mergeRank != b.phase.mergeRank {
@@ -208,6 +224,9 @@ public struct CoachState: Codable, Sendable, Equatable {
         winner.lastNudgeAt = later(winner.lastNudgeAt, loser.lastNudgeAt)
         winner.snoozedUntil = later(winner.snoozedUntil, loser.snoozedUntil)
         if winner.phase == .learned { winner.learnedAt = winner.learnedAt ?? loser.learnedAt }
+        let since = [winner.lastNudgeAt, winner.phase == .learned ? winner.learnedAt : nil].compactMap { $0 }.max()
+        if let since { winner.menuUsesSinceLastNudge = winner.menuUses.filter { $0 > since }.count }
+        winner.shortcutUsesSinceCoaching = max(winner.shortcutUsesSinceCoaching, loser.shortcutUsesSinceCoaching)
         return winner
     }
 

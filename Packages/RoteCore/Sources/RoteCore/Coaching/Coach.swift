@@ -3,9 +3,16 @@ import Foundation
 /// The patient coach (spec §6). Pure: same events, same state, same answers.
 public struct Coach: Sendable {
     public var policy: CoachPolicy
+    /// Only its time zone is used, read on every call, so `.autoupdatingCurrent` follows a
+    /// change of the system time zone without a new coach (see `dayKey`).
     public let calendar: Calendar
-    /// Day keys are always Gregorian, in `calendar`'s time zone (see `dayKey`).
+    /// Day keys are always Gregorian; `dayKey` sets this one to `calendar`'s current zone.
     private let dayCalendar: Calendar
+
+    /// Slack for times later than the event in hand. Reordered AX and key events differ by
+    /// milliseconds; anything further ahead was written while the system clock ran fast and
+    /// is stale once the clock is set right, so it gates nothing and is dropped.
+    private static let clockSkewTolerance: TimeInterval = 3_600
 
     public init(policy: CoachPolicy = .default, calendar: Calendar = .current) {
         self.policy = policy
@@ -66,8 +73,9 @@ public struct Coach: Sendable {
         let needed = threshold(for: record)
         guard record.menuUsesSinceLastNudge >= needed, record.menuUses.count >= needed else { return .record }
 
+        // A clock from the future gates nothing: the record prune already dropped a stale item clock.
         if let last = record.lastNudgeAt, now.timeIntervalSince(last) < policy.itemSpacing { return .record }
-        if let last = state.lastNudgeAt, now.timeIntervalSince(last) < policy.globalSpacing { return .record }
+        if let last = state.lastNudgeAt, last <= horizon(now), now.timeIntervalSince(last) < policy.globalSpacing { return .record }
         let day = dayKey(now)
         if state.nudgesByDay[day, default: 0] >= policy.dailyCap { return .record }
         if context.isNudgeOnScreen || context.isOverlayVisible { return .record }
@@ -123,21 +131,16 @@ public struct Coach: Sendable {
 
     // MARK: - Housekeeping
 
-    /// Drops what the policy no longer needs. Call on load and once a day. A coaching item
-    /// with no use inside the window and no active snooze falls back to observed and is
-    /// forgotten with the other empty records.
+    /// Drops what the policy no longer needs. Call on load and once a day. Records are
+    /// pruned exactly as `handle` prunes them, so a lesson that saw a whole quiet window is
+    /// forgotten here with the other empty records, and by `handle` if an event comes first.
     public func prune(state: inout CoachState, now: Date) {
         let logCutoff = now.addingTimeInterval(-policy.logRetention)
         state.log.removeAll { $0.at < logCutoff }
+        if let last = state.lastNudgeAt, last > horizon(now) { state.lastNudgeAt = nil }
         for (identity, original) in state.items {
             var record = original
             prune(&record, now: now)
-            if record.phase == .coaching && record.menuUses.isEmpty && record.shortcutUses.isEmpty && !record.isSnoozed(at: now) {
-                // A quiet window ends the lesson; the item starts over when it comes back.
-                record.phase = .observed
-                record.menuUsesSinceLastNudge = 0
-                record.shortcutUsesSinceCoaching = 0
-            }
             let forgettable = record.phase == .observed && record.menuUses.isEmpty && record.shortcutUses.isEmpty && record.snoozedUntil == nil
             state.items[identity] = forgettable ? nil : record
         }
@@ -145,18 +148,35 @@ public struct Coach: Sendable {
         state.nudgesByDay = state.nudgesByDay.filter { $0.key >= dayCutoff }
     }
 
+    /// Keeps the uses inside the window, drops an expired snooze and times from a clock that
+    /// ran ahead, and ends a lesson that saw a whole window with no use and no active snooze
+    /// (spec §6.1: coaching → observed, forgotten): the item starts over as if never seen.
     private func prune(_ record: inout ItemRecord, now: Date) {
         let cutoff = now.addingTimeInterval(-policy.window)
-        record.menuUses.removeAll { $0 < cutoff }
-        record.shortcutUses.removeAll { $0 < cutoff }
+        let latest = horizon(now)
+        record.menuUses.removeAll { $0 < cutoff || $0 > latest }
+        record.shortcutUses.removeAll { $0 < cutoff || $0 > latest }
         if let until = record.snoozedUntil, until <= now { record.snoozedUntil = nil }
+        if let last = record.lastNudgeAt, last > latest { record.lastNudgeAt = nil }
+        if record.phase == .coaching && record.menuUses.isEmpty && record.shortcutUses.isEmpty && record.snoozedUntil == nil {
+            record = ItemRecord(item: record.item)
+        }
+    }
+
+    /// The latest time a stored date may carry and still count at `now`.
+    private func horizon(_ now: Date) -> Date {
+        now.addingTimeInterval(Self.clockSkewTolerance)
     }
 
     /// Local calendar day as "yyyy-MM-dd", always in the Gregorian calendar of
-    /// `calendar`'s time zone, so string order equals date order whatever calendar the
-    /// user prefers (Japanese era years would otherwise restart the numbering).
+    /// `calendar`'s time zone as it is at the call, so string order equals date order
+    /// whatever calendar the user prefers (Japanese era years would otherwise restart the
+    /// numbering).
     public func dayKey(_ date: Date) -> String {
-        let parts = dayCalendar.dateComponents([.year, .month, .day], from: date)
+        var gregorian = dayCalendar
+        let zone = calendar.timeZone
+        if gregorian.timeZone != zone { gregorian.timeZone = zone }
+        let parts = gregorian.dateComponents([.year, .month, .day], from: date)
         return String(format: "%04d-%02d-%02d", parts.year ?? 0, parts.month ?? 0, parts.day ?? 0)
     }
 }
