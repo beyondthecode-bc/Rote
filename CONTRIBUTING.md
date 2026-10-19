@@ -30,3 +30,6 @@ Rote ships with 8 languages: English (source), French, German, Spanish, Japanese
 - **Korean**: follow Apple Korean Glossary conventions
 - **Portuguese (BR)**: use Brazilian Portuguese conventions
 - **Chinese (Simplified)**: follow Apple Simplified Chinese Glossary
+- **Plurals**: keys ending in `.one` and `.other` are the singular and plural forms of one phrase. Rote uses `.one` for 1 in English, German and Spanish, for 0 and 1 in French and Portuguese, and never in Japanese, Korean and Chinese (give both keys the same text there)
+- **Spoken key names** (`spoken.*`): what VoiceOver reads for a shortcut's keys; use the names Apple's "Mac keyboard shortcuts" page uses in your language
+- **Inserted times and names**: a phrase around `%1` must read correctly for any value, for example for both 1:00 and 13:00
