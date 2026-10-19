@@ -21,15 +21,23 @@ public enum AXWindowLocator {
               AXValueGetValue(sizeValue as! AXValue, .cgSize, &size),
               let primary = NSScreen.screens.first
         else { return nil }
-
-        // Accessibility coordinates start at the top-left of the primary display.
-        let flippedY = primary.frame.maxY - position.y - size.height
-        return CGRect(x: position.x, y: flippedY, width: size.width, height: size.height)
+        return appKitFrame(position: position, size: size, primaryScreenFrame: primary.frame)
     }
 
     @MainActor
     public static func screen(containing rect: CGRect) -> NSScreen? {
+        let screens = NSScreen.screens
+        return index(ofFrameContaining: rect, in: screens.map(\.frame)).map { screens[$0] }
+    }
+
+    /// Accessibility coordinates start at the top-left of the primary display, AppKit's at its bottom-left.
+    static func appKitFrame(position: CGPoint, size: CGSize, primaryScreenFrame: CGRect) -> CGRect {
+        CGRect(x: position.x, y: primaryScreenFrame.maxY - position.y - size.height, width: size.width, height: size.height)
+    }
+
+    /// The first frame that holds the center of `rect`.
+    static func index(ofFrameContaining rect: CGRect, in frames: [CGRect]) -> Int? {
         let center = CGPoint(x: rect.midX, y: rect.midY)
-        return NSScreen.screens.first { $0.frame.contains(center) }
+        return frames.firstIndex { $0.contains(center) }
     }
 }
