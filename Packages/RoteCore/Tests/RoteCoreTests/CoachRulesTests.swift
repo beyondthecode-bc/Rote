@@ -484,6 +484,47 @@ final class CoachRulesTests: XCTestCase {
         }
     }
 
+    func testTimesUpToAnHourAheadStillCountAndLaterOnesAreStale() {
+        // Reordered AX and key events differ by milliseconds, so a time stamped just after the
+        // event in hand still counts; past the hour of slack a fast clock wrote it.
+        let c = Fx.coach()
+        let a = item("A", "A")
+        let now = Fx.base.addingTimeInterval(100)
+        let earlier = [Fx.base, Fx.base.addingTimeInterval(1)]
+        for (ahead, counts) in [(0.005, true), (1, true), (Fx.hour, true), (Fx.hour + 1, false), (2 * Fx.hour, false)] {
+            let stamp = now.addingTimeInterval(ahead)
+            var itemClock = CoachState() // rule 6: the third use since this item's nudge is due
+            var nudged = ItemRecord(item: a)
+            nudged.phase = .coaching
+            nudged.menuUses = earlier
+            nudged.menuUsesSinceLastNudge = 2
+            nudged.lastNudgeAt = stamp
+            nudged.nudgeCount = 1
+            itemClock.items[a.identity] = nudged
+            var globalClock = CoachState() // rule 7: another item's nudge set the global clock
+            var seen = ItemRecord(item: a)
+            seen.menuUses = earlier
+            seen.menuUsesSinceLastNudge = 2
+            globalClock.items[a.identity] = seen
+            globalClock.lastNudgeAt = stamp
+            var laterUse = CoachState() // rule 5: a use stamped after the one in hand makes three
+            var reordered = ItemRecord(item: a)
+            reordered.menuUses = [Fx.base, stamp]
+            reordered.menuUsesSinceLastNudge = 2
+            laterUse.items[a.identity] = reordered
+            for (rule, state) in [("rule 6", itemClock), ("rule 7", globalClock), ("rule 5", laterUse)] {
+                var pruned = state
+                c.prune(state: &pruned, now: now)
+                let expected = rule == "rule 5" ? counts : !counts
+                for (label, start) in [("before prune", state), ("after prune", pruned)] {
+                    var s = start
+                    let nudges = isNudge(c.handle(CoachEvent(kind: .menuUsed, item: a, at: now), state: &s, context: Fx.ctx))
+                    XCTAssertEqual(nudges, expected, "\(rule), \(label): a time \(ahead) s ahead must \(counts ? "count" : "be stale")")
+                }
+            }
+        }
+    }
+
     // MARK: - Day keys and the local calendar day
 
     func testDayKeyIsSortableGregorianInManyTimeZones() {
@@ -772,6 +813,29 @@ final class CoachRulesTests: XCTestCase {
         XCTAssertEqual(merged?.shortcutUsesSinceCoaching, 2, "the loser's progress toward learning is kept")
         let decisions = (0..<3).map { isNudge(c.handle(Fx.menu(Fx.reload, at: 9 * Fx.hour + Double($0)), state: &s, context: Fx.ctx)) }
         XCTAssertEqual(decisions, [false, false, true], "rule 5: nudgeAfter uses after the newer nudge")
+    }
+
+    func testRekeyRecountsALearnedItemFromItsLearningNotItsLastNudge() {
+        // Nudged at t=2, two menu uses while coaching (t=50, 51), learned at t=102; a duplicate
+        // under another key saw one use at t=200, the only use since learning.
+        let c = Fx.coach()
+        let a = item("A", "A")
+        var s = CoachState()
+        Fx.use(a, times: 3, from: 0, step: 1, coach: c, state: &s)
+        Fx.use(a, times: 2, from: 50, step: 1, coach: c, state: &s)
+        for i in 0..<3 { _ = c.handle(Fx.key(a, at: 100 + Double(i)), state: &s, context: Fx.ctx) }
+        XCTAssertEqual(s.items[a.identity]?.learnedAt, Fx.base.addingTimeInterval(102))
+        var duplicate = ItemRecord(item: a)
+        duplicate.menuUses = [Fx.base.addingTimeInterval(200)]
+        duplicate.menuUsesSinceLastNudge = 1
+        s.items["stale-a"] = s.items.removeValue(forKey: a.identity)
+        s.items["stale-b"] = duplicate
+        s.rekeyItems()
+        let merged = s.items[a.identity]
+        XCTAssertEqual(merged?.phase, .learned)
+        XCTAssertEqual(merged?.menuUsesSinceLastNudge, 1, "menu uses while coaching came before learning")
+        let decisions = (0..<5).map { isNudge(c.handle(Fx.menu(a, at: 6 * Fx.hour + Double($0)), state: &s, context: Fx.ctx)) }
+        XCTAssertEqual(decisions, [false, false, false, true, false], "rule 5: regressAfter uses after learning, the duplicate's included")
     }
 
     func testPolicyClampsNonsense() {
