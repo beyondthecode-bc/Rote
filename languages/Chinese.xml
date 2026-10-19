@@ -2,6 +2,7 @@
 <strings>
   <!-- App -->
   <string key="app.name">Rote</string>
+  <string key="menubar.paused">Rote，已暂停</string>
   <string key="app.quit">退出 Rote</string>
   <string key="general.ok">好</string>
   <string key="general.cancel">取消</string>
@@ -19,8 +20,10 @@
   <string key="popover.pause">暂停提示</string>
   <string key="popover.pauseHour">暂停 1 小时</string>
   <string key="popover.pauseToday">暂停至明天</string>
+  <string key="popover.pauseUntilResumed">暂停至手动恢复</string>
   <string key="popover.resume">恢复提示</string>
   <string key="popover.pausedUntil">已暂停至 %1</string>
+  <string key="popover.pausedIndefinitely">已暂停</string>
   <string key="popover.updateAvailable">Rote %1 现已可用</string>
   <string key="popover.recovered">Rote 无法读取已存储的进度，因此已重新开始。旧文件已保留为 %1。</string>
   <string key="popover.uses">%1×</string>

@@ -2,6 +2,7 @@
 <strings>
   <!-- App -->
   <string key="app.name">Rote</string>
+  <string key="menubar.paused">Rote, paused</string>
   <string key="app.quit">Quit Rote</string>
   <string key="general.ok">OK</string>
   <string key="general.cancel">Cancel</string>
@@ -19,8 +20,10 @@
   <string key="popover.pause">Pause coaching</string>
   <string key="popover.pauseHour">Pause for 1 hour</string>
   <string key="popover.pauseToday">Pause until tomorrow</string>
+  <string key="popover.pauseUntilResumed">Pause until resumed</string>
   <string key="popover.resume">Resume coaching</string>
   <string key="popover.pausedUntil">Paused until %1</string>
+  <string key="popover.pausedIndefinitely">Paused</string>
   <string key="popover.updateAvailable">Rote %1 is available</string>
   <string key="popover.recovered">Rote could not read its saved progress and started fresh. The old file was kept as %1.</string>
   <string key="popover.uses">%1×</string>

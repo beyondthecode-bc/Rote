@@ -2,6 +2,7 @@
 <strings>
   <!-- App -->
   <string key="app.name">Rote</string>
+  <string key="menubar.paused">Rote, en pausa</string>
   <string key="app.quit">Salir de Rote</string>
   <string key="general.ok">Aceptar</string>
   <string key="general.cancel">Cancelar</string>
@@ -19,8 +20,10 @@
   <string key="popover.pause">Pausar las sugerencias</string>
   <string key="popover.pauseHour">Pausar durante 1 hora</string>
   <string key="popover.pauseToday">Pausar hasta mañana</string>
+  <string key="popover.pauseUntilResumed">Pausar hasta reanudar</string>
   <string key="popover.resume">Reanudar las sugerencias</string>
   <string key="popover.pausedUntil">En pausa hasta las %1</string>
+  <string key="popover.pausedIndefinitely">En pausa</string>
   <string key="popover.updateAvailable">Rote %1 está disponible</string>
   <string key="popover.recovered">Rote no ha podido leer el progreso guardado y ha empezado de cero. El archivo anterior se ha conservado como %1.</string>
   <string key="popover.uses">%1×</string>

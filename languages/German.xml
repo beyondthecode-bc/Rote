@@ -2,6 +2,7 @@
 <strings>
   <!-- App -->
   <string key="app.name">Rote</string>
+  <string key="menubar.paused">Rote, pausiert</string>
   <string key="app.quit">Rote beenden</string>
   <string key="general.ok">OK</string>
   <string key="general.cancel">Abbrechen</string>
@@ -19,8 +20,10 @@
   <string key="popover.pause">Hinweise pausieren</string>
   <string key="popover.pauseHour">1 Stunde pausieren</string>
   <string key="popover.pauseToday">Bis morgen pausieren</string>
+  <string key="popover.pauseUntilResumed">Bis zum Fortsetzen pausieren</string>
   <string key="popover.resume">Hinweise fortsetzen</string>
   <string key="popover.pausedUntil">Pausiert bis %1</string>
+  <string key="popover.pausedIndefinitely">Pausiert</string>
   <string key="popover.updateAvailable">Rote %1 ist verfügbar</string>
   <string key="popover.recovered">Rote konnte den gesicherten Fortschritt nicht lesen und hat neu begonnen. Die alte Datei wurde als %1 aufbewahrt.</string>
   <string key="popover.uses">%1×</string>

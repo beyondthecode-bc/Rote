@@ -127,7 +127,7 @@ enum GitHubUpdateChecker {
         try open.run()
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            NSApplication.shared.terminate(nil)
+            MainActor.assumeIsolated { NSApplication.shared.terminate(nil) }
         }
     }
 

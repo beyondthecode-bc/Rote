@@ -17,6 +17,7 @@ final class CoachEngine {
     @ObservationIgnored private let observer: MenuObserver
     @ObservationIgnored private let keyMonitor: KeyEventMonitor
     @ObservationIgnored private let store: StateStore
+    @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private var coach: Coach
     @ObservationIgnored private let ownBundleID = Bundle.main.bundleIdentifier ?? "com.beyondthecode.rote"
 
@@ -54,6 +55,7 @@ final class CoachEngine {
     private static let pruneInterval: TimeInterval = 86_400
     private static let treeStaleAfter: TimeInterval = 60
     private static let menuCloseGrace: Duration = .milliseconds(300)
+    static let pauseUntilKey = "coach.pauseUntil"
 
     init(
         settings: AppSettings,
@@ -63,7 +65,8 @@ final class CoachEngine {
         keyMonitor: KeyEventMonitor = KeyEventMonitor(),
         store: StateStore = StateStore(fileURL: StateStore.defaultFileURL(), onWriteFailure: { error in
             Logger.engine.error("Could not save state: \(error.localizedDescription, privacy: .public)")
-        })
+        }),
+        defaults: UserDefaults = .standard
     ) {
         self.settings = settings
         self.scanner = scanner
@@ -71,10 +74,13 @@ final class CoachEngine {
         self.observer = observer
         self.keyMonitor = keyMonitor
         self.store = store
+        self.defaults = defaults
         self.coach = Coach(policy: settings.policy, calendar: .autoupdatingCurrent)
     }
 
     var isPaused: Bool { pauseUntil.map { $0 > Date() } ?? false }
+    /// "Pause until resumed" has no deadline: the popover shows "Paused" without a time.
+    var isPausedUntilResumed: Bool { pauseUntil == .distantFuture }
     var isMenuOpen: Bool { openMenuDepth > 0 }
 
     // MARK: Lifecycle
@@ -82,6 +88,7 @@ final class CoachEngine {
     func start() async {
         guard !started else { return }
         started = true
+        restorePause()
         switch await store.load() {
         case .fresh:
             break
@@ -290,6 +297,9 @@ final class CoachEngine {
 
     func nudgeDismissed() { nudgeOnScreen = false }
 
+    /// The corrupt-file notice is one-time: the popover's OK clears it (spec §10).
+    func acknowledgeRecoveryNotice() { recoveredCorruptFile = nil }
+
     func snooze(_ identity: String, days: Int = 7) {
         coach.snooze(identity: identity, until: Date().addingTimeInterval(Double(days) * 86_400), state: &state)
         persist()
@@ -313,31 +323,54 @@ final class CoachEngine {
         pause(until: tomorrow)
     }
 
+    func pauseUntilResumed() { pause(until: .distantFuture) }
+
     func resume() {
         pauseExpiryTask?.cancel()
         pauseExpiryTask = nil
-        pauseUntil = nil
+        setPauseUntil(nil)
     }
 
     private func pause(until deadline: Date) {
-        pauseUntil = deadline
+        setPauseUntil(deadline)
         schedulePauseExpiry()
+    }
+
+    /// The deadline is kept in UserDefaults too, so a relaunch never silently drops a pause.
+    private func setPauseUntil(_ deadline: Date?) {
+        pauseUntil = deadline
+        if let deadline {
+            defaults.set(deadline, forKey: Self.pauseUntilKey)
+        } else {
+            defaults.removeObject(forKey: Self.pauseUntilKey)
+        }
+    }
+
+    /// Restores the pause an earlier run saved, unless its deadline has passed.
+    private func restorePause() {
+        guard let saved = defaults.object(forKey: Self.pauseUntilKey) as? Date else { return }
+        if saved > Date() {
+            pause(until: saved)
+        } else {
+            defaults.removeObject(forKey: Self.pauseUntilKey)
+        }
     }
 
     /// Clears `pauseUntil` once it passes, so the menu bar icon and the popover, which observe it,
     /// show coaching back on (spec §6.3). The wait is monotonic and the deadline is wall-clock, so
-    /// it re-checks after the wait, on wake and on a clock change.
+    /// it re-checks after the wait, on wake and on a clock change. A pause until resumed has no
+    /// deadline to wait for.
     private func schedulePauseExpiry() {
         pauseExpiryTask?.cancel()
         pauseExpiryTask = nil
-        guard let deadline = pauseUntil else { return }
+        guard let deadline = pauseUntil, !isPausedUntilResumed else { return }
         pauseExpiryTask = Task { [weak self] in
             while deadline.timeIntervalSinceNow > 0 {
                 try? await Task.sleep(for: .seconds(deadline.timeIntervalSinceNow))
                 if Task.isCancelled { return }
             }
             guard !Task.isCancelled, let self, self.pauseUntil == deadline else { return }
-            self.pauseUntil = nil
+            self.setPauseUntil(nil)
             self.pauseExpiryTask = nil
         }
     }
@@ -365,5 +398,13 @@ final class CoachEngine {
     #if DEBUG
     /// Feeds a fake event through the real pipeline, for screenshots and manual testing.
     func simulate(_ event: CoachEvent) { process(event) }
+
+    /// Forgets one item, the last nudge and today's nudge count, so an earlier simulated nudge,
+    /// snooze or mute cannot hold the next one back.
+    func debugForget(_ identity: String) {
+        state.items[identity] = nil
+        state.lastNudgeAt = nil
+        state.nudgesByDay[coach.dayKey(Date())] = nil
+    }
     #endif
 }
