@@ -6,6 +6,9 @@ struct NudgeModel {
     let record: ItemRecord
     let appName: String
     let appIcon: NSImage?
+    /// Screen location of the pointer when the nudge appeared. A card that appears under a
+    /// resting pointer counts as hovered only once the pointer moves.
+    let pointerAtShow: NSPoint
 }
 
 /// The lesson: keycaps, item title, "Safari · 3 menu uses this week", hover-revealed snooze.
@@ -32,6 +35,7 @@ struct NudgeView: View {
                 Text(l("nudge.subtitle", model.appName, "\(model.record.menuUses.count)"))
                     .font(.system(size: 11))
                     .foregroundStyle(.secondary)
+                    .lineLimit(1)
             }
             snoozeMenu
                 .opacity(hovering ? 1 : 0)
@@ -41,7 +45,7 @@ struct NudgeView: View {
         .padding(.horizontal, 20)
         .padding(.top, 16)
         .padding(.bottom, 12)
-        .frame(minWidth: 240)
+        .frame(minWidth: 240, maxWidth: 480)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: DesignTokens.hudCornerRadius, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: DesignTokens.hudCornerRadius, style: .continuous)
@@ -52,11 +56,22 @@ struct NudgeView: View {
         .onAppear {
             withAnimation(reduceMotion ? nil : .spring(duration: 0.18)) { appeared = true }
         }
-        .onHover { isHovering in
-            withAnimation(.easeOut(duration: 0.12)) { hovering = isHovering }
-            controller.setHovering(isHovering)
+        .onContinuousHover { phase in
+            switch phase {
+            case .active:
+                guard !hovering, NSEvent.mouseLocation != model.pointerAtShow else { return }
+                setHovering(true)
+            case .ended:
+                guard hovering else { return }
+                setHovering(false)
+            }
         }
         .padding(DesignTokens.hudShadowPadding)
+    }
+
+    private func setHovering(_ isHovering: Bool) {
+        withAnimation(.easeOut(duration: 0.12)) { hovering = isHovering }
+        controller.setHovering(isHovering)
     }
 
     private var snoozeMenu: some View {

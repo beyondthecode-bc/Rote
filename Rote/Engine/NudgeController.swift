@@ -16,7 +16,6 @@ final class NudgeController {
     private let panel = NudgePanel()
     private var current: ItemRecord?
     private var dismissTask: Task<Void, Never>?
-    private var hovering = false
 
     init(settings: AppSettings) {
         self.settings = settings
@@ -28,7 +27,8 @@ final class NudgeController {
         dismissTask?.cancel()
         current = record
 
-        let view = NudgeView(model: NudgeModel(record: record, appName: appName, appIcon: appIcon), controller: self)
+        let model = NudgeModel(record: record, appName: appName, appIcon: appIcon, pointerAtShow: NSEvent.mouseLocation)
+        let view = NudgeView(model: model, controller: self)
         let host = NSHostingView(rootView: view)
         let size = host.fittingSize
         host.frame = NSRect(origin: .zero, size: size)
@@ -54,9 +54,9 @@ final class NudgeController {
     }
 
     func setHovering(_ isHovering: Bool) {
-        hovering = isHovering
         if isHovering {
             dismissTask?.cancel()
+            dismissTask = nil
         } else if current != nil {
             scheduleDismiss()
         }
@@ -101,7 +101,7 @@ final class NudgeController {
         let duration = settings.hudDuration
         dismissTask = Task { [weak self] in
             try? await Task.sleep(for: .seconds(duration))
-            guard !Task.isCancelled, let self, !self.hovering else { return }
+            guard !Task.isCancelled, let self else { return }
             self.dismiss()
         }
     }
