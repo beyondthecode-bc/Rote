@@ -16,6 +16,10 @@ public enum ItemPhase: String, Codable, Sendable {
 
 /// Everything Rote remembers about one menu item.
 public struct ItemRecord: Codable, Sendable, Equatable, Identifiable {
+    /// Shortcut uses kept per item; older ones are dropped, so a heavily used shortcut
+    /// cannot grow the state file.
+    public static let maxShortcutUses = 50
+
     /// Last seen record: title, shortcut, enabled state.
     public var item: MenuItemRecord
     public var phase: ItemPhase
@@ -43,6 +47,28 @@ public struct ItemRecord: Codable, Sendable, Equatable, Identifiable {
         lastNudgeAt = nil
         snoozedUntil = nil
         learnedAt = nil
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case item, phase, menuUses, shortcutUses, menuUsesSinceLastNudge, shortcutUsesSinceCoaching
+        case nudgeCount, regressions, lastNudgeAt, snoozedUntil, learnedAt
+    }
+
+    /// Tolerant on read: a file written by an older build, or edited by hand, may lack any
+    /// field but the item. Missing fields take the values of a fresh record.
+    public init(from decoder: any Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        item = try c.decode(MenuItemRecord.self, forKey: .item)
+        phase = try c.decodeIfPresent(ItemPhase.self, forKey: .phase) ?? .observed
+        menuUses = try c.decodeIfPresent([Date].self, forKey: .menuUses) ?? []
+        shortcutUses = try c.decodeIfPresent([Date].self, forKey: .shortcutUses) ?? []
+        menuUsesSinceLastNudge = try c.decodeIfPresent(Int.self, forKey: .menuUsesSinceLastNudge) ?? 0
+        shortcutUsesSinceCoaching = try c.decodeIfPresent(Int.self, forKey: .shortcutUsesSinceCoaching) ?? 0
+        nudgeCount = try c.decodeIfPresent(Int.self, forKey: .nudgeCount) ?? 0
+        regressions = try c.decodeIfPresent(Int.self, forKey: .regressions) ?? 0
+        lastNudgeAt = try c.decodeIfPresent(Date.self, forKey: .lastNudgeAt)
+        snoozedUntil = try c.decodeIfPresent(Date.self, forKey: .snoozedUntil)
+        learnedAt = try c.decodeIfPresent(Date.self, forKey: .learnedAt)
     }
 
     /// Always the item's current identity, so an identity-rule change cannot strand a record.
@@ -76,15 +102,13 @@ public struct LogEntry: Codable, Sendable, Equatable {
     public var kind: CoachEvent.Kind
     public var identity: String
     public var bundleID: String
-    public var hadShortcut: Bool
     public var phaseAfter: ItemPhase
 
-    public init(at: Date, kind: CoachEvent.Kind, identity: String, bundleID: String, hadShortcut: Bool, phaseAfter: ItemPhase) {
+    public init(at: Date, kind: CoachEvent.Kind, identity: String, bundleID: String, phaseAfter: ItemPhase) {
         self.at = at
         self.kind = kind
         self.identity = identity
         self.bundleID = bundleID
-        self.hadShortcut = hadShortcut
         self.phaseAfter = phaseAfter
     }
 }
@@ -140,23 +164,59 @@ public struct CoachState: Codable, Sendable, Equatable {
         lastNudgeAt = nil
     }
 
+    private enum CodingKeys: String, CodingKey {
+        case schemaVersion, items, log, nudgesByDay, lastNudgeAt
+    }
+
+    /// Tolerant on read, like `ItemRecord`. A file without a version is version 1.
+    public init(from decoder: any Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        schemaVersion = try c.decodeIfPresent(Int.self, forKey: .schemaVersion) ?? 1
+        items = try c.decodeIfPresent([String: ItemRecord].self, forKey: .items) ?? [:]
+        log = try c.decodeIfPresent([LogEntry].self, forKey: .log) ?? []
+        nudgesByDay = try c.decodeIfPresent([String: Int].self, forKey: .nudgesByDay) ?? [:]
+        lastNudgeAt = try c.decodeIfPresent(Date.self, forKey: .lastNudgeAt)
+    }
+
     /// Re-keys `items` by each record's current identity, merging duplicates that an
     /// identity-rule change may have produced. Call once after loading from disk.
     public mutating func rekeyItems() {
         var merged: [String: ItemRecord] = [:]
         for (_, record) in items.sorted(by: { $0.key < $1.key }) {
             let key = record.identity
-            merged[key] = merged[key].map { Self.preferred($0, record) } ?? record
+            merged[key] = merged[key].map { Self.merge($0, record) } ?? record
         }
         items = merged
     }
 
     /// The record that carries more of the user's decisions wins (muted, then learned,
     /// then coaching); busyness breaks ties; an exact tie keeps the first by key order.
-    private static func preferred(_ a: ItemRecord, _ b: ItemRecord) -> ItemRecord {
-        if a.phase.mergeRank != b.phase.mergeRank { return a.phase.mergeRank > b.phase.mergeRank ? a : b }
-        let busyA = a.menuUses.count + a.shortcutUses.count
-        let busyB = b.menuUses.count + b.shortcutUses.count
-        return busyB > busyA ? b : a
+    /// Nothing the user would notice is dropped: snoozes, histories and counts carry over.
+    static func merge(_ a: ItemRecord, _ b: ItemRecord) -> ItemRecord {
+        let aWins: Bool
+        if a.phase.mergeRank != b.phase.mergeRank {
+            aWins = a.phase.mergeRank > b.phase.mergeRank
+        } else {
+            aWins = (a.menuUses.count + a.shortcutUses.count) >= (b.menuUses.count + b.shortcutUses.count)
+        }
+        var winner = aWins ? a : b
+        let loser = aWins ? b : a
+        winner.menuUses = (winner.menuUses + loser.menuUses).sorted()
+        winner.shortcutUses = Array((winner.shortcutUses + loser.shortcutUses).sorted().suffix(ItemRecord.maxShortcutUses))
+        winner.nudgeCount += loser.nudgeCount
+        winner.regressions += loser.regressions
+        winner.lastNudgeAt = later(winner.lastNudgeAt, loser.lastNudgeAt)
+        winner.snoozedUntil = later(winner.snoozedUntil, loser.snoozedUntil)
+        if winner.phase == .learned { winner.learnedAt = winner.learnedAt ?? loser.learnedAt }
+        return winner
+    }
+
+    private static func later(_ a: Date?, _ b: Date?) -> Date? {
+        switch (a, b) {
+        case (let a?, let b?): return max(a, b)
+        case (let a?, nil): return a
+        case (nil, let b?): return b
+        case (nil, nil): return nil
+        }
     }
 }

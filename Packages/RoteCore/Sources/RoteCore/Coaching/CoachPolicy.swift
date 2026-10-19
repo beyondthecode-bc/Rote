@@ -1,25 +1,25 @@
 import Foundation
 
 /// Every tunable of the patient coach (spec §6.4). Settings mirror `nudgeAfter`,
-/// `itemSpacing` and `dailyCap`; values are clamped to sane minimums so a bad
-/// preference cannot disable the coach.
-public struct CoachPolicy: Codable, Sendable, Equatable {
+/// `itemSpacing` and `dailyCap`. Values are clamped to sane minimums and immutable
+/// once built, so a bad preference cannot disable the coach. Nothing persists a policy.
+public struct CoachPolicy: Sendable, Equatable {
     /// Menu uses within `window` before the first nudge.
-    public var nudgeAfter: Int
+    public let nudgeAfter: Int
     /// Rolling window for counting menu uses.
-    public var window: TimeInterval
+    public let window: TimeInterval
     /// Minimum time between two nudges for the same item.
-    public var itemSpacing: TimeInterval
+    public let itemSpacing: TimeInterval
     /// Minimum time between any two nudges.
-    public var globalSpacing: TimeInterval
+    public let globalSpacing: TimeInterval
     /// Maximum nudges per local calendar day.
-    public var dailyCap: Int
+    public let dailyCap: Int
     /// Shortcut uses while coaching before the item counts as learned.
-    public var learnAfter: Int
+    public let learnAfter: Int
     /// Menu uses after learning before coaching resumes.
-    public var regressAfter: Int
+    public let regressAfter: Int
     /// How long log entries and day counters are kept.
-    public var logRetention: TimeInterval
+    public let logRetention: TimeInterval
 
     public init(
         nudgeAfter: Int = 3,
@@ -35,7 +35,7 @@ public struct CoachPolicy: Codable, Sendable, Equatable {
         self.window = max(60, window)
         self.itemSpacing = max(0, itemSpacing)
         self.globalSpacing = max(0, globalSpacing)
-        self.dailyCap = max(0, dailyCap)
+        self.dailyCap = max(1, dailyCap)
         self.learnAfter = max(1, learnAfter)
         self.regressAfter = max(1, regressAfter)
         self.logRetention = max(86_400, logRetention)
