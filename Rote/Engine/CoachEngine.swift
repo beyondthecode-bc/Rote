@@ -42,17 +42,18 @@ final class CoachEngine {
     @ObservationIgnored private var treeOrder: [String] = []
     @ObservationIgnored private var scanTasks: [String: Task<Void, Never>] = [:]
     @ObservationIgnored private var openMenuDepth = 0
-    @ObservationIgnored private var lastMenuClosedAt = Date.distantPast
-    @ObservationIgnored private var lastShortcutUse: (identity: String, at: Date)?
+    @ObservationIgnored private var lastMenuClosedAt: ContinuousClock.Instant?
+    @ObservationIgnored private var echoes = ShortcutEchoFilter()
     @ObservationIgnored private var permissionTask: Task<Void, Never>?
+    @ObservationIgnored private var pauseExpiryTask: Task<Void, Never>?
+    @ObservationIgnored private var clockObservers: [any NSObjectProtocol] = []
     @ObservationIgnored private var started = false
     @ObservationIgnored private var lastPruneAt = Date.distantPast
 
     private static let treeCacheLimit = 20
     private static let pruneInterval: TimeInterval = 86_400
     private static let treeStaleAfter: TimeInterval = 60
-    private static let menuCloseGrace: TimeInterval = 0.3
-    private static let duplicateWindow: TimeInterval = 0.3
+    private static let menuCloseGrace: Duration = .milliseconds(300)
 
     init(
         settings: AppSettings,
@@ -96,6 +97,7 @@ final class CoachEngine {
         tracker.onActivate = { [weak self] app in self?.appActivated(app) }
         observer.onEvent = { [weak self] event in self?.handleObserverEvent(event) }
         keyMonitor.onEvent = { [weak self] event in self?.handleKeyEvent(event) }
+        watchClock()
         startPermissionLoop()
     }
 
@@ -135,19 +137,37 @@ final class CoachEngine {
         }
     }
 
+    /// A pause deadline is wall-clock time: one crossed during sleep or by a clock change ends at once.
+    private func watchClock() {
+        let recheck: @Sendable (Notification) -> Void = { [weak self] _ in
+            MainActor.assumeIsolated { self?.schedulePauseExpiry() }
+        }
+        clockObservers = [
+            NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.didWakeNotification, object: nil, queue: .main, using: recheck),
+            NotificationCenter.default.addObserver(forName: .NSSystemClockDidChange, object: nil, queue: .main, using: recheck),
+        ]
+    }
+
     // MARK: App activation and tree cache
 
     private func appActivated(_ app: AppIdentity?) {
-        guard let app, app.bundleID != ownBundleID else {
-            // An app without a bundle ID, or Rote itself, is frontmost: stop coaching the previous app (spec §4.3).
+        openMenuDepth = 0
+        echoes.reset()
+        guard let app else {
+            // An app without a bundle ID is frontmost: stop coaching the previous app (spec §4.3).
             observer.detach()
             currentApp = nil
             currentTree = nil
-            openMenuDepth = 0
+            return
+        }
+        guard app.bundleID != ownBundleID else {
+            // Rote itself is frontmost (onboarding, Settings). With the observer detached and its own
+            // presses never matched nothing is coached, but the hold-⌘ sheet keeps the app the user
+            // came from, so onboarding's "Hold ⌘ now" step can show it (spec §7.5).
+            observer.detach()
             return
         }
         currentApp = app
-        openMenuDepth = 0
         if Date().timeIntervalSince(lastPruneAt) > Self.pruneInterval {
             coach.prune(state: &state, now: Date())
             lastPruneAt = Date()
@@ -203,16 +223,23 @@ final class CoachEngine {
         switch event {
         case .menuOpened:
             openMenuDepth += 1
+            echoes.reset()
         case .menuClosed:
             openMenuDepth = max(0, openMenuDepth - 1)
-            lastMenuClosedAt = Date()
+            lastMenuClosedAt = .now
         case .itemSelected(let record):
             let now = Date()
-            let viaMenu = openMenuDepth > 0 || now.timeIntervalSince(lastMenuClosedAt) < Self.menuCloseGrace
-            if viaMenu {
-                process(CoachEvent(kind: .menuUsed, item: record, at: now))
-            } else {
-                shortcutUsed(record, at: now)
+            let tick = ContinuousClock.now
+            // AppKit also reports a key equivalent as a selection once its action returns; the
+            // key monitor has counted that press already (spec §5.5).
+            if !echoes.isEcho(record, at: tick) {
+                let viaMenu = openMenuDepth > 0 || lastMenuClosedAt.map { $0.duration(to: tick) < Self.menuCloseGrace } ?? false
+                if viaMenu {
+                    process(CoachEvent(kind: .menuUsed, item: record, at: now))
+                } else {
+                    echoes.selectionCounted(record, at: tick)
+                    process(CoachEvent(kind: .shortcutUsed, item: record, at: now))
+                }
             }
             if let tree = currentTree, !tree.contains(identity: record.identity), let app = currentApp {
                 scan(app)
@@ -224,13 +251,8 @@ final class CoachEngine {
         onKeyEvent?(event)
         guard case .keyDown(let press, inOwnApp: false) = event, let tree = currentTree else { return }
         guard let item = tree.item(for: press) else { return }   // nil for auto-repeats
-        shortcutUsed(item, at: Date())
-    }
-
-    private func shortcutUsed(_ item: MenuItemRecord, at now: Date) {
-        if let last = lastShortcutUse, last.identity == item.identity, now.timeIntervalSince(last.at) < Self.duplicateWindow { return }
-        lastShortcutUse = (item.identity, now)
-        process(CoachEvent(kind: .shortcutUsed, item: item, at: now))
+        guard echoes.keyPressMatched(item, at: .now) else { return }   // its selection came first and counted
+        process(CoachEvent(kind: .shortcutUsed, item: item, at: Date()))
     }
 
     private func process(_ event: CoachEvent) {
@@ -242,7 +264,11 @@ final class CoachEngine {
             isOverlayVisible: overlayVisible,
             ownBundleID: ownBundleID
         )
-        switch coach.handle(event, state: &state, context: context) {
+        // Assigned only when the coach changed it: an ignored ⌘C must not invalidate every view of `state`.
+        var next = state
+        let decision = coach.handle(event, state: &next, context: context)
+        if decision != .ignore { state = next }
+        switch decision {
         case .nudge(let record):
             nudgeOnScreen = true
             Logger.engine.info("Nudge: \(record.item.title, privacy: .public)")
@@ -279,14 +305,42 @@ final class CoachEngine {
         persist()
     }
 
-    func pause(for interval: TimeInterval) { pauseUntil = Date().addingTimeInterval(interval) }
+    func pause(for interval: TimeInterval) { pause(until: Date().addingTimeInterval(interval)) }
 
     func pauseUntilTomorrow() {
         let start = Calendar.current.startOfDay(for: Date())
-        pauseUntil = Calendar.current.date(byAdding: .day, value: 1, to: start)
+        guard let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: start) else { return }
+        pause(until: tomorrow)
     }
 
-    func resume() { pauseUntil = nil }
+    func resume() {
+        pauseExpiryTask?.cancel()
+        pauseExpiryTask = nil
+        pauseUntil = nil
+    }
+
+    private func pause(until deadline: Date) {
+        pauseUntil = deadline
+        schedulePauseExpiry()
+    }
+
+    /// Clears `pauseUntil` once it passes, so the menu bar icon and the popover, which observe it,
+    /// show coaching back on (spec §6.3). The wait is monotonic and the deadline is wall-clock, so
+    /// it re-checks after the wait, on wake and on a clock change.
+    private func schedulePauseExpiry() {
+        pauseExpiryTask?.cancel()
+        pauseExpiryTask = nil
+        guard let deadline = pauseUntil else { return }
+        pauseExpiryTask = Task { [weak self] in
+            while deadline.timeIntervalSinceNow > 0 {
+                try? await Task.sleep(for: .seconds(deadline.timeIntervalSinceNow))
+                if Task.isCancelled { return }
+            }
+            guard !Task.isCancelled, let self, self.pauseUntil == deadline else { return }
+            self.pauseUntil = nil
+            self.pauseExpiryTask = nil
+        }
+    }
 
     func resetStatistics() {
         state = CoachState()
