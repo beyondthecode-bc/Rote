@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<strings>
+  <!-- App -->
+  <string key="app.name">Rote</string>
+  <string key="app.quit">退出 Rote</string>
+  <string key="general.ok">好</string>
+  <string key="general.cancel">取消</string>
+  <string key="general.done">完成</string>
+  <string key="general.next">下一步</string>
+  <string key="general.remove">移除</string>
+
+  <!-- Menu bar popover -->
+  <string key="menu.settings">设置…</string>
+  <string key="menu.about">关于</string>
+  <string key="popover.thisWeek">本周</string>
+  <string key="popover.coachingNow">正在练习</string>
+  <string key="popover.learned">已掌握</string>
+  <string key="popover.empty">暂无内容。照常使用 Mac 即可；当你重复点按几次同一菜单项后，Rote 会提示你。</string>
+  <string key="popover.pause">暂停提示</string>
+  <string key="popover.pauseHour">暂停 1 小时</string>
+  <string key="popover.pauseToday">暂停至明天</string>
+  <string key="popover.resume">恢复提示</string>
+  <string key="popover.pausedUntil">已暂停至 %1</string>
+  <string key="popover.updateAvailable">Rote %1 现已可用</string>
+  <string key="popover.recovered">Rote 无法读取已存储的进度，因此已重新开始。旧文件已保留为 %1。</string>
+  <string key="popover.uses">%1×</string>
+  <string key="stats.learned">已掌握的快捷键</string>
+  <string key="stats.menuClicks">有快捷键的菜单点按</string>
+  <string key="stats.shortcutsUsed">已使用的快捷键</string>
+
+  <!-- Nudge HUD -->
+  <string key="nudge.subtitle">%1 · 本周通过菜单使用 %2 次</string>
+  <string key="nudge.snooze">稍后提醒</string>
+  <string key="nudge.snoozeWeek">一周后再提醒</string>
+  <string key="nudge.stopItem">不再提示此项目</string>
+  <string key="nudge.pauseHour">暂停 Rote 1 小时</string>
+  <string key="nudge.announcement">%1 的快捷键：%2</string>
+
+  <!-- Keycaps -->
+  <string key="keycap.unknown">未知快捷键</string>
+
+  <!-- Overlay -->
+  <string key="overlay.count">%1 个快捷键</string>
+  <string key="overlay.partial">仍在读取菜单…</string>
+  <string key="overlay.releaseHint">松开 %1 以关闭</string>
+  <string key="overlay.stickyHint">按下 Esc 或 ⌃⌥⌘K 以关闭</string>
+  <string key="overlay.scrollHint">滚动以查看更多</string>
+
+  <!-- Permission and onboarding -->
+  <string key="permission.title">Rote 需要辅助功能访问权限</string>
+  <string key="permission.body">Rote 会读取 App 菜单，并留意你选择了哪些菜单项。它从不读取你输入的内容，任何数据都不会离开这台 Mac。</string>
+  <string key="permission.open">打开系统设置</string>
+  <string key="permission.granted">已授予辅助功能访问权限</string>
+  <string key="permission.waiting">正在等待访问权限…请在“隐私与安全性” › “辅助功能”中打开 Rote</string>
+  <string key="onboarding.title1">学会你总是跳过的快捷键</string>
+  <string key="onboarding.body1">当你多次用鼠标选择同一个菜单项时，Rote 会显示对应的按键。用上这些按键后，它就不再提示。</string>
+  <string key="onboarding.title3">试一试</string>
+  <string key="onboarding.body3">在任意 App 中按住 ⌘ 片刻，即可查看它的所有快捷键。</string>
+  <string key="onboarding.tried">你已看过总览。一切就绪。</string>
+
+  <!-- Settings -->
+  <string key="settings.title">设置</string>
+  <string key="settings.general">通用</string>
+  <string key="settings.coaching">提示</string>
+  <string key="settings.overlay">总览</string>
+  <string key="settings.apps">App</string>
+  <string key="settings.data">数据</string>
+  <string key="settings.launchAtLogin">登录时打开</string>
+  <string key="settings.language">语言</string>
+  <string key="settings.language.system">系统默认</string>
+  <string key="settings.checkUpdatesOnLaunch">启动时检查更新</string>
+  <string key="settings.updatesHint">“立即检查”位于“关于”标签页中。</string>
+  <string key="settings.nudgeAfter">通过菜单使用 %1 次后提示</string>
+  <string key="settings.itemSpacing">同一项目的提示至少间隔 %1 小时</string>
+  <string key="settings.dailyCap">每天最多提示 %1 次</string>
+  <string key="settings.hudDuration">提示显示 %1 秒</string>
+  <string key="settings.sound">播放轻柔的提示音</string>
+  <string key="settings.trigger">显示总览的方式</string>
+  <string key="settings.trigger.command">按住 ⌘</string>
+  <string key="settings.trigger.option">按住 ⌥</string>
+  <string key="settings.trigger.sticky">按下 ⌃⌥⌘K（保持打开）</string>
+  <string key="settings.holdDelay">按住 %1 毫秒</string>
+  <string key="settings.showNoShortcut">显示没有快捷键的项目</string>
+  <string key="settings.showAppleMenu">显示苹果菜单</string>
+  <string key="settings.excluded">从不在这些 App 中提示</string>
+  <string key="settings.paused">已暂停的 App</string>
+  <string key="settings.addApp">添加 App</string>
+  <string key="settings.runningApps">正在运行的 App</string>
+  <string key="settings.chooseApp">选取…</string>
+  <string key="settings.privacy">所有数据都保留在这台 Mac 上。Rote 只保存菜单标题和对应的按键组合，从不保存你输入的内容。</string>
+  <string key="settings.muted">已停止提示的项目</string>
+  <string key="settings.unmute">重新提示</string>
+  <string key="settings.reset">重置统计数据</string>
+  <string key="settings.resetConfirm">这将删除所有计数和学习记录。设置会保留。</string>
+  <string key="settings.export">导出 JSON…</string>
+
+  <!-- About -->
+  <string key="about.title">关于</string>
+  <string key="about.tagline">你的 Mac 键盘快捷键教练</string>
+  <string key="about.version">版本</string>
+  <string key="about.version.label">Rote</string>
+  <string key="about.github">GitHub</string>
+  <string key="about.githubProject">GitHub 上的 Rote</string>
+  <string key="about.githubProject.subtitle">基于 MIT 许可证开源</string>
+  <string key="about.support">支持 Rote</string>
+  <string key="about.sponsor">GitHub Sponsors</string>
+  <string key="about.sponsor.subtitle">支持持续开发</string>
+  <string key="about.coffee">Buy Me a Coffee</string>
+  <string key="about.coffee.subtitle">一次性致谢</string>
+  <string key="update.title">更新</string>
+  <string key="update.check">立即检查</string>
+  <string key="update.checking">正在检查…</string>
+  <string key="update.upToDate">Rote 已是最新版本</string>
+  <string key="update.recheck">再次检查</string>
+  <string key="update.version">版本 %1 现已可用</string>
+  <string key="update.download">下载</string>
+  <string key="update.downloading">正在下载…</string>
+  <string key="update.ready">已准备好安装</string>
+  <string key="update.install">安装并重新启动</string>
+  <string key="update.error">检查更新失败</string>
+  <string key="update.retry">重试</string>
+</strings>

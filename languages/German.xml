@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<strings>
+  <!-- App -->
+  <string key="app.name">Rote</string>
+  <string key="app.quit">Rote beenden</string>
+  <string key="general.ok">OK</string>
+  <string key="general.cancel">Abbrechen</string>
+  <string key="general.done">Fertig</string>
+  <string key="general.next">Weiter</string>
+  <string key="general.remove">Entfernen</string>
+
+  <!-- Menu bar popover -->
+  <string key="menu.settings">Einstellungen …</string>
+  <string key="menu.about">Info</string>
+  <string key="popover.thisWeek">Diese Woche</string>
+  <string key="popover.coachingNow">Wird gerade gelernt</string>
+  <string key="popover.learned">Gelernt</string>
+  <string key="popover.empty">Noch nichts. Verwenden Sie Ihren Mac wie gewohnt. Rote meldet sich, nachdem Sie einige Male dasselbe Menüobjekt angeklickt haben.</string>
+  <string key="popover.pause">Hinweise pausieren</string>
+  <string key="popover.pauseHour">1 Stunde pausieren</string>
+  <string key="popover.pauseToday">Bis morgen pausieren</string>
+  <string key="popover.resume">Hinweise fortsetzen</string>
+  <string key="popover.pausedUntil">Pausiert bis %1</string>
+  <string key="popover.updateAvailable">Rote %1 ist verfügbar</string>
+  <string key="popover.recovered">Rote konnte den gesicherten Fortschritt nicht lesen und hat neu begonnen. Die alte Datei wurde als %1 aufbewahrt.</string>
+  <string key="popover.uses">%1×</string>
+  <string key="stats.learned">gelernte Kurzbefehle</string>
+  <string key="stats.menuClicks">Menüklicks mit Kurzbefehl</string>
+  <string key="stats.shortcutsUsed">verwendete Kurzbefehle</string>
+
+  <!-- Nudge HUD -->
+  <string key="nudge.subtitle">%1 · %2 Menüaufrufe diese Woche</string>
+  <string key="nudge.snooze">Später</string>
+  <string key="nudge.snoozeWeek">Eine Woche lang ausblenden</string>
+  <string key="nudge.stopItem">Für dieses Objekt keine Hinweise mehr</string>
+  <string key="nudge.pauseHour">Rote eine Stunde pausieren</string>
+  <string key="nudge.announcement">Kurzbefehl für %1: %2</string>
+
+  <!-- Keycaps -->
+  <string key="keycap.unknown">Unbekannter Kurzbefehl</string>
+
+  <!-- Overlay -->
+  <string key="overlay.count">%1 Kurzbefehle</string>
+  <string key="overlay.partial">Menüs werden noch gelesen …</string>
+  <string key="overlay.releaseHint">Zum Schließen %1 loslassen</string>
+  <string key="overlay.stickyHint">Zum Schließen Esc oder ⌃⌥⌘K drücken</string>
+  <string key="overlay.scrollHint">Für mehr scrollen</string>
+
+  <!-- Permission and onboarding -->
+  <string key="permission.title">Rote benötigt Zugriff auf die Bedienungshilfen</string>
+  <string key="permission.body">Rote liest die Menüs von Apps und erkennt, welche Menüobjekte Sie auswählen. Rote liest niemals, was Sie eingeben, und keine Daten verlassen diesen Mac.</string>
+  <string key="permission.open">Systemeinstellungen öffnen</string>
+  <string key="permission.granted">Zugriff auf die Bedienungshilfen erteilt</string>
+  <string key="permission.waiting">Warten auf Zugriff … Aktivieren Sie Rote unter Datenschutz &amp; Sicherheit › Bedienungshilfen</string>
+  <string key="onboarding.title1">Lernen Sie die Kurzbefehle, die Sie immer wieder auslassen</string>
+  <string key="onboarding.body1">Wenn Sie dasselbe Menüobjekt mehrmals mit der Maus auswählen, zeigt Rote Ihnen die Tasten. Verwenden Sie diese, und Rote bleibt still.</string>
+  <string key="onboarding.title3">Ausprobieren</string>
+  <string key="onboarding.body3">Halten Sie in einer beliebigen App kurz ⌘ gedrückt, um alle ihre Kurzbefehle zu sehen.</string>
+  <string key="onboarding.tried">Sie haben die Übersicht gesehen. Alles ist bereit.</string>
+
+  <!-- Settings -->
+  <string key="settings.title">Einstellungen</string>
+  <string key="settings.general">Allgemein</string>
+  <string key="settings.coaching">Hinweise</string>
+  <string key="settings.overlay">Übersicht</string>
+  <string key="settings.apps">Apps</string>
+  <string key="settings.data">Daten</string>
+  <string key="settings.launchAtLogin">Beim Anmelden öffnen</string>
+  <string key="settings.language">Sprache</string>
+  <string key="settings.language.system">Systemsprache</string>
+  <string key="settings.checkUpdatesOnLaunch">Beim Start nach Updates suchen</string>
+  <string key="settings.updatesHint">„Jetzt suchen“ befindet sich im Bereich „Info“.</string>
+  <string key="settings.nudgeAfter">Hinweis nach %1 Menüaufrufen</string>
+  <string key="settings.itemSpacing">Mindestens %1 Stunden zwischen Hinweisen zum selben Objekt</string>
+  <string key="settings.dailyCap">Höchstens %1 Hinweise pro Tag</string>
+  <string key="settings.hudDuration">Hinweis %1 Sekunden lang anzeigen</string>
+  <string key="settings.sound">Dezenten Ton abspielen</string>
+  <string key="settings.trigger">Übersicht anzeigen</string>
+  <string key="settings.trigger.command">⌘ gedrückt halten</string>
+  <string key="settings.trigger.option">⌥ gedrückt halten</string>
+  <string key="settings.trigger.sticky">⌃⌥⌘K drücken (bleibt geöffnet)</string>
+  <string key="settings.holdDelay">%1 ms lang halten</string>
+  <string key="settings.showNoShortcut">Objekte ohne Kurzbefehl anzeigen</string>
+  <string key="settings.showAppleMenu">Apple-Menü anzeigen</string>
+  <string key="settings.excluded">In diesen Apps nie Hinweise anzeigen</string>
+  <string key="settings.paused">Pausierte Apps</string>
+  <string key="settings.addApp">App hinzufügen</string>
+  <string key="settings.runningApps">Geöffnete Apps</string>
+  <string key="settings.chooseApp">Auswählen …</string>
+  <string key="settings.privacy">Alles bleibt auf diesem Mac. Rote speichert nur Menütitel und Tastenkombinationen, niemals, was Sie eingeben.</string>
+  <string key="settings.muted">Objekte ohne Hinweise</string>
+  <string key="settings.unmute">Wieder Hinweise anzeigen</string>
+  <string key="settings.reset">Statistik zurücksetzen</string>
+  <string key="settings.resetConfirm">Dadurch werden alle Zählungen und Lernfortschritte gelöscht. Die Einstellungen bleiben erhalten.</string>
+  <string key="settings.export">Als JSON exportieren …</string>
+
+  <!-- About -->
+  <string key="about.title">Info</string>
+  <string key="about.tagline">Der Coach für Tastaturkurzbefehle auf Ihrem Mac</string>
+  <string key="about.version">Version</string>
+  <string key="about.version.label">Rote</string>
+  <string key="about.github">GitHub</string>
+  <string key="about.githubProject">Rote auf GitHub</string>
+  <string key="about.githubProject.subtitle">Open Source unter der MIT-Lizenz</string>
+  <string key="about.support">Rote unterstützen</string>
+  <string key="about.sponsor">GitHub Sponsors</string>
+  <string key="about.sponsor.subtitle">Die Weiterentwicklung unterstützen</string>
+  <string key="about.coffee">Buy Me a Coffee</string>
+  <string key="about.coffee.subtitle">Einmaliges Dankeschön</string>
+  <string key="update.title">Updates</string>
+  <string key="update.check">Jetzt suchen</string>
+  <string key="update.checking">Wird gesucht …</string>
+  <string key="update.upToDate">Rote ist auf dem neuesten Stand</string>
+  <string key="update.recheck">Erneut suchen</string>
+  <string key="update.version">Version %1 ist verfügbar</string>
+  <string key="update.download">Laden</string>
+  <string key="update.downloading">Wird geladen …</string>
+  <string key="update.ready">Bereit zur Installation</string>
+  <string key="update.install">Installieren und neu starten</string>
+  <string key="update.error">Suche nach Updates fehlgeschlagen</string>
+  <string key="update.retry">Erneut versuchen</string>
+</strings>

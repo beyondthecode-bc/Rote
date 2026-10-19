@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<strings>
+  <!-- App -->
+  <string key="app.name">Rote</string>
+  <string key="app.quit">Quitter Rote</string>
+  <string key="general.ok">OK</string>
+  <string key="general.cancel">Annuler</string>
+  <string key="general.done">Terminé</string>
+  <string key="general.next">Suivant</string>
+  <string key="general.remove">Supprimer</string>
+
+  <!-- Menu bar popover -->
+  <string key="menu.settings">Réglages…</string>
+  <string key="menu.about">À propos</string>
+  <string key="popover.thisWeek">Cette semaine</string>
+  <string key="popover.coachingNow">En cours d’apprentissage</string>
+  <string key="popover.learned">Appris</string>
+  <string key="popover.empty">Rien pour l’instant. Utilisez votre Mac comme d’habitude. Rote intervient après quelques clics répétés dans les menus.</string>
+  <string key="popover.pause">Suspendre les suggestions</string>
+  <string key="popover.pauseHour">Suspendre pendant 1 heure</string>
+  <string key="popover.pauseToday">Suspendre jusqu’à demain</string>
+  <string key="popover.resume">Reprendre les suggestions</string>
+  <string key="popover.pausedUntil">En pause jusqu’à %1</string>
+  <string key="popover.updateAvailable">Rote %1 est disponible</string>
+  <string key="popover.recovered">Rote n’a pas pu lire sa progression enregistrée et est reparti de zéro. L’ancien fichier a été conservé sous le nom %1.</string>
+  <string key="popover.uses">%1×</string>
+  <string key="stats.learned">raccourcis appris</string>
+  <string key="stats.menuClicks">clics de menu ayant un raccourci</string>
+  <string key="stats.shortcutsUsed">raccourcis utilisés</string>
+
+  <!-- Nudge HUD -->
+  <string key="nudge.subtitle">%1 · %2 utilisations du menu cette semaine</string>
+  <string key="nudge.snooze">Reporter</string>
+  <string key="nudge.snoozeWeek">Reporter d’une semaine</string>
+  <string key="nudge.stopItem">Ne plus suggérer cet élément</string>
+  <string key="nudge.pauseHour">Suspendre Rote pendant une heure</string>
+  <string key="nudge.announcement">Raccourci pour %1 : %2</string>
+
+  <!-- Keycaps -->
+  <string key="keycap.unknown">Raccourci inconnu</string>
+
+  <!-- Overlay -->
+  <string key="overlay.count">%1 raccourcis</string>
+  <string key="overlay.partial">Lecture des menus en cours…</string>
+  <string key="overlay.releaseHint">Relâchez %1 pour fermer</string>
+  <string key="overlay.stickyHint">Appuyez sur Esc ou ⌃⌥⌘K pour fermer</string>
+  <string key="overlay.scrollHint">Faites défiler pour en voir plus</string>
+
+  <!-- Permission and onboarding -->
+  <string key="permission.title">Rote a besoin de l’accès Accessibilité</string>
+  <string key="permission.body">Rote lit les menus des apps et repère les éléments de menu que vous choisissez. Il ne lit jamais ce que vous saisissez, et rien ne quitte ce Mac.</string>
+  <string key="permission.open">Ouvrir Réglages Système</string>
+  <string key="permission.granted">Accès Accessibilité autorisé</string>
+  <string key="permission.waiting">En attente de l’accès… activez Rote dans Confidentialité et sécurité › Accessibilité</string>
+  <string key="onboarding.title1">Apprenez les raccourcis que vous négligez sans cesse</string>
+  <string key="onboarding.body1">Lorsque vous choisissez plusieurs fois le même élément de menu avec la souris, Rote vous montre les touches. Utilisez-les, et il se fait discret.</string>
+  <string key="onboarding.title3">Essayez</string>
+  <string key="onboarding.body3">Maintenez la touche ⌘ enfoncée un instant dans n’importe quelle app pour voir tous ses raccourcis.</string>
+  <string key="onboarding.tried">Vous avez vu la vue d’ensemble. Tout est prêt.</string>
+
+  <!-- Settings -->
+  <string key="settings.title">Réglages</string>
+  <string key="settings.general">Général</string>
+  <string key="settings.coaching">Suggestions</string>
+  <string key="settings.overlay">Vue d’ensemble</string>
+  <string key="settings.apps">Apps</string>
+  <string key="settings.data">Données</string>
+  <string key="settings.launchAtLogin">Ouvrir à l’ouverture de session</string>
+  <string key="settings.language">Langue</string>
+  <string key="settings.language.system">Langue du système</string>
+  <string key="settings.checkUpdatesOnLaunch">Rechercher les mises à jour au lancement</string>
+  <string key="settings.updatesHint">Le bouton « Vérifier maintenant » se trouve dans l’onglet « À propos ».</string>
+  <string key="settings.nudgeAfter">Suggérer après %1 utilisations du menu</string>
+  <string key="settings.itemSpacing">Au moins %1 heures entre deux suggestions pour un même élément</string>
+  <string key="settings.dailyCap">Au plus %1 suggestions par jour</string>
+  <string key="settings.hudDuration">Afficher la suggestion pendant %1 secondes</string>
+  <string key="settings.sound">Émettre un son discret</string>
+  <string key="settings.trigger">Afficher la vue d’ensemble</string>
+  <string key="settings.trigger.command">En maintenant ⌘</string>
+  <string key="settings.trigger.option">En maintenant ⌥</string>
+  <string key="settings.trigger.sticky">En appuyant sur ⌃⌥⌘K (reste ouverte)</string>
+  <string key="settings.holdDelay">Maintenir pendant %1 ms</string>
+  <string key="settings.showNoShortcut">Afficher les éléments sans raccourci</string>
+  <string key="settings.showAppleMenu">Afficher le menu Pomme</string>
+  <string key="settings.excluded">Aucune suggestion dans ces apps</string>
+  <string key="settings.paused">Apps en pause</string>
+  <string key="settings.addApp">Ajouter une app</string>
+  <string key="settings.runningApps">Apps ouvertes</string>
+  <string key="settings.chooseApp">Choisir…</string>
+  <string key="settings.privacy">Tout reste sur ce Mac. Rote ne conserve que les titres de menu et les équivalents clavier, jamais ce que vous saisissez.</string>
+  <string key="settings.muted">Éléments sans suggestions</string>
+  <string key="settings.unmute">Suggérer à nouveau</string>
+  <string key="settings.reset">Réinitialiser les statistiques</string>
+  <string key="settings.resetConfirm">Tous les compteurs et toutes les leçons seront supprimés. Les réglages sont conservés.</string>
+  <string key="settings.export">Exporter en JSON…</string>
+
+  <!-- About -->
+  <string key="about.title">À propos</string>
+  <string key="about.tagline">Le coach des raccourcis clavier pour votre Mac</string>
+  <string key="about.version">Version</string>
+  <string key="about.version.label">Rote</string>
+  <string key="about.github">GitHub</string>
+  <string key="about.githubProject">Rote sur GitHub</string>
+  <string key="about.githubProject.subtitle">Open source sous licence MIT</string>
+  <string key="about.support">Soutenir Rote</string>
+  <string key="about.sponsor">GitHub Sponsors</string>
+  <string key="about.sponsor.subtitle">Soutenir le développement continu</string>
+  <string key="about.coffee">Buy Me a Coffee</string>
+  <string key="about.coffee.subtitle">Un remerciement ponctuel</string>
+  <string key="update.title">Mises à jour</string>
+  <string key="update.check">Vérifier maintenant</string>
+  <string key="update.checking">Vérification…</string>
+  <string key="update.upToDate">Rote est à jour</string>
+  <string key="update.recheck">Vérifier à nouveau</string>
+  <string key="update.version">La version %1 est disponible</string>
+  <string key="update.download">Télécharger</string>
+  <string key="update.downloading">Téléchargement…</string>
+  <string key="update.ready">Prêt pour l’installation</string>
+  <string key="update.install">Installer et relancer</string>
+  <string key="update.error">Échec de la recherche de mises à jour</string>
+  <string key="update.retry">Réessayer</string>
+</strings>

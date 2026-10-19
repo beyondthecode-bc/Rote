@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<strings>
+  <!-- App -->
+  <string key="app.name">Rote</string>
+  <string key="app.quit">Salir de Rote</string>
+  <string key="general.ok">Aceptar</string>
+  <string key="general.cancel">Cancelar</string>
+  <string key="general.done">OK</string>
+  <string key="general.next">Siguiente</string>
+  <string key="general.remove">Eliminar</string>
+
+  <!-- Menu bar popover -->
+  <string key="menu.settings">Ajustes…</string>
+  <string key="menu.about">Acerca de</string>
+  <string key="popover.thisWeek">Esta semana</string>
+  <string key="popover.coachingNow">Aprendiendo ahora</string>
+  <string key="popover.learned">Aprendidas</string>
+  <string key="popover.empty">Todavía nada. Use su Mac con normalidad. Rote le avisará tras unos cuantos clics repetidos en los menús.</string>
+  <string key="popover.pause">Pausar las sugerencias</string>
+  <string key="popover.pauseHour">Pausar durante 1 hora</string>
+  <string key="popover.pauseToday">Pausar hasta mañana</string>
+  <string key="popover.resume">Reanudar las sugerencias</string>
+  <string key="popover.pausedUntil">En pausa hasta las %1</string>
+  <string key="popover.updateAvailable">Rote %1 está disponible</string>
+  <string key="popover.recovered">Rote no ha podido leer el progreso guardado y ha empezado de cero. El archivo anterior se ha conservado como %1.</string>
+  <string key="popover.uses">%1×</string>
+  <string key="stats.learned">funciones rápidas aprendidas</string>
+  <string key="stats.menuClicks">clics en menús que tenían función rápida</string>
+  <string key="stats.shortcutsUsed">funciones rápidas usadas</string>
+
+  <!-- Nudge HUD -->
+  <string key="nudge.subtitle">%1 · %2 usos del menú esta semana</string>
+  <string key="nudge.snooze">Posponer</string>
+  <string key="nudge.snoozeWeek">Posponer una semana</string>
+  <string key="nudge.stopItem">Dejar de sugerir este ítem</string>
+  <string key="nudge.pauseHour">Pausar Rote durante una hora</string>
+  <string key="nudge.announcement">Función rápida para %1: %2</string>
+
+  <!-- Keycaps -->
+  <string key="keycap.unknown">Función rápida desconocida</string>
+
+  <!-- Overlay -->
+  <string key="overlay.count">%1 funciones rápidas</string>
+  <string key="overlay.partial">Todavía leyendo los menús…</string>
+  <string key="overlay.releaseHint">Suelte %1 para cerrar</string>
+  <string key="overlay.stickyHint">Pulse Esc o ⌃⌥⌘K para cerrar</string>
+  <string key="overlay.scrollHint">Desplácese para ver más</string>
+
+  <!-- Permission and onboarding -->
+  <string key="permission.title">Rote necesita acceso a Accesibilidad</string>
+  <string key="permission.body">Rote lee los menús de las apps y detecta qué ítems de menú elige. Nunca lee lo que escribe y nada sale de este Mac.</string>
+  <string key="permission.open">Abrir Ajustes del Sistema</string>
+  <string key="permission.granted">Acceso a Accesibilidad concedido</string>
+  <string key="permission.waiting">Esperando acceso… active Rote en Privacidad y seguridad › Accesibilidad</string>
+  <string key="onboarding.title1">Aprenda las funciones rápidas que siempre pasa por alto</string>
+  <string key="onboarding.body1">Cuando elige el mismo ítem de menú con el ratón varias veces, Rote le muestra las teclas. Úselas y dejará de avisarle.</string>
+  <string key="onboarding.title3">Pruébelo</string>
+  <string key="onboarding.body3">Mantenga pulsada la tecla ⌘ un momento en cualquier app para ver todas sus funciones rápidas.</string>
+  <string key="onboarding.tried">Ya ha visto la vista general. Todo listo.</string>
+
+  <!-- Settings -->
+  <string key="settings.title">Ajustes</string>
+  <string key="settings.general">General</string>
+  <string key="settings.coaching">Sugerencias</string>
+  <string key="settings.overlay">Vista general</string>
+  <string key="settings.apps">Apps</string>
+  <string key="settings.data">Datos</string>
+  <string key="settings.launchAtLogin">Abrir al iniciar sesión</string>
+  <string key="settings.language">Idioma</string>
+  <string key="settings.language.system">Idioma del sistema</string>
+  <string key="settings.checkUpdatesOnLaunch">Buscar actualizaciones al abrir</string>
+  <string key="settings.updatesHint">“Comprobar ahora” está en la pestaña “Acerca de”.</string>
+  <string key="settings.nudgeAfter">Sugerir tras %1 usos del menú</string>
+  <string key="settings.itemSpacing">Al menos %1 horas entre sugerencias del mismo ítem</string>
+  <string key="settings.dailyCap">Como máximo %1 sugerencias al día</string>
+  <string key="settings.hudDuration">Mostrar la sugerencia durante %1 segundos</string>
+  <string key="settings.sound">Reproducir un sonido sutil</string>
+  <string key="settings.trigger">Mostrar la vista general</string>
+  <string key="settings.trigger.command">Manteniendo pulsada la tecla ⌘</string>
+  <string key="settings.trigger.option">Manteniendo pulsada la tecla ⌥</string>
+  <string key="settings.trigger.sticky">Pulsando ⌃⌥⌘K (permanece abierta)</string>
+  <string key="settings.holdDelay">Mantener durante %1 ms</string>
+  <string key="settings.showNoShortcut">Mostrar ítems sin función rápida</string>
+  <string key="settings.showAppleMenu">Mostrar el menú Apple</string>
+  <string key="settings.excluded">No sugerir nunca en estas apps</string>
+  <string key="settings.paused">Apps en pausa</string>
+  <string key="settings.addApp">Añadir app</string>
+  <string key="settings.runningApps">Apps abiertas</string>
+  <string key="settings.chooseApp">Seleccionar…</string>
+  <string key="settings.privacy">Todo se queda en este Mac. Rote solo guarda los títulos de los menús y sus equivalentes de teclado, nunca lo que escribe.</string>
+  <string key="settings.muted">Ítems que ya no se sugieren</string>
+  <string key="settings.unmute">Volver a sugerir</string>
+  <string key="settings.reset">Restablecer estadísticas</string>
+  <string key="settings.resetConfirm">Se eliminarán todos los recuentos y lecciones. Los ajustes se conservan.</string>
+  <string key="settings.export">Exportar JSON…</string>
+
+  <!-- About -->
+  <string key="about.title">Acerca de</string>
+  <string key="about.tagline">El entrenador de funciones rápidas de teclado para su Mac</string>
+  <string key="about.version">Versión</string>
+  <string key="about.version.label">Rote</string>
+  <string key="about.github">GitHub</string>
+  <string key="about.githubProject">Rote en GitHub</string>
+  <string key="about.githubProject.subtitle">Código abierto con licencia MIT</string>
+  <string key="about.support">Apoyar Rote</string>
+  <string key="about.sponsor">GitHub Sponsors</string>
+  <string key="about.sponsor.subtitle">Apoyar el desarrollo continuo</string>
+  <string key="about.coffee">Buy Me a Coffee</string>
+  <string key="about.coffee.subtitle">Un agradecimiento puntual</string>
+  <string key="update.title">Actualizaciones</string>
+  <string key="update.check">Comprobar ahora</string>
+  <string key="update.checking">Comprobando…</string>
+  <string key="update.upToDate">Rote está actualizado</string>
+  <string key="update.recheck">Volver a comprobar</string>
+  <string key="update.version">La versión %1 está disponible</string>
+  <string key="update.download">Descargar</string>
+  <string key="update.downloading">Descargando…</string>
+  <string key="update.ready">Lista para instalar</string>
+  <string key="update.install">Instalar y reabrir</string>
+  <string key="update.error">No se han podido buscar actualizaciones</string>
+  <string key="update.retry">Reintentar</string>
+</strings>

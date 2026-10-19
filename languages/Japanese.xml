@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<strings>
+  <!-- App -->
+  <string key="app.name">Rote</string>
+  <string key="app.quit">Roteを終了</string>
+  <string key="general.ok">OK</string>
+  <string key="general.cancel">キャンセル</string>
+  <string key="general.done">完了</string>
+  <string key="general.next">次へ</string>
+  <string key="general.remove">削除</string>
+
+  <!-- Menu bar popover -->
+  <string key="menu.settings">設定…</string>
+  <string key="menu.about">情報</string>
+  <string key="popover.thisWeek">今週</string>
+  <string key="popover.coachingNow">練習中</string>
+  <string key="popover.learned">習得済み</string>
+  <string key="popover.empty">まだ何もありません。いつも通りMacを使ってください。同じメニューを何度かクリックすると、Roteがお知らせします。</string>
+  <string key="popover.pause">ヒントを一時停止</string>
+  <string key="popover.pauseHour">1時間一時停止</string>
+  <string key="popover.pauseToday">明日まで一時停止</string>
+  <string key="popover.resume">ヒントを再開</string>
+  <string key="popover.pausedUntil">%1まで一時停止中</string>
+  <string key="popover.updateAvailable">Rote %1を利用できます</string>
+  <string key="popover.recovered">Roteは保存された進捗を読み込めなかったため、最初からやり直しました。古いファイルは%1として残してあります。</string>
+  <string key="popover.uses">%1×</string>
+  <string key="stats.learned">習得したショートカット</string>
+  <string key="stats.menuClicks">ショートカットがあるメニューのクリック</string>
+  <string key="stats.shortcutsUsed">使用したショートカット</string>
+
+  <!-- Nudge HUD -->
+  <string key="nudge.subtitle">%1 · 今週メニューから%2回使用</string>
+  <string key="nudge.snooze">スヌーズ</string>
+  <string key="nudge.snoozeWeek">1週間スヌーズ</string>
+  <string key="nudge.stopItem">この項目のヒントを停止</string>
+  <string key="nudge.pauseHour">Roteを1時間一時停止</string>
+  <string key="nudge.announcement">%1のショートカット: %2</string>
+
+  <!-- Keycaps -->
+  <string key="keycap.unknown">不明なショートカット</string>
+
+  <!-- Overlay -->
+  <string key="overlay.count">ショートカット%1件</string>
+  <string key="overlay.partial">メニューを読み込み中…</string>
+  <string key="overlay.releaseHint">%1を離すと閉じます</string>
+  <string key="overlay.stickyHint">Escまたは⌃⌥⌘Kを押すと閉じます</string>
+  <string key="overlay.scrollHint">スクロールして続きを表示</string>
+
+  <!-- Permission and onboarding -->
+  <string key="permission.title">Roteにはアクセシビリティへのアクセスが必要です</string>
+  <string key="permission.body">Roteはアプリのメニューを読み取り、どのメニュー項目が選択されたかを確認します。入力した内容を読み取ることはなく、データがこのMacの外に出ることもありません。</string>
+  <string key="permission.open">システム設定を開く</string>
+  <string key="permission.granted">アクセシビリティへのアクセスが許可されました</string>
+  <string key="permission.waiting">アクセスを待っています…「プライバシーとセキュリティ」›「アクセシビリティ」でRoteをオンにしてください</string>
+  <string key="onboarding.title1">いつも使い忘れるショートカットを覚えましょう</string>
+  <string key="onboarding.body1">同じメニュー項目をマウスで何度か選ぶと、Roteがキーを表示します。そのキーを使えば、表示されなくなります。</string>
+  <string key="onboarding.title3">試してみましょう</string>
+  <string key="onboarding.body3">どのアプリでも⌘を少し押し続けると、そのアプリのすべてのショートカットが表示されます。</string>
+  <string key="onboarding.tried">オーバーレイを確認しました。準備完了です。</string>
+
+  <!-- Settings -->
+  <string key="settings.title">設定</string>
+  <string key="settings.general">一般</string>
+  <string key="settings.coaching">ヒント</string>
+  <string key="settings.overlay">オーバーレイ</string>
+  <string key="settings.apps">アプリ</string>
+  <string key="settings.data">データ</string>
+  <string key="settings.launchAtLogin">ログイン時に開く</string>
+  <string key="settings.language">言語</string>
+  <string key="settings.language.system">システムのデフォルト</string>
+  <string key="settings.checkUpdatesOnLaunch">起動時にアップデートを確認</string>
+  <string key="settings.updatesHint">「今すぐ確認」は「情報」タブにあります。</string>
+  <string key="settings.nudgeAfter">メニューを%1回使用したらヒントを表示</string>
+  <string key="settings.itemSpacing">同じ項目のヒントは%1時間以上空ける</string>
+  <string key="settings.dailyCap">ヒントは1日最大%1回</string>
+  <string key="settings.hudDuration">ヒントを%1秒間表示</string>
+  <string key="settings.sound">控えめなサウンドを再生</string>
+  <string key="settings.trigger">オーバーレイの表示方法</string>
+  <string key="settings.trigger.command">⌘を押し続ける</string>
+  <string key="settings.trigger.option">⌥を押し続ける</string>
+  <string key="settings.trigger.sticky">⌃⌥⌘Kを押す（開いたまま）</string>
+  <string key="settings.holdDelay">%1ミリ秒押し続ける</string>
+  <string key="settings.showNoShortcut">ショートカットのない項目を表示</string>
+  <string key="settings.showAppleMenu">アップルメニューを表示</string>
+  <string key="settings.excluded">これらのアプリではヒントを表示しない</string>
+  <string key="settings.paused">一時停止中のアプリ</string>
+  <string key="settings.addApp">アプリを追加</string>
+  <string key="settings.runningApps">起動中のアプリ</string>
+  <string key="settings.chooseApp">選択…</string>
+  <string key="settings.privacy">すべてこのMac内にとどまります。Roteが保持するのはメニュー名とキーボードショートカットだけで、入力した内容は保持しません。</string>
+  <string key="settings.muted">ヒントを停止した項目</string>
+  <string key="settings.unmute">ヒントを再表示</string>
+  <string key="settings.reset">統計をリセット</string>
+  <string key="settings.resetConfirm">すべてのカウントと学習記録が削除されます。設定はそのまま残ります。</string>
+  <string key="settings.export">JSONを書き出す…</string>
+
+  <!-- About -->
+  <string key="about.title">情報</string>
+  <string key="about.tagline">Mac用キーボードショートカットのコーチ</string>
+  <string key="about.version">バージョン</string>
+  <string key="about.version.label">Rote</string>
+  <string key="about.github">GitHub</string>
+  <string key="about.githubProject">GitHubのRote</string>
+  <string key="about.githubProject.subtitle">MITライセンスのオープンソース</string>
+  <string key="about.support">Roteを支援</string>
+  <string key="about.sponsor">GitHub Sponsors</string>
+  <string key="about.sponsor.subtitle">継続的な開発を支援</string>
+  <string key="about.coffee">Buy Me a Coffee</string>
+  <string key="about.coffee.subtitle">1回限りのお礼</string>
+  <string key="update.title">アップデート</string>
+  <string key="update.check">今すぐ確認</string>
+  <string key="update.checking">確認中…</string>
+  <string key="update.upToDate">Roteは最新です</string>
+  <string key="update.recheck">再確認</string>
+  <string key="update.version">バージョン%1を利用できます</string>
+  <string key="update.download">ダウンロード</string>
+  <string key="update.downloading">ダウンロード中…</string>
+  <string key="update.ready">インストールの準備ができました</string>
+  <string key="update.install">インストールして再起動</string>
+  <string key="update.error">アップデートを確認できませんでした</string>
+  <string key="update.retry">再試行</string>
+</strings>
