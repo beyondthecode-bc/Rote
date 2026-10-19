@@ -22,14 +22,11 @@
   <string key="popover.pauseToday">Pausar hasta mañana</string>
   <string key="popover.pauseUntilResumed">Pausar hasta reanudar</string>
   <string key="popover.resume">Reanudar las sugerencias</string>
-  <string key="popover.pausedUntil">En pausa hasta las %1</string>
+  <string key="popover.pausedUntil">En pausa hasta: %1</string>
   <string key="popover.pausedIndefinitely">En pausa</string>
   <string key="popover.updateAvailable">Rote %1 está disponible</string>
   <string key="popover.recovered">Rote no ha podido leer el progreso guardado y ha empezado de cero. El archivo anterior se ha conservado como %1.</string>
   <string key="popover.uses">%1×</string>
-  <string key="stats.learned">funciones rápidas aprendidas</string>
-  <string key="stats.menuClicks">clics en menús que tenían función rápida</string>
-  <string key="stats.shortcutsUsed">funciones rápidas usadas</string>
 
   <!-- Nudge HUD -->
   <string key="nudge.subtitle">%1 · %2 usos del menú esta semana</string>
@@ -43,7 +40,6 @@
   <string key="keycap.unknown">Función rápida desconocida</string>
 
   <!-- Overlay -->
-  <string key="overlay.count">%1 funciones rápidas</string>
   <string key="overlay.partial">Todavía leyendo los menús…</string>
   <string key="overlay.releaseHint">Suelte %1 para cerrar</string>
   <string key="overlay.stickyHint">Pulse Esc o ⌃⌥⌘K para cerrar</string>
@@ -63,6 +59,56 @@
   <string key="onboarding.tried">Ya ha visto la vista general. Todo listo.</string>
   <string key="onboarding.menubarHint">Si no ve el icono con forma de tecla en la barra de menús, es posible que macOS lo haya ocultado junto con otros ítems de la barra de menús. Haga clic en el botón con dos flechas que apuntan a la izquierda («Mostrar los ítems ocultos de la barra de menús»), situado en el extremo izquierdo de los iconos del lado derecho de la barra de menús, para mostrarlo.</string>
 
+  <!-- Spoken names and plurals -->
+  <string key="spoken.control">Control</string>
+  <string key="spoken.option">Opción</string>
+  <string key="spoken.shift">Mayúsculas</string>
+  <string key="spoken.command">Comando</string>
+  <string key="spoken.key.escape">Escape</string>
+  <string key="spoken.key.tab">Tabulador</string>
+  <string key="spoken.key.space">Barra espaciadora</string>
+  <string key="spoken.key.delete">Suprimir</string>
+  <string key="spoken.key.forwardDelete">Suprimir hacia delante</string>
+  <string key="spoken.key.returnKey">Retorno</string>
+  <string key="spoken.key.enter">Intro</string>
+  <string key="spoken.key.upArrow">Flecha arriba</string>
+  <string key="spoken.key.downArrow">Flecha abajo</string>
+  <string key="spoken.key.leftArrow">Flecha izquierda</string>
+  <string key="spoken.key.rightArrow">Flecha derecha</string>
+  <string key="spoken.key.pageUp">Página anterior</string>
+  <string key="spoken.key.pageDown">Página siguiente</string>
+  <string key="spoken.key.home">Inicio</string>
+  <string key="spoken.key.end">Fin</string>
+  <string key="spoken.key.help">Ayuda</string>
+  <string key="spoken.key.clear">Borrar</string>
+  <string key="nudge.subtitle.one">%1 · %2 uso del menú esta semana</string>
+  <string key="nudge.subtitle.other">%1 · %2 usos del menú esta semana</string>
+  <string key="overlay.count.one">%1 función rápida</string>
+  <string key="overlay.count.other">%1 funciones rápidas</string>
+  <string key="stats.learned.one">función rápida aprendida</string>
+  <string key="stats.learned.other">funciones rápidas aprendidas</string>
+  <string key="stats.menuClicks.one">clic en un menú que tenía función rápida</string>
+  <string key="stats.menuClicks.other">clics en menús que tenían función rápida</string>
+  <string key="stats.shortcutsUsed.one">función rápida usada</string>
+  <string key="stats.shortcutsUsed.other">funciones rápidas usadas</string>
+  <string key="settings.nudgeAfter.one">Sugerir tras %1 uso del menú</string>
+  <string key="settings.nudgeAfter.other">Sugerir tras %1 usos del menú</string>
+  <string key="settings.itemSpacing.one">Al menos %1 hora entre sugerencias del mismo ítem</string>
+  <string key="settings.itemSpacing.other">Al menos %1 horas entre sugerencias del mismo ítem</string>
+  <string key="settings.dailyCap.one">Como máximo %1 sugerencia al día</string>
+  <string key="settings.dailyCap.other">Como máximo %1 sugerencias al día</string>
+  <string key="general.none">Ninguno</string>
+  <string key="settings.exportFilename">rote-datos</string>
+  <string key="update.error.server">No se ha podido conectar con GitHub. Compruebe su conexión a Internet.</string>
+  <string key="update.error.invalidResponse">Respuesta inesperada de GitHub.</string>
+  <string key="update.error.noDownload">No se ha encontrado ninguna descarga en la última versión.</string>
+  <string key="update.error.download">No se ha podido completar la descarga.</string>
+  <string key="update.error.extract">No se ha podido extraer el archivo de la actualización.</string>
+  <string key="update.error.noApp">No se ha encontrado ninguna app en el archivo descargado.</string>
+  <string key="update.error.install">No se ha podido instalar la actualización.</string>
+  <string key="update.error.installDetail">No se ha podido instalar la actualización. %1</string>
+  <string key="update.error.installCancelled">Se ha cancelado la instalación.</string>
+
   <!-- Settings -->
   <string key="settings.title">Ajustes</string>
   <string key="settings.general">General</string>
@@ -75,9 +121,6 @@
   <string key="settings.language.system">Idioma del sistema</string>
   <string key="settings.checkUpdatesOnLaunch">Buscar actualizaciones al abrir</string>
   <string key="settings.updatesHint">“Comprobar ahora” está en la pestaña “Acerca de”.</string>
-  <string key="settings.nudgeAfter">Sugerir tras %1 usos del menú</string>
-  <string key="settings.itemSpacing">Al menos %1 horas entre sugerencias del mismo ítem</string>
-  <string key="settings.dailyCap">Como máximo %1 sugerencias al día</string>
   <string key="settings.hudDuration">Mostrar la sugerencia durante %1 segundos</string>
   <string key="settings.sound">Reproducir un sonido sutil</string>
   <string key="settings.trigger">Mostrar la vista general</string>

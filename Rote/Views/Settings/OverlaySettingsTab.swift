@@ -16,7 +16,7 @@ struct OverlaySettingsTab: View {
                 Text(l("settings.trigger.sticky")).tag(AppSettings.OverlayTrigger.stickyHotkey)
             }
             Slider(value: holdDelay, in: Double(AppSettings.holdDelayMsRange.lowerBound)...Double(AppSettings.holdDelayMsRange.upperBound), step: 50) {
-                Text(l("settings.holdDelay", "\(settings.holdDelayMs)"))
+                Text(l("settings.holdDelay", number(settings.holdDelayMs)))
             }
             .disabled(settings.overlayTrigger == .stickyHotkey)
             Toggle(l("settings.showNoShortcut"), isOn: $settings.showItemsWithoutShortcuts)

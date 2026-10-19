@@ -32,7 +32,7 @@ struct NudgeView: View {
                         .resizable()
                         .frame(width: 16, height: 16)
                 }
-                Text(l("nudge.subtitle", model.appName, "\(model.record.menuUses.count)"))
+                Text(l("nudge.subtitle", count: model.record.menuUses.count, model.appName, number(model.record.menuUses.count)))
                     .font(.system(size: 11))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)

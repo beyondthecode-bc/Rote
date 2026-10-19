@@ -27,9 +27,6 @@
   <string key="popover.updateAvailable">Rote %1 is available</string>
   <string key="popover.recovered">Rote could not read its saved progress and started fresh. The old file was kept as %1.</string>
   <string key="popover.uses">%1×</string>
-  <string key="stats.learned">shortcuts learned</string>
-  <string key="stats.menuClicks">menu clicks that had a shortcut</string>
-  <string key="stats.shortcutsUsed">shortcuts used</string>
 
   <!-- Nudge HUD -->
   <string key="nudge.subtitle">%1 · %2 menu uses this week</string>
@@ -43,7 +40,6 @@
   <string key="keycap.unknown">Unknown shortcut</string>
 
   <!-- Overlay -->
-  <string key="overlay.count">%1 shortcuts</string>
   <string key="overlay.partial">Still reading menus…</string>
   <string key="overlay.releaseHint">Release %1 to close</string>
   <string key="overlay.stickyHint">Press Esc or ⌃⌥⌘K to close</string>
@@ -63,6 +59,56 @@
   <string key="onboarding.tried">You have seen the overlay. You are all set.</string>
   <string key="onboarding.menubarHint">If you don’t see the keycap icon in the menu bar, macOS may have hidden it with other menu bar items. Click the button with two left-pointing arrows (“Show Hidden Menu Bar Items”) at the left end of the icons on the right side of the menu bar to reveal it.</string>
 
+  <!-- Spoken names and plurals -->
+  <string key="spoken.control">Control</string>
+  <string key="spoken.option">Option</string>
+  <string key="spoken.shift">Shift</string>
+  <string key="spoken.command">Command</string>
+  <string key="spoken.key.escape">Escape</string>
+  <string key="spoken.key.tab">Tab</string>
+  <string key="spoken.key.space">Space</string>
+  <string key="spoken.key.delete">Delete</string>
+  <string key="spoken.key.forwardDelete">Forward Delete</string>
+  <string key="spoken.key.returnKey">Return</string>
+  <string key="spoken.key.enter">Enter</string>
+  <string key="spoken.key.upArrow">Up Arrow</string>
+  <string key="spoken.key.downArrow">Down Arrow</string>
+  <string key="spoken.key.leftArrow">Left Arrow</string>
+  <string key="spoken.key.rightArrow">Right Arrow</string>
+  <string key="spoken.key.pageUp">Page Up</string>
+  <string key="spoken.key.pageDown">Page Down</string>
+  <string key="spoken.key.home">Home</string>
+  <string key="spoken.key.end">End</string>
+  <string key="spoken.key.help">Help</string>
+  <string key="spoken.key.clear">Clear</string>
+  <string key="nudge.subtitle.one">%1 · %2 menu use this week</string>
+  <string key="nudge.subtitle.other">%1 · %2 menu uses this week</string>
+  <string key="overlay.count.one">%1 shortcut</string>
+  <string key="overlay.count.other">%1 shortcuts</string>
+  <string key="stats.learned.one">shortcut learned</string>
+  <string key="stats.learned.other">shortcuts learned</string>
+  <string key="stats.menuClicks.one">menu click that had a shortcut</string>
+  <string key="stats.menuClicks.other">menu clicks that had a shortcut</string>
+  <string key="stats.shortcutsUsed.one">shortcut used</string>
+  <string key="stats.shortcutsUsed.other">shortcuts used</string>
+  <string key="settings.nudgeAfter.one">Nudge after %1 menu use</string>
+  <string key="settings.nudgeAfter.other">Nudge after %1 menu uses</string>
+  <string key="settings.itemSpacing.one">At least %1 hour between nudges for the same item</string>
+  <string key="settings.itemSpacing.other">At least %1 hours between nudges for the same item</string>
+  <string key="settings.dailyCap.one">At most %1 nudge per day</string>
+  <string key="settings.dailyCap.other">At most %1 nudges per day</string>
+  <string key="general.none">None</string>
+  <string key="settings.exportFilename">rote-state</string>
+  <string key="update.error.server">Could not reach GitHub. Check your internet connection.</string>
+  <string key="update.error.invalidResponse">Unexpected response from GitHub.</string>
+  <string key="update.error.noDownload">No download found in the latest release.</string>
+  <string key="update.error.download">Download failed.</string>
+  <string key="update.error.extract">Could not extract the update archive.</string>
+  <string key="update.error.noApp">No app found in the downloaded archive.</string>
+  <string key="update.error.install">Could not install the update.</string>
+  <string key="update.error.installDetail">Could not install the update. %1</string>
+  <string key="update.error.installCancelled">The installation was cancelled.</string>
+
   <!-- Settings -->
   <string key="settings.title">Settings</string>
   <string key="settings.general">General</string>
@@ -75,9 +121,6 @@
   <string key="settings.language.system">System default</string>
   <string key="settings.checkUpdatesOnLaunch">Check for updates on launch</string>
   <string key="settings.updatesHint">Check Now lives in the About tab.</string>
-  <string key="settings.nudgeAfter">Nudge after %1 menu uses</string>
-  <string key="settings.itemSpacing">At least %1 hours between nudges for the same item</string>
-  <string key="settings.dailyCap">At most %1 nudges per day</string>
   <string key="settings.hudDuration">Show the nudge for %1 seconds</string>
   <string key="settings.sound">Play a subtle sound</string>
   <string key="settings.trigger">Show the overlay by</string>

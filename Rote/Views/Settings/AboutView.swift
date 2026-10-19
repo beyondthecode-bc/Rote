@@ -12,6 +12,42 @@ enum UpdateCheckState: Equatable {
     case error(String)
 }
 
+/// The About tab's text for a failed update step, in Rote's language. The shared template
+/// checker keeps its English `errorDescription`; each of its cases maps to a key here.
+@MainActor
+enum UpdateErrorMessage {
+    static func text(for error: any Error, localization: LocalizationManager = .shared) -> String {
+        switch error {
+        case let error as GitHubUpdateChecker.UpdateError:
+            return text(for: error, localization: localization)
+        case is URLError:
+            // Offline, timed out or blocked: URLSession's own text would be in the system's language.
+            return localization.string(for: "update.error.server")
+        default:
+            return error.localizedDescription
+        }
+    }
+
+    static func text(for error: GitHubUpdateChecker.UpdateError, localization: LocalizationManager = .shared) -> String {
+        switch error {
+        case .serverError: return localization.string(for: "update.error.server")
+        case .invalidResponse: return localization.string(for: "update.error.invalidResponse")
+        case .noDownloadAsset: return localization.string(for: "update.error.noDownload")
+        case .downloadFailed: return localization.string(for: "update.error.download")
+        case .extractFailed: return localization.string(for: "update.error.extract")
+        case .noAppInArchive: return localization.string(for: "update.error.noApp")
+        case .installFailed(let reason):
+            // The checker's own reasons are English literals; anything else is the system's
+            // message from the administrator prompt or the copy, shown after Rote's sentence.
+            switch reason {
+            case "Authorization cancelled": return localization.string(for: "update.error.installCancelled")
+            case "Could not create installer script": return localization.string(for: "update.error.install")
+            default: return localization.string(for: "update.error.installDetail", [reason])
+            }
+        }
+    }
+}
+
 struct AboutView: View {
     @Environment(AppContainer.self) private var container
     @State private var updateState: UpdateCheckState = .idle
@@ -182,7 +218,7 @@ struct AboutView: View {
                     updateState = .available(version: version, downloadURL: url)
                 }
             } catch {
-                updateState = .error(error.localizedDescription)
+                updateState = .error(UpdateErrorMessage.text(for: error))
             }
         }
     }
@@ -198,7 +234,7 @@ struct AboutView: View {
                 let path = try await GitHubUpdateChecker.downloadUpdate(from: url) { @Sendable _ in }
                 updateState = .downloaded(path: path)
             } catch {
-                updateState = .error(error.localizedDescription)
+                updateState = .error(UpdateErrorMessage.text(for: error))
             }
         }
     }
@@ -210,7 +246,7 @@ struct AboutView: View {
             do {
                 try await GitHubUpdateChecker.installUpdate(fromZip: path)
             } catch {
-                updateState = .error(error.localizedDescription)
+                updateState = .error(UpdateErrorMessage.text(for: error))
             }
         }
     }

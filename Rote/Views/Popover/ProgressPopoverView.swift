@@ -106,9 +106,9 @@ struct ProgressPopoverView: View {
 
     private func tiles(_ stats: WeeklyStats) -> some View {
         HStack(spacing: 8) {
-            StatTileView(value: stats.learned, delta: stats.learnedDelta, label: l("stats.learned"))
-            StatTileView(value: stats.menuClicksWithShortcut, delta: stats.menuClicksDelta, label: l("stats.menuClicks"), lowerIsBetter: true)
-            StatTileView(value: stats.shortcutsUsed, delta: stats.shortcutsUsedDelta, label: l("stats.shortcutsUsed"))
+            StatTileView(value: stats.learned, delta: stats.learnedDelta, label: l("stats.learned", count: stats.learned))
+            StatTileView(value: stats.menuClicksWithShortcut, delta: stats.menuClicksDelta, label: l("stats.menuClicks", count: stats.menuClicksWithShortcut), lowerIsBetter: true)
+            StatTileView(value: stats.shortcutsUsed, delta: stats.shortcutsUsedDelta, label: l("stats.shortcutsUsed", count: stats.shortcutsUsed))
         }
     }
 
@@ -135,12 +135,12 @@ struct ProgressPopoverView: View {
     private func learnedSection(_ records: [ItemRecord], total: Int) -> some View {
         DisclosureGroup(isExpanded: $learnedExpanded) {
             if records.isEmpty {
-                Text("—").foregroundStyle(.secondary).font(.system(size: 11))
+                Text(l("general.none")).foregroundStyle(.secondary).font(.system(size: 11))
             } else {
                 ForEach(records) { LearnedRow(record: $0) }
             }
         } label: {
-            SectionLabel(text: "\(l("popover.learned")) · \(total)")
+            SectionLabel(text: "\(l("popover.learned")) · \(number(total))")
         }
     }
 
