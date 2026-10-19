@@ -32,7 +32,7 @@ enum OnboardingWindow {
         window?.close()
     }
 
-    /// Done, the close button and ⌘W all end the first run: onboarding never comes back on its own
+    /// Done and the close button both end the first run: onboarding never comes back on its own
     /// (spec §7.5). Access still missing shows on the menu bar icon, and the popover offers the permission step.
     private final class CloseObserver: NSObject, NSWindowDelegate {
         private let settings: AppSettings
