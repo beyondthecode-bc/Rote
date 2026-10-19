@@ -21,6 +21,8 @@ final class LocalizationManager {
     @ObservationIgnored private let defaults: UserDefaults
     /// Holds `languages/<Name>.xml`.
     @ObservationIgnored private let bundle: Bundle
+    /// The system's languages, read on every reload while the choice is "system".
+    @ObservationIgnored private let preferredLanguages: () -> [String]
 
     /// "system" or one of `supportedCodes`.
     var languageCode: String {
@@ -30,10 +32,15 @@ final class LocalizationManager {
         }
     }
 
-    /// The app uses `shared`; tests pass their own defaults and string tables.
-    init(defaults: UserDefaults = .standard, bundle: Bundle = .main) {
+    /// The app uses `shared`; tests pass their own defaults, string tables and system languages.
+    init(
+        defaults: UserDefaults = .standard,
+        bundle: Bundle = .main,
+        preferredLanguages: @escaping () -> [String] = { Locale.preferredLanguages }
+    ) {
         self.defaults = defaults
         self.bundle = bundle
+        self.preferredLanguages = preferredLanguages
         languageCode = defaults.string(forKey: Self.defaultsKey) ?? "system"
         fallback = Self.loadXML("English", in: bundle)
         reload()
@@ -63,7 +70,7 @@ final class LocalizationManager {
     }
 
     private func reload() {
-        let code = languageCode == "system" ? Self.systemCode() : languageCode
+        let code = languageCode == "system" ? Self.systemCode(preferred: preferredLanguages()) : languageCode
         strings = Self.loadXML(Self.fileMap[code] ?? "English", in: bundle)
         Logger.ui.info("Loaded \(self.strings.count) strings for \(code, privacy: .public)")
     }

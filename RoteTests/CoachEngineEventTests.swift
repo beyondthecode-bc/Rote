@@ -220,6 +220,27 @@ final class CoachEngineEventTests: XCTestCase {
         await waitUntil { await h.savedState()?.items[self.save.identity]?.phase == .coaching }
     }
 
+    func testAMenuUseIsSavedBeforeAnyNudge() async throws {
+        let h = try await makeHarness()
+        await h.activate(Fixtures.appA, serving: treeA)
+
+        h.menuPick(save)
+        XCTAssertTrue(h.nudges.isEmpty)
+
+        await waitUntil { await h.savedState()?.items[self.save.identity]?.menuUses.count == 1 }
+    }
+
+    func testAShortcutUseIsSavedWithoutANudge() async throws {
+        let h = try await makeHarness()
+        await h.activate(Fixtures.appA, serving: treeA)
+        h.coach(save)
+
+        h.press(pressS)
+        XCTAssertEqual(h.nudges.count, 1, "only the nudge that started coaching")
+
+        await waitUntil { await h.savedState()?.items[self.save.identity]?.shortcutUses.count == 1 }
+    }
+
     func testSnoozeMuteAndUnmuteChangeTheRecordAndAreSaved() async throws {
         let h = try await makeHarness()
         await h.activate(Fixtures.appA, serving: treeA)
@@ -262,6 +283,22 @@ final class CoachEngineEventTests: XCTestCase {
         XCTAssertNil(h.engine.currentTree)
         XCTAssertNil(h.observer.attachedApp)
         XCTAssertFalse(h.engine.isMenuOpen)
+    }
+
+    func testWhileAnUncachedAppIsScannedThePreviousAppsTreeMatchesNoPress() async throws {
+        let h = try await makeHarness()
+        await h.activate(Fixtures.appA, serving: treeA)
+        h.coach(save)
+        await h.scanner.hold()
+
+        h.activate(Fixtures.appB)
+        await waitUntil { await h.scanner.scanCount(Fixtures.appB.bundleID) == 1 }
+        XCTAssertNil(h.engine.currentTree, "A's tree must not serve presses made in B")
+        h.press(pressS)                   // ⌘S in B, mid-scan: not a use of A's File › Save
+        XCTAssertEqual(h.record(save)?.shortcutUses.count, 0)
+
+        await h.scanner.release()
+        await waitUntil { h.engine.currentTree?.bundleID == Fixtures.appB.bundleID }
     }
 
     func testRoteInFrontKeepsThePreviousAppsSheetButStopsObserving() async throws {
@@ -308,6 +345,23 @@ final class CoachEngineEventTests: XCTestCase {
         await settle()
         let scans = await h.scanner.scanCount(Fixtures.appA.bundleID)
         XCTAssertEqual(scans, 1)
+    }
+
+    func testATreeOlderThanAMinuteIsRescannedOnTheNextActivation() async throws {
+        let h = try await makeHarness()
+        let stale = MenuTree(
+            bundleID: Fixtures.appA.bundleID, appName: Fixtures.appA.name, menus: treeA.menus,
+            scannedAt: Date().addingTimeInterval(-61), isPartial: false
+        )
+        await h.activate(Fixtures.appA, serving: stale)
+        await h.activate(Fixtures.appB, serving: Fixtures.tree(Fixtures.appB, []))
+
+        await h.scanner.enqueue(treeA)
+        h.activate(Fixtures.appA)
+        XCTAssertEqual(h.engine.currentTree, stale, "the cached tree serves until the rescan lands")
+        await waitUntil { h.engine.currentTree == self.treeA }
+        let scans = await h.scanner.scanCount(Fixtures.appA.bundleID)
+        XCTAssertEqual(scans, 2)
     }
 
     func testAKnownItemDoesNotRescanButAnUnknownOneMergesAPartialScanOverTheCache() async throws {
@@ -374,8 +428,8 @@ final class CoachEngineEventTests: XCTestCase {
         await h.scanner.release(Fixtures.appB.bundleID)
         await waitUntil { h.engine.currentTree == treeB }
         await h.scanner.release(Fixtures.appA.bundleID)   // A's scan lands while B is in front
-        await waitUntil { await h.scanner.scanCount(Fixtures.appA.bundleID) == 1 }
-        await settle()
+        await waitUntil { await h.scanner.finishedCount(Fixtures.appA.bundleID) == 1 }
+        await settle()                                    // the engine stores it on the main actor
         XCTAssertEqual(h.engine.currentTree, treeB)
 
         h.activate(Fixtures.appA)
@@ -407,5 +461,14 @@ final class CoachEngineEventTests: XCTestCase {
         second = await h.scanner.scanCount(apps[1].bundleID)
         XCTAssertEqual(newest, 1)
         XCTAssertEqual(second, 1)
+
+        // Least recently used, not first scanned: the hit on apps[1] kept it, so apps[2] went.
+        h.activate(apps[1])
+        await settle()
+        second = await h.scanner.scanCount(apps[1].bundleID)
+        XCTAssertEqual(second, 1, "a cache hit counts as a recent use")
+        h.activate(apps[2])
+        await waitUntil { await h.scanner.scanCount(apps[2].bundleID) == 2 }
+        await waitUntil { h.engine.currentTree?.bundleID == apps[2].bundleID }
     }
 }

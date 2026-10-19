@@ -1,3 +1,4 @@
+import AppKit
 import XCTest
 @testable import Rote
 import RoteCore
@@ -95,6 +96,24 @@ final class NudgeControllerTests: XCTestCase {
         show(open, on: controller)
         await waitUntil(timeout: .seconds(1)) { !controller.isShowing }
         XCTAssertEqual(events, ["dismiss", "dismiss"])
+    }
+
+    func testANudgeShownRightAfterADismissalStaysOnScreen() async throws {
+        let earlierPanels = NSApp.windows.compactMap { $0 as? NudgePanel }
+        let controller = makeController()
+        show(save, on: controller)
+        controller.dismiss()
+        show(open, on: controller)        // while the dismissed card is still fading out
+        controller.setHovering(true)
+
+        try await Task.sleep(for: .milliseconds(300))   // past the fade's order-out
+
+        let panels = NSApp.windows.compactMap { $0 as? NudgePanel }.filter { panel in
+            !earlierPanels.contains { $0 === panel }
+        }
+        XCTAssertEqual(panels.count, 1)
+        XCTAssertTrue(controller.isShowing)
+        XCTAssertTrue(panels.first?.isVisible ?? false, "the fade of the dismissed card hid the one on screen")
     }
 
     func testLeavingAfterTheNudgeWentSchedulesNothing() async throws {

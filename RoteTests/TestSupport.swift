@@ -67,10 +67,12 @@ func settle() async {
     try? await Task.sleep(for: .milliseconds(30))
 }
 
-/// Serves queued trees per app and records every scan. `hold()` parks scans until they are released.
+/// Serves queued trees per app and records every scan as it starts (`scans`) and as it returns
+/// (`finished`). `hold()` parks scans until they are released.
 actor FakeScanner: MenuScanning {
     private var queued: [String: [MenuTree]] = [:]
     private(set) var scans: [String] = []
+    private(set) var finished: [String] = []
     private var held = false
     private var parked: [(bundleID: String, continuation: CheckedContinuation<Void, Never>)] = []
 
@@ -99,6 +101,10 @@ actor FakeScanner: MenuScanning {
         scans.filter { $0 == bundleID }.count
     }
 
+    func finishedCount(_ bundleID: String) -> Int {
+        finished.filter { $0 == bundleID }.count
+    }
+
     func scan(app: AppIdentity) async -> MenuTree {
         scans.append(app.bundleID)
         if held {
@@ -109,6 +115,7 @@ actor FakeScanner: MenuScanning {
             ? MenuTree(bundleID: app.bundleID, appName: app.name, menus: [], scannedAt: Date(), isPartial: false)
             : trees.removeFirst()
         queued[app.bundleID] = trees
+        finished.append(app.bundleID)
         return tree
     }
 }

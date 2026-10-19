@@ -32,4 +32,20 @@ final class TestIsolationTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: harness.directory.url.path))
         XCTAssertFalse(FileManager.default.fileExists(atPath: harness.testDefaults.directory.path))
     }
+
+    /// Never the process's own trust: a trusted test host would start the real activation observer
+    /// and key monitors.
+    func testTheEngineAsksTheInjectedPermissionCheck() async throws {
+        var checks = 0
+        let harness = try EngineHarness(isTrusted: {
+            checks += 1
+            return false
+        })
+        addTeardownBlock { @MainActor in await harness.tearDown() }
+
+        await harness.engine.start()
+
+        await waitUntil { checks >= 1 }
+        XCTAssertFalse(harness.engine.permissionGranted)
+    }
 }

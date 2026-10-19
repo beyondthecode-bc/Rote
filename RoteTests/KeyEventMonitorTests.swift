@@ -46,14 +46,16 @@ final class KeyEventMonitorTests: XCTestCase {
 
     func testACommandPressCarriesTheLayoutsCommandCharacters() throws {
         let monitor = makeMonitor()
-        let event = try keyEvent("s", keyCode: 1, flags: [.command])
+        // The S key typing a Cyrillic letter: ⌘ reads it through the layout's ⌘ table instead.
+        let event = try keyEvent("ы", keyCode: 1, flags: [.command])
+        let commandCharacters = try XCTUnwrap(event.characters(byApplyingModifiers: .command))
+        XCTAssertFalse(commandCharacters.isEmpty)
+        try XCTSkipIf(commandCharacters == "ы", "this Mac's current layout types ы with ⌘ on that key")
 
         monitor.handle(event, inOwnApp: false)
 
-        let commandCharacters = try XCTUnwrap(event.characters(byApplyingModifiers: .command))
-        XCTAssertFalse(commandCharacters.isEmpty)
         XCTAssertEqual(received, [.keyDown(KeyPress(
-            characters: "s", commandCharacters: commandCharacters, keyCode: 1, modifiers: [.command], isRepeat: false
+            characters: "ы", commandCharacters: commandCharacters, keyCode: 1, modifiers: [.command], isRepeat: false
         ), inOwnApp: false)])
     }
 
@@ -118,6 +120,15 @@ final class KeyEventMonitorTests: XCTestCase {
     }
 
     // MARK: Pointer
+
+    func testTheMonitorsWatchKeysModifiersButtonsDragsAndTheWheel() {
+        XCTAssertEqual(KeyEventMonitor.mask, [
+            .keyDown, .flagsChanged,
+            .leftMouseDown, .rightMouseDown, .otherMouseDown,
+            .leftMouseDragged, .rightMouseDragged, .otherMouseDragged,
+            .scrollWheel,
+        ])
+    }
 
     func testButtonPressesAndDragsCancel() throws {
         let monitor = makeMonitor()

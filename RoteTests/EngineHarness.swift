@@ -25,7 +25,11 @@ final class EngineHarness {
     var defaults: UserDefaults { testDefaults.defaults }
     var stateURL: URL { directory.url.appendingPathComponent("state.json") }
 
-    init(menuCloseGrace: Duration = .milliseconds(300), pruneInterval: TimeInterval = 86_400) throws {
+    init(
+        menuCloseGrace: Duration = .milliseconds(300),
+        pruneInterval: TimeInterval = 86_400,
+        isTrusted: @escaping @MainActor () -> Bool = { false }
+    ) throws {
         directory = try TemporaryDirectory()
         let stateURL = directory.url.appendingPathComponent("state.json")
         store = StateStore(fileURL: stateURL, debounce: .milliseconds(10))
@@ -38,7 +42,7 @@ final class EngineHarness {
             keyMonitor: keyMonitor,
             store: store,
             defaults: testDefaults.defaults,
-            isTrusted: { false },
+            isTrusted: isTrusted,
             menuCloseGrace: menuCloseGrace,
             pruneInterval: pruneInterval
         )

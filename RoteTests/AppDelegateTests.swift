@@ -12,4 +12,10 @@ final class AppDelegateTests: XCTestCase {
     func testThisProcessIsTheTestHost() {
         XCTAssertTrue(AppDelegate.isTestHost())
     }
+
+    /// Launch has finished before any test runs; a started container would mean the real engine,
+    /// the user's state file and the update check are live under test.
+    func testTheHostAppDidNotStartTheContainer() {
+        XCTAssertFalse(AppContainer.shared.started)
+    }
 }

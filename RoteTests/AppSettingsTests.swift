@@ -151,12 +151,18 @@ final class AppSettingsTests: XCTestCase {
         let settings = AppSettings(defaults: store.defaults)
 
         settings.nudgeAfter = 4
+        settings.itemSpacingHours = 6
+        settings.dailyCap = 20
         settings.hudDuration = 3.5
         settings.soundEnabled = true
         settings.overlayTrigger = .holdOption
         settings.holdDelayMs = 900
+        settings.showItemsWithoutShortcuts = true
+        settings.showAppleMenu = true
         settings.excludedBundleIDs = ["com.example.Alpha"]
+        settings.pausedBundleIDs = ["com.example.Beta"]
         settings.checkUpdatesOnLaunch = false
+        settings.hasCompletedOnboarding = true
 
         XCTAssertEqual(store.defaults.object(forKey: Keys.nudgeAfter) as? Int, 4)
         XCTAssertEqual(store.defaults.object(forKey: Keys.hudDuration) as? Double, 3.5)
@@ -165,12 +171,18 @@ final class AppSettingsTests: XCTestCase {
 
         let reloaded = AppSettings(defaults: store.defaults)
         XCTAssertEqual(reloaded.nudgeAfter, 4)
+        XCTAssertEqual(reloaded.itemSpacingHours, 6)
+        XCTAssertEqual(reloaded.dailyCap, 20)
         XCTAssertEqual(reloaded.hudDuration, 3.5)
         XCTAssertTrue(reloaded.soundEnabled)
         XCTAssertEqual(reloaded.overlayTrigger, .holdOption)
         XCTAssertEqual(reloaded.holdDelayMs, 900)
+        XCTAssertTrue(reloaded.showItemsWithoutShortcuts)
+        XCTAssertTrue(reloaded.showAppleMenu)
         XCTAssertEqual(reloaded.excludedBundleIDs, ["com.example.Alpha"])
+        XCTAssertEqual(reloaded.pausedBundleIDs, ["com.example.Beta"])
         XCTAssertFalse(reloaded.checkUpdatesOnLaunch)
+        XCTAssertTrue(reloaded.hasCompletedOnboarding)
     }
 
     func testThePolicyMirrorsTheCoachingSettings() {

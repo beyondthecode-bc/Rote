@@ -24,7 +24,10 @@ final class LocalizationManagerTests: XCTestCase {
     </strings>
     """
 
-    private func makeManager(language: String?) throws -> (LocalizationManager, TestDefaults) {
+    private func makeManager(
+        language: String?,
+        systemLanguages: [String] = ["en-US"]
+    ) throws -> (LocalizationManager, TestDefaults) {
         let directory = try TemporaryDirectory()
         let testDefaults = TestDefaults()
         addTeardownBlock {
@@ -37,7 +40,8 @@ final class LocalizationManagerTests: XCTestCase {
         try Data(Self.french.utf8).write(to: languages.appendingPathComponent("French.xml"))
         if let language { testDefaults.defaults.set(language, forKey: "rote.language") }
         let bundle = try XCTUnwrap(Bundle(url: directory.url))
-        return (LocalizationManager(defaults: testDefaults.defaults, bundle: bundle), testDefaults)
+        let manager = LocalizationManager(defaults: testDefaults.defaults, bundle: bundle, preferredLanguages: { systemLanguages })
+        return (manager, testDefaults)
     }
 
     func testTheChosenLanguagesStringIsUsed() throws {
@@ -93,9 +97,13 @@ final class LocalizationManagerTests: XCTestCase {
     }
 
     func testWithNoSavedChoiceTheLanguageFollowsTheSystem() throws {
-        let (manager, _) = try makeManager(language: nil)
-        XCTAssertEqual(manager.languageCode, "system")
-        XCTAssertEqual(manager.string(for: "englishOnly"), "Only in English")
+        let (french, _) = try makeManager(language: nil, systemLanguages: ["fr-FR", "en-US"])
+        XCTAssertEqual(french.languageCode, "system")
+        XCTAssertEqual(french.string(for: "greeting"), "Bonjour, %1")
+        XCTAssertEqual(french.string(for: "englishOnly"), "Only in English")
+
+        let (english, _) = try makeManager(language: nil, systemLanguages: ["xx", "en-GB"])
+        XCTAssertEqual(english.string(for: "greeting"), "Hello, %1")
     }
 
     func testTheSystemLanguageMatchesASupportedCodeOrEnglish() {
