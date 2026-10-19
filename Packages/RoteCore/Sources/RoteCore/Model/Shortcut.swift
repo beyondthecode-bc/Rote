@@ -11,7 +11,7 @@ public struct Modifiers: OptionSet, Codable, Hashable, Sendable {
     public static let command = Modifiers(rawValue: 1 << 3)
 
     /// Decodes `AXMenuItemCmdModifiers`. Values combine: 1 = ⇧, 2 = ⌥, 4 = ⌃,
-    /// 8 = no ⌘. Zero therefore means ⌘ alone.
+    /// 8 = no ⌘, 16 = fn (see `ShortcutDecoding.functionMask`). Zero therefore means ⌘ alone.
     public static func fromAXMask(_ mask: Int) -> Modifiers {
         var result: Modifiers = []
         if mask & 1 != 0 { result.insert(.shift) }
@@ -68,8 +68,16 @@ public enum ShortcutDecoding {
         case unrenderable
     }
 
+    /// `AXMenuItemCmdModifiers` bit for fn/Globe. Rote has no keycap for it and its key monitor
+    /// cannot tell fn ⌃F from ⌃F, so such items are unrenderable rather than taught as a key
+    /// that does something else (spec §5.4).
+    public static let functionMask = 16
+
     /// Precedence: glyph table, then the scalar table (control and function-key scalars),
     /// then a printable character, then the virtual key code.
+    ///
+    /// Accessibility reports letter key equivalents in uppercase and Shift only through mask
+    /// bit 1, so the character's case never implies Shift ("N" with mask 0 is ⌘N).
     /// - Parameters:
     ///   - cmdChar: `AXMenuItemCmdChar`
     ///   - modifierMask: `AXMenuItemCmdModifiers`
@@ -81,13 +89,18 @@ public enum ShortcutDecoding {
         let keyCode = virtualKey ?? 0
         guard !char.isEmpty || glyphCode > 0 || keyCode > 0 else { return .none }
 
-        var modifiers = Modifiers.fromAXMask(modifierMask ?? 0)
+        let mask = modifierMask ?? 0
+        if mask & functionMask != 0 { return .unrenderable }
+        var modifiers = Modifiers.fromAXMask(mask)
 
         if glyphCode > 0, let special = KeyTables.special(forGlyph: glyphCode) {
             // kMenuTabLeftGlyph is Shift-Tab even when the mask omits Shift.
             if glyphCode == KeyTables.backTabGlyph { modifiers.insert(.shift) }
             return .shortcut(Shortcut(modifiers: modifiers, key: .special(special)))
         }
+        // Accessibility uppercases the key equivalent, and some letters uppercase to several
+        // ("ß" arrives as "SS"): the first scalar alone would claim a different key.
+        if char.unicodeScalars.count > 1 { return .unrenderable }
         if let scalar = char.unicodeScalars.first {
             if let special = KeyTables.special(forScalar: scalar) {
                 // NSBackTabCharacter is Shift-Tab even when the mask omits Shift.
@@ -95,9 +108,6 @@ public enum ShortcutDecoding {
                 return .shortcut(Shortcut(modifiers: modifiers, key: .special(special)))
             }
             if let legend = KeyTables.keycapCharacter(for: scalar) {
-                // AppKit treats an uppercase key equivalent as "needs Shift" even when the
-                // modifier mask does not say so; the menu bar draws ⇧ for it.
-                if scalar.properties.isUppercase { modifiers.insert(.shift) }
                 return .shortcut(Shortcut(modifiers: modifiers, key: .character(legend)))
             }
         }
