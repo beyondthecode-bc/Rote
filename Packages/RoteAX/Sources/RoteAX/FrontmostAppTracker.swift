@@ -1,9 +1,10 @@
 import AppKit
 
-/// Reports the frontmost app on start and on every activation.
+/// Reports the frontmost app on start and on every activation. An app without an `AppIdentity`
+/// (no bundle ID) is reported as nil, so the consumer stops treating the previous app as frontmost (spec §4.3).
 @MainActor
 public final class FrontmostAppTracker {
-    public var onActivate: ((AppIdentity) -> Void)?
+    public var onActivate: ((AppIdentity?) -> Void)?
     private var token: (any NSObjectProtocol)?
 
     public init() {}
@@ -17,13 +18,11 @@ public final class FrontmostAppTracker {
         ) { [weak self] note in
             let app = note.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication
             MainActor.assumeIsolated {
-                guard let self, let app, let identity = Self.identity(for: app) else { return }
-                self.onActivate?(identity)
+                guard let self else { return }
+                self.onActivate?(app.flatMap(Self.identity(for:)))
             }
         }
-        if let app = NSWorkspace.shared.frontmostApplication, let identity = Self.identity(for: app) {
-            onActivate?(identity)
-        }
+        onActivate?(NSWorkspace.shared.frontmostApplication.flatMap(Self.identity(for:)))
     }
 
     public func stop() {
@@ -31,7 +30,8 @@ public final class FrontmostAppTracker {
         token = nil
     }
 
-    public static func identity(for app: NSRunningApplication) -> AppIdentity? {
+    /// Reads only fixed properties of a Sendable value, so it needs no actor.
+    nonisolated public static func identity(for app: NSRunningApplication) -> AppIdentity? {
         guard let bundleID = app.bundleIdentifier else { return nil }
         return AppIdentity(pid: app.processIdentifier, bundleID: bundleID, name: app.localizedName ?? bundleID)
     }
