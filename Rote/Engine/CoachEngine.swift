@@ -18,6 +18,7 @@ final class CoachEngine {
     @ObservationIgnored private let keyMonitor: KeyEventMonitor
     @ObservationIgnored private let store: StateStore
     @ObservationIgnored private let defaults: UserDefaults
+    @ObservationIgnored private let isTrusted: @MainActor () -> Bool
     @ObservationIgnored private var coach: Coach
     @ObservationIgnored private let ownBundleID = Bundle.main.bundleIdentifier ?? "com.beyondthecode.rote"
 
@@ -50,11 +51,13 @@ final class CoachEngine {
     @ObservationIgnored private var clockObservers: [any NSObjectProtocol] = []
     @ObservationIgnored private var started = false
     @ObservationIgnored private var lastPruneAt = Date.distantPast
+    /// A selection this soon after a menu closed is still a pick from that menu.
+    @ObservationIgnored private let menuCloseGrace: Duration
+    /// Time between two prunes; the check runs on app activation.
+    @ObservationIgnored private let pruneInterval: TimeInterval
 
     private static let treeCacheLimit = 20
-    private static let pruneInterval: TimeInterval = 86_400
     private static let treeStaleAfter: TimeInterval = 60
-    private static let menuCloseGrace: Duration = .milliseconds(300)
     static let pauseUntilKey = "coach.pauseUntil"
 
     init(
@@ -66,7 +69,10 @@ final class CoachEngine {
         store: StateStore = StateStore(fileURL: StateStore.defaultFileURL(), onWriteFailure: { error in
             Logger.engine.error("Could not save state: \(error.localizedDescription, privacy: .public)")
         }),
-        defaults: UserDefaults = .standard
+        defaults: UserDefaults = .standard,
+        isTrusted: @escaping @MainActor () -> Bool = { AccessibilityPermission.isTrusted },
+        menuCloseGrace: Duration = .milliseconds(300),
+        pruneInterval: TimeInterval = 86_400
     ) {
         self.settings = settings
         self.scanner = scanner
@@ -75,6 +81,9 @@ final class CoachEngine {
         self.keyMonitor = keyMonitor
         self.store = store
         self.defaults = defaults
+        self.isTrusted = isTrusted
+        self.menuCloseGrace = menuCloseGrace
+        self.pruneInterval = pruneInterval
         self.coach = Coach(policy: settings.policy, calendar: .autoupdatingCurrent)
     }
 
@@ -122,7 +131,7 @@ final class CoachEngine {
         permissionTask = Task { [weak self] in
             while !Task.isCancelled {
                 guard let self else { return }
-                let trusted = AccessibilityPermission.isTrusted
+                let trusted = self.isTrusted()
                 if trusted != self.permissionGranted { self.permissionChanged(trusted) }
                 try? await Task.sleep(for: .seconds(trusted ? 5 : 1))
             }
@@ -175,7 +184,7 @@ final class CoachEngine {
             return
         }
         currentApp = app
-        if Date().timeIntervalSince(lastPruneAt) > Self.pruneInterval {
+        if Date().timeIntervalSince(lastPruneAt) > pruneInterval {
             coach.prune(state: &state, now: Date())
             lastPruneAt = Date()
             persist()
@@ -240,7 +249,7 @@ final class CoachEngine {
             // AppKit also reports a key equivalent as a selection once its action returns; the
             // key monitor has counted that press already (spec §5.5).
             if !echoes.isEcho(record, at: tick) {
-                let viaMenu = openMenuDepth > 0 || lastMenuClosedAt.map { $0.duration(to: tick) < Self.menuCloseGrace } ?? false
+                let viaMenu = openMenuDepth > 0 || lastMenuClosedAt.map { $0.duration(to: tick) < menuCloseGrace } ?? false
                 if viaMenu {
                     process(CoachEvent(kind: .menuUsed, item: record, at: now))
                 } else {
