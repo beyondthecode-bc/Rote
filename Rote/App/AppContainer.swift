@@ -14,6 +14,7 @@ final class AppContainer {
     let settings: AppSettings
     let engine: CoachEngine
     let nudges: NudgeController
+    let overlay: OverlayController
 
     var updateAvailable: (version: String, url: URL)?
     @ObservationIgnored private var started = false
@@ -22,6 +23,7 @@ final class AppContainer {
         settings = AppSettings()
         engine = CoachEngine(settings: settings)
         nudges = NudgeController(settings: settings)
+        overlay = OverlayController(settings: settings, engine: engine)
         wire()
     }
 
@@ -46,6 +48,7 @@ final class AppContainer {
         nudges.onSnooze = { [weak self] identity in self?.engine.snooze(identity) }
         nudges.onMute = { [weak self] identity in self?.engine.mute(identity) }
         nudges.onPauseHour = { [weak self] in self?.engine.pause(for: 3_600) }
+        engine.onKeyEvent = { [weak self] event in self?.overlay.handle(event) }
     }
 
     func presentNudge(_ record: ItemRecord) {
