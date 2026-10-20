@@ -66,9 +66,15 @@ final class StateStoreTests: XCTestCase {
         await store.scheduleSave(first)
         await store.scheduleSave(second)
         XCTAssertFalse(FileManager.default.fileExists(atPath: fileURL.path), "nothing is written before the debounce elapses")
-        try await Task.sleep(for: .milliseconds(150))
+        // Wait for the write rather than a fixed time: at background priority (release.sh runs under
+        // `taskpolicy -b`) macOS may fire a 50 ms timer far later. The write is atomic, so once the
+        // file exists it holds a whole state.
+        let deadline = ContinuousClock.now + .seconds(5)
+        while !FileManager.default.fileExists(atPath: fileURL.path), ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(20))
+        }
         let result = await store.load()
-        XCTAssertEqual(result, .loaded(second))
+        XCTAssertEqual(result, .loaded(second), "only the latest of two quick saves is written")
     }
 
     func testSupersededSaveDoesNotWriteEarly() async throws {
