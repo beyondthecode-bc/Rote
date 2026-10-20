@@ -115,6 +115,12 @@ final class LocalizationManagerTests: XCTestCase {
         XCTAssertNotEqual(LocalizationManager.systemCode(preferred: ["kok"]), "ko")
     }
 
+    /// The language menu names every supported language, and each in its own words.
+    func testEverySupportedLanguageHasANativeName() {
+        XCTAssertEqual(Set(LocalizationManager.nativeNames.keys), Set(LocalizationManager.supportedCodes))
+        XCTAssertEqual(Set(LocalizationManager.nativeNames.values).count, LocalizationManager.supportedCodes.count)
+    }
+
     func testEveryShippedLanguageLoadsFromTheAppBundle() throws {
         let englishDefaults = TestDefaults()
         defer { englishDefaults.remove() }

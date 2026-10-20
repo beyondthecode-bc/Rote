@@ -122,6 +122,7 @@
   <string key="settings.launchAtLogin">Beim Anmelden öffnen</string>
   <string key="settings.language">Sprache</string>
   <string key="settings.language.system">Systemsprache</string>
+  <string key="settings.language.note">Änderungen werden sofort übernommen.</string>
   <string key="settings.checkUpdatesOnLaunch">Beim Start nach Updates suchen</string>
   <string key="settings.updatesHint">„Jetzt suchen“ befindet sich im Bereich „Info“.</string>
   <string key="settings.hudDuration">Hinweis %1 Sekunden lang anzeigen</string>

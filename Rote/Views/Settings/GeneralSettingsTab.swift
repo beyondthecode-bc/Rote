@@ -6,30 +6,24 @@ struct GeneralSettingsTab: View {
     @State private var launchError: String?
     @State private var launchNeedsApproval = false
 
-    private static let languageNames: [String: String] = [
-        "en": "English", "fr": "Français", "de": "Deutsch", "es": "Español",
-        "ja": "日本語", "ko": "한국어", "pt-BR": "Português (Brasil)", "zh-Hans": "简体中文",
-    ]
-
     var body: some View {
         @Bindable var settings = container.settings
-        @Bindable var localization = LocalizationManager.shared
         Form {
-            Toggle(l("settings.launchAtLogin"), isOn: launchAtLoginBinding)
-            if let launchError {
-                Text(launchError).font(.caption).foregroundStyle(.red)
-            }
-            if launchNeedsApproval {
-                Button(l("permission.open")) { LaunchAtLogin.openSystemSettings() }
-            }
-            Picker(l("settings.language"), selection: $localization.languageCode) {
-                Text(l("settings.language.system")).tag("system")
-                ForEach(LocalizationManager.supportedCodes, id: \.self) { code in
-                    Text(Self.languageNames[code] ?? code).tag(code)
+            Section {
+                Toggle(l("settings.launchAtLogin"), isOn: launchAtLoginBinding)
+                if let launchError {
+                    Text(launchError).font(.caption).foregroundStyle(.red)
                 }
+                if launchNeedsApproval {
+                    Button(l("permission.open")) { LaunchAtLogin.openSystemSettings() }
+                }
+                Toggle(l("settings.checkUpdatesOnLaunch"), isOn: $settings.checkUpdatesOnLaunch)
+                Text(l("settings.updatesHint")).font(.caption).foregroundStyle(.secondary)
             }
-            Toggle(l("settings.checkUpdatesOnLaunch"), isOn: $settings.checkUpdatesOnLaunch)
-            Text(l("settings.updatesHint")).font(.caption).foregroundStyle(.secondary)
+            Section(l("settings.language")) {
+                LanguagePicker()
+                Text(l("settings.language.note")).font(.caption).foregroundStyle(.secondary)
+            }
         }
         .formStyle(.grouped)
     }

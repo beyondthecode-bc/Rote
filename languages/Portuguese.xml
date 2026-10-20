@@ -122,6 +122,7 @@
   <string key="settings.launchAtLogin">Abrir ao iniciar sessão</string>
   <string key="settings.language">Idioma</string>
   <string key="settings.language.system">Padrão do sistema</string>
+  <string key="settings.language.note">As alterações são aplicadas imediatamente.</string>
   <string key="settings.checkUpdatesOnLaunch">Verificar atualizações ao abrir</string>
   <string key="settings.updatesHint">“Verificar agora” fica na aba “Sobre”.</string>
   <string key="settings.hudDuration">Mostrar a dica por %1 segundos</string>

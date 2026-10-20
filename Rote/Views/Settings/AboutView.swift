@@ -85,6 +85,8 @@ struct AboutView: View {
                 Divider().padding(.horizontal, 16)
                 updatesSection
                 Divider().padding(.horizontal, 16)
+                languageRow
+                Divider().padding(.horizontal, 16)
                 supportSection
                 Divider().padding(.horizontal, 16)
                 compactLinks
@@ -177,6 +179,31 @@ struct AboutView: View {
         }
     }
 
+    /// The interface language, as on the General tab: the same menu, applied at once.
+    private var languageRow: some View {
+        HStack(spacing: 10) {
+            rowIcon(symbol: "character.bubble.fill", tint: .purple)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(l("settings.language")).font(.system(size: 12, weight: .medium))
+                // Wraps rather than truncates: the menu is as wide as its longest language name.
+                Text(l("settings.language.note"))
+                    .font(.system(size: 10))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 8)
+            LanguagePicker()
+                .labelsHidden()
+                .fixedSize()
+                .controlSize(.small)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.secondary.opacity(0.06)))
+    }
+
     private var supportSection: some View {
         VStack(spacing: 6) {
             linkRow(symbol: "heart.fill", tint: .pink, title: l("about.sponsor"), subtitle: l("about.sponsor.subtitle"), url: "https://github.com/sponsors/beyondthecode-bc")
@@ -198,12 +225,7 @@ struct AboutView: View {
             if let link = URL(string: url) { NSWorkspace.shared.open(link) }
         } label: {
             HStack(spacing: 10) {
-                Image(systemName: symbol)
-                    .font(.system(size: 12))
-                    .foregroundStyle(.white)
-                    .frame(width: 24, height: 24)
-                    .background(tint.gradient)
-                    .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                rowIcon(symbol: symbol, tint: tint)
                 VStack(alignment: .leading, spacing: 1) {
                     Text(title).font(.system(size: 12, weight: .medium)).foregroundStyle(.primary)
                     Text(subtitle).font(.system(size: 10)).foregroundStyle(.secondary).lineLimit(1)
@@ -218,6 +240,16 @@ struct AboutView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+    }
+
+    /// A white symbol on a tinted rounded square, as the portfolio's About rows show them.
+    private func rowIcon(symbol: String, tint: Color) -> some View {
+        Image(systemName: symbol)
+            .font(.system(size: 12))
+            .foregroundStyle(.white)
+            .frame(width: 24, height: 24)
+            .background(tint.gradient)
+            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
     }
 
     private func compactLink(symbol: String, title: String, url: String) -> some View {

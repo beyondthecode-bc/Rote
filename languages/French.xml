@@ -122,6 +122,7 @@
   <string key="settings.launchAtLogin">Ouvrir à l’ouverture de session</string>
   <string key="settings.language">Langue</string>
   <string key="settings.language.system">Langue du système</string>
+  <string key="settings.language.note">Les changements s’appliquent immédiatement.</string>
   <string key="settings.checkUpdatesOnLaunch">Rechercher les mises à jour au lancement</string>
   <string key="settings.updatesHint">Le bouton « Vérifier maintenant » se trouve dans l’onglet « À propos ».</string>
   <string key="settings.hudDuration">Afficher la suggestion pendant %1 secondes</string>

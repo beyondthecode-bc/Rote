@@ -122,6 +122,7 @@
   <string key="settings.launchAtLogin">Abrir al iniciar sesión</string>
   <string key="settings.language">Idioma</string>
   <string key="settings.language.system">Idioma del sistema</string>
+  <string key="settings.language.note">Los cambios se aplican de inmediato.</string>
   <string key="settings.checkUpdatesOnLaunch">Buscar actualizaciones al abrir</string>
   <string key="settings.updatesHint">“Comprobar ahora” está en la pestaña “Acerca de”.</string>
   <string key="settings.hudDuration">Mostrar la sugerencia durante %1 segundos</string>

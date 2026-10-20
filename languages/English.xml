@@ -122,6 +122,7 @@
   <string key="settings.launchAtLogin">Launch at login</string>
   <string key="settings.language">Language</string>
   <string key="settings.language.system">System default</string>
+  <string key="settings.language.note">Changes apply immediately.</string>
   <string key="settings.checkUpdatesOnLaunch">Check for updates on launch</string>
   <string key="settings.updatesHint">Check Now lives in the About tab.</string>
   <string key="settings.hudDuration">Show the nudge for %1 seconds</string>

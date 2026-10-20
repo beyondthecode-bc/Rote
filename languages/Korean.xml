@@ -122,6 +122,7 @@
   <string key="settings.launchAtLogin">로그인 시 열기</string>
   <string key="settings.language">언어</string>
   <string key="settings.language.system">시스템 기본값</string>
+  <string key="settings.language.note">변경 사항은 즉시 적용됩니다.</string>
   <string key="settings.checkUpdatesOnLaunch">실행 시 업데이트 확인</string>
   <string key="settings.updatesHint">‘지금 확인’은 ‘정보’ 탭에 있습니다.</string>
   <string key="settings.hudDuration">코칭을 %1초 동안 표시</string>

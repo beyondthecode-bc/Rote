@@ -73,7 +73,7 @@ Rote cannot be sandboxed, because the Accessibility API is unavailable to sandbo
 - **Weekly progress** in the menu bar popover: tiles for shortcuts learned, menu clicks that had a shortcut, and shortcuts used, each showing its improvement on the week before, plus the items being coached now, grouped by app, and the ones you learned.
 - **Pause** coaching for an hour, until tomorrow, or until you resume it. The pause survives quitting and relaunching Rote.
 - **Per-app control:** a list of apps to never coach and a list of paused apps, in Settings › Apps. Items you stopped coaching can be coached again from Settings › Data.
-- **Eight languages**: English, French, German, Spanish, Japanese, Korean, Portuguese (Brazil) and Chinese (Simplified), switchable live in Settings › General.
+- **Eight languages**: English, French, German, Spanish, Japanese, Korean, Portuguese (Brazil) and Chinese (Simplified), switchable live in Settings › General or on the About tab.
 - Works in any app with a native menu bar, Electron apps included.
 - Reduce Motion and Increase Contrast support, light and dark appearance, launch at login, in-app updates.
 

@@ -122,6 +122,7 @@
   <string key="settings.launchAtLogin">登录时打开</string>
   <string key="settings.language">语言</string>
   <string key="settings.language.system">系统默认</string>
+  <string key="settings.language.note">更改会立即生效。</string>
   <string key="settings.checkUpdatesOnLaunch">启动时检查更新</string>
   <string key="settings.updatesHint">“立即检查”位于“关于”标签页中。</string>
   <string key="settings.hudDuration">提示显示 %1 秒</string>

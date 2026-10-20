@@ -9,6 +9,13 @@ final class LocalizationManager {
 
     static let supportedCodes = ["en", "fr", "de", "es", "ja", "ko", "pt-BR", "zh-Hans"]
 
+    /// Each supported language in its own name, as the language menu lists it. Never translated,
+    /// so a reader can find their language whatever the current one is.
+    static let nativeNames: [String: String] = [
+        "en": "English", "fr": "Français", "de": "Deutsch", "es": "Español",
+        "ja": "日本語", "ko": "한국어", "pt-BR": "Português (Brasil)", "zh-Hans": "简体中文",
+    ]
+
     private static let fileMap: [String: String] = [
         "en": "English", "fr": "French", "de": "German", "es": "Spanish",
         "ja": "Japanese", "ko": "Korean", "pt-BR": "Portuguese", "zh-Hans": "Chinese",
