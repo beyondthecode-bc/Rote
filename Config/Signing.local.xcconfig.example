@@ -1,0 +1,9 @@
+// Copy to Signing.local.xcconfig in this folder (gitignored) to sign local builds with your own
+// certificate. A stable identity keeps Rote's Accessibility grant across rebuilds; without this
+// file builds are signed ad hoc and lose it. List your identities with:
+//   security find-identity -v -p codesigning
+// Use the identity's name ("Developer ID Application" or "Apple Development" picks the one of
+// that kind for the team) and the 10-character team ID shown in parentheses after it.
+
+CODE_SIGN_IDENTITY = Developer ID Application
+DEVELOPMENT_TEAM = <your team ID>
