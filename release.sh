@@ -107,11 +107,22 @@ except Exception: print("pending")')"
 done
 [ "${VT_DONE}" = "1" ] || { echo "ABORT: VirusTotal did not complete — not publishing."; exit 1; }
 VT_LINK="https://www.virustotal.com/gui/file/${SHA256}"
+# The first public release has nobody to update yet: say so, and present the update path for later versions.
+EARLIER_TAGS="$(git ls-remote --tags origin 'refs/tags/v*' | awk '{print $2}' | grep -v -x -F -e "refs/tags/${TAG}" -e "refs/tags/${TAG}^{}" || true)"
+if [ -z "${EARLIER_TAGS}" ]; then
+  LEAD="First public release of Rote, the keyboard shortcut coach for your Mac.
+
+"
+  UPDATE_LABEL="Updating, from this version on"
+else
+  LEAD=""
+  UPDATE_LABEL="Existing users — update in app"
+fi
 
 echo "==> 8/9 GitHub release"
 NOTES="## Rote ${VERSION}
 
-**Existing users — update in app:** click the Rote menu bar icon → **About** → **Check Now** → **Download** → **Install and Relaunch** (macOS asks for an administrator password to replace the app). Homebrew: \`brew upgrade --cask rote\`.
+${LEAD}**${UPDATE_LABEL}:** click the Rote menu bar icon → **About** → **Download** → **Install and Relaunch** (if no update is listed yet, click **Check Now** first; macOS asks for an administrator password to replace the app). Homebrew: \`brew upgrade --cask rote\`.
 
 **New install:** download \`${ASSET_NAME}\` below, unzip, move **Rote.app** to Applications, launch, and grant Accessibility when asked. Or \`brew install --cask beyondthecode-bc/tap/rote\`.
 
@@ -156,8 +167,12 @@ cask "rote" do
 
   app "Rote.app"
 
+  uninstall quit: "com.beyondthecode.rote"
+
   zap trash: [
     "~/Library/Application Support/Rote",
+    "~/Library/Caches/com.beyondthecode.rote",
+    "~/Library/HTTPStorages/com.beyondthecode.rote",
     "~/Library/Preferences/com.beyondthecode.rote.plist",
   ]
 end

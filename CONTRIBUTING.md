@@ -9,7 +9,7 @@ Rote ships with 8 languages: English (source), French, German, Spanish, Japanese
 1. Fork this repository
 2. Edit an existing file in the `languages/` folder, or create a new one by copying `English.xml`
 3. Translate the string values (the text between `<string>` tags) -- **do not** change the `key` attributes
-4. Keep any `%1`, `%2`, `%@`, `%d` placeholders in place -- the app needs them
+4. Keep the `%1`, `%2` … placeholders in place, in whatever order your sentence needs -- the app fills them in
 5. Run `python3 scripts/check-languages.py` and fix anything it reports -- it checks keys, placeholders, the ⌘ ⌥ ⌃ ⇧ symbols, "Esc" and "Rote" against `English.xml`
 6. Submit a pull request with a brief description of changes
 
@@ -17,13 +17,15 @@ Rote ships with 8 languages: English (source), French, German, Spanish, Japanese
 
 1. Copy `languages/English.xml` to `languages/YourLanguage.xml`
 2. Translate all string values
-3. Open a PR with your additions
+3. Open a PR with your additions and say which language and region it is for
+
+A new file alone does not appear in the app yet: a maintainer wires it up in the same PR. That means adding the language code to `supportedCodes`, its own name to `nativeNames` and the file name to `fileMap` in `Rote/Utilities/LocalizationManager.swift`, its plural rule to `pluralCategory(for:language:)`, the file to `FILES` in `scripts/check-languages.py`, and its entries to the per-language tables in `RoteTests`. You are welcome to do this yourself.
 
 ### Translation guidelines
 
-- **Technical terms** stay in English in all locales (e.g., CPU, GPU, RPM, app-specific identifiers)
+- **Technical names** stay as they are in all locales: app names, the key symbols ⌘ ⌥ ⌃ ⇧ and "Esc"
 - **App name** "Rote" is never translated
-- **French**: follow Apple French Glossary (e.g., "Reglages" for Settings, "Quitter" for Quit)
+- **French**: follow Apple French Glossary (e.g., "Réglages" for Settings, "Quitter" for Quit)
 - **German**: use formal `Sie` register, follow Apple macOS system terminology
 - **Spanish**: use formal `usted` register, follow Apple Spanish Glossary
 - **Japanese**: follow Apple Japanese Glossary conventions

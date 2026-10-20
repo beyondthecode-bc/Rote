@@ -16,9 +16,9 @@ concurrency:
 jobs:
   build-and-test:
     name: Build and test
-    # Rote is built with Xcode 27.1 (Swift 6.4). xcode-27 (macOS 27, public preview) is the
-    # newest GitHub-hosted macOS image and the only one with Xcode 27; macos-26 and
-    # macos-latest stop at Xcode 26. Move to the GA label once GitHub publishes one.
+    # Rote is built with Xcode 27.1 (Swift 6.4). xcode-27 (macOS 27, Apple Silicon, generally
+    # available since 2026-10-15) is the GitHub-hosted image with Xcode 27; macos-26 and
+    # macos-latest stop at Xcode 26.
     runs-on: xcode-27
     timeout-minutes: 45
     steps:

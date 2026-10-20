@@ -58,7 +58,7 @@ Download `Rote-vX.Y.Z.zip` from [Releases](https://github.com/beyondthecode-bc/R
 
 **Updating**
 
-Click the Rote menu bar icon → **About** → **Check Now** → **Download** → **Install and Relaunch**. macOS asks for an administrator password to replace the app. Homebrew users can run `brew upgrade --cask rote` instead. If the in-app update fails, quit Rote, download the zip from [Releases](https://github.com/beyondthecode-bc/Rote/releases/latest) and replace `/Applications/Rote.app` with the unzipped app.
+Click the Rote menu bar icon → **About** → **Download** → **Install and Relaunch** (if no update is listed yet, click **Check Now** first). macOS asks for an administrator password to replace the app. Homebrew users can run `brew upgrade --cask rote` instead. If the in-app update fails, quit Rote, download the zip from [Releases](https://github.com/beyondthecode-bc/Rote/releases/latest) and replace `/Applications/Rote.app` with the unzipped app.
 
 ## Permissions and privacy
 
