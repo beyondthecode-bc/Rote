@@ -33,6 +33,13 @@
 
 ---
 
+## Screenshots
+
+<p align="center">
+  <img src="images/screenshots/nudge.jpg" alt="Rote's keycap nudge: ⌘R for Safari's Reload Page, picked three times from the menu this week" width="49%">
+  <img src="images/screenshots/shortcut-sheet.jpg" alt="The hold-⌘ shortcut sheet for Safari: every menu's shortcuts, coached items in amber, learned ones checked" width="49%">
+</p>
+
 ## How it works
 
 1. You pick a menu item with the mouse. Rote counts quietly.
