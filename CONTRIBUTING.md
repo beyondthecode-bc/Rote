@@ -56,3 +56,22 @@ Rote is Swift 6 with strict concurrency, SwiftUI, and two local packages. Keep `
 5. Text the app shows goes through `l("key")`, and the key goes into every file in `languages/`, translated where you can; `python3 scripts/check-languages.py` catches a key missing from a language file, and `LocalizedSourceTests` catches a key missing from `English.xml`, a plural phrase called without `count:` or without its `.one` and `.other` forms, and a shortcut spoken without `spokenShortcut`, which reads the `spoken.*` names. Text that names System Settings' list of apps with Accessibility access picks its key with `PermissionPane.key`, which adds `.macOS27` on macOS 27 and later, where the list is Privacy & Security › Device Control and Data Access; give every language both keys.
 6. Builds are signed ad hoc unless you add a local signing file, so you need no certificate to build. An ad-hoc build, though, looks like a new app to macOS after every rebuild and silently loses Accessibility access while System Settings still shows Rote switched on. To keep access across rebuilds, copy `Config/Signing.local.xcconfig.example` to `Config/Signing.local.xcconfig` (gitignored) and set `CODE_SIGN_IDENTITY` and `DEVELOPMENT_TEAM` to your own certificate and team ID (`security find-identity -v -p codesigning` lists them); `Config/Signing.xcconfig` includes it for Debug and Release. Settings on the xcodebuild command line win over both files, so the test command above, which passes `CODE_SIGN_IDENTITY="-"`, still signs ad hoc. If Rote says access is missing while its switch looks on, select Rote in System Settings › Privacy & Security › Accessibility (on macOS 27: Privacy & Security › Device Control and Data Access), remove it with the minus (−) button and add it again, or run `tccutil reset Accessibility com.beyondthecode.rote` and grant access again.
 7. Debug builds have a **Debug** menu in the popover: simulate a nudge, simulate the shortcut sheet with a fixture Safari menu bar for screenshots (this needs Accessibility, which an ad-hoc Debug build loses on every rebuild; the item reads "Simulate overlay (needs Accessibility)" until access is granted), or export the frontmost app's menu snapshot as JSON for a new test fixture.
+
+## Artwork
+
+The app icon, README banner and GitHub social preview are built from artwork in `images/source/`, generated with Codex's image tool and then composed in code so every edge and letter stays crisp:
+
+- `icon-art.png`: the glass-keycap icon artwork.
+- `banner-art.png` and `social-art.png`: the text-free backgrounds.
+
+Regenerate the shipped files from the repository root:
+
+```bash
+swift scripts/make-logo.swift     # images/logo.png: fitted to the macOS icon grid, clipped, shadowed
+swift scripts/make-banner.swift   # images/banner.png and images/social-preview.png
+scripts/make-appicon.sh           # Rote/Assets.xcassets/AppIcon.appiconset from images/logo.png
+```
+
+Text on the banner and social preview is set by `make-banner.swift` in SF Pro Rounded; edit it there, not in the artwork. Upload `images/social-preview.png` in the repository's Settings › General › Social preview.
+
+To shrink the banner images after regenerating them: `pngquant --quality 85-98 --speed 1 --force --strip --output images/banner.png images/banner.png` (and the same for `images/social-preview.png`). Keep `images/logo.png` lossless; its glow bands when quantized.
