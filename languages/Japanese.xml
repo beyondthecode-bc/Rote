@@ -155,17 +155,12 @@
   <!-- About -->
   <string key="about.title">情報</string>
   <string key="about.tagline">Mac用キーボードショートカットのコーチ</string>
-  <string key="about.version">バージョン</string>
-  <string key="about.version.label">Rote</string>
-  <string key="about.github">GitHub</string>
-  <string key="about.githubProject">GitHubのRote</string>
-  <string key="about.githubProject.subtitle">MITライセンスのオープンソース</string>
-  <string key="about.support">Roteを支援</string>
   <string key="about.sponsor">GitHub Sponsors</string>
   <string key="about.sponsor.subtitle">継続的な開発を支援</string>
   <string key="about.coffee">Buy Me a Coffee</string>
   <string key="about.coffee.subtitle">1回限りのお礼</string>
-  <string key="update.title">アップデート</string>
+  <string key="about.translations">翻訳</string>
+  <string key="about.reportIssue">問題を報告</string>
   <string key="update.check">今すぐ確認</string>
   <string key="update.checking">確認中…</string>
   <string key="update.upToDate">Roteは最新です</string>

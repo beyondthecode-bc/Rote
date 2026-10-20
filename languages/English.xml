@@ -155,17 +155,12 @@
   <!-- About -->
   <string key="about.title">About</string>
   <string key="about.tagline">The keyboard shortcut coach for your Mac</string>
-  <string key="about.version">Version</string>
-  <string key="about.version.label">Rote</string>
-  <string key="about.github">GitHub</string>
-  <string key="about.githubProject">Rote on GitHub</string>
-  <string key="about.githubProject.subtitle">Open source under the MIT license</string>
-  <string key="about.support">Support Rote</string>
   <string key="about.sponsor">GitHub Sponsors</string>
   <string key="about.sponsor.subtitle">Support ongoing development</string>
   <string key="about.coffee">Buy Me a Coffee</string>
   <string key="about.coffee.subtitle">One-time thank-you</string>
-  <string key="update.title">Updates</string>
+  <string key="about.translations">Translations</string>
+  <string key="about.reportIssue">Report Issue</string>
   <string key="update.check">Check Now</string>
   <string key="update.checking">Checking…</string>
   <string key="update.upToDate">Rote is up to date</string>

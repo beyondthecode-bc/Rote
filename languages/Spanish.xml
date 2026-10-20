@@ -155,17 +155,12 @@
   <!-- About -->
   <string key="about.title">Acerca de</string>
   <string key="about.tagline">El entrenador de funciones rápidas de teclado para su Mac</string>
-  <string key="about.version">Versión</string>
-  <string key="about.version.label">Rote</string>
-  <string key="about.github">GitHub</string>
-  <string key="about.githubProject">Rote en GitHub</string>
-  <string key="about.githubProject.subtitle">Código abierto con licencia MIT</string>
-  <string key="about.support">Apoyar Rote</string>
   <string key="about.sponsor">GitHub Sponsors</string>
   <string key="about.sponsor.subtitle">Apoyar el desarrollo continuo</string>
   <string key="about.coffee">Buy Me a Coffee</string>
   <string key="about.coffee.subtitle">Un agradecimiento puntual</string>
-  <string key="update.title">Actualizaciones</string>
+  <string key="about.translations">Traducciones</string>
+  <string key="about.reportIssue">Reportar problema</string>
   <string key="update.check">Comprobar ahora</string>
   <string key="update.checking">Comprobando…</string>
   <string key="update.upToDate">Rote está actualizado</string>

@@ -80,16 +80,14 @@ struct AboutView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
+            VStack(spacing: 14) {
                 header
-                Divider()
-                versionSection
-                Divider()
+                Divider().padding(.horizontal, 16)
                 updatesSection
-                Divider()
-                repoSection
-                Divider()
+                Divider().padding(.horizontal, 16)
                 supportSection
+                Divider().padding(.horizontal, 16)
+                compactLinks
             }
             .padding(22)
         }
@@ -98,41 +96,39 @@ struct AboutView: View {
         .onChange(of: container.updateAvailable?.version) { showUpdateFoundAtLaunch() }
     }
 
+    /// The portfolio's About header: brand logo, name, marketing version only (never the build
+    /// number), tagline.
     private var header: some View {
-        HStack(spacing: 14) {
-            Image(nsImage: NSApp.applicationIconImage)
+        VStack(spacing: 6) {
+            Image("AppLogo")
                 .resizable()
-                .frame(width: 64, height: 64)
-            VStack(alignment: .leading, spacing: 4) {
-                Text(l("app.name")).font(.system(size: 20, weight: .bold, design: .rounded))
-                Text(l("about.tagline")).font(.system(size: 12)).foregroundStyle(.secondary)
-            }
-        }
-    }
-
-    private var versionSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            SectionLabel(text: l("about.version"))
-            HStack {
-                Text(l("about.version.label")).font(.system(size: 12))
-                Spacer()
-                Text(shortVersion)
-                    .font(.system(size: 11, weight: .medium, design: .monospaced))
-                    .foregroundStyle(.secondary)
-            }
+                .interpolation(.high)
+                .frame(width: 96, height: 96)
+                .accessibilityHidden(true)
+            Text(l("app.name"))
+                .font(.system(size: 22, weight: .bold, design: .rounded))
+            Text("v\(shortVersion)")
+                .font(.caption)
+                .foregroundStyle(.tertiary)
+            Text(l("about.tagline"))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 8)
         }
     }
 
     private var updatesSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            SectionLabel(text: l("update.title"))
             switch updateState {
             case .idle:
                 HStack {
-                    Text(l("update.check")).font(.system(size: 12))
                     Spacer()
-                    Button(l("update.check")) { checkForUpdates() }
-                        .buttonStyle(.bordered).controlSize(.small)
+                    Button { checkForUpdates() } label: {
+                        Label(l("update.check"), systemImage: "arrow.triangle.2.circlepath")
+                    }
+                    .controlSize(.small)
+                    Spacer()
                 }
             case .checking:
                 progressRow(l("update.checking"))
@@ -181,41 +177,61 @@ struct AboutView: View {
         }
     }
 
-    private var repoSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            SectionLabel(text: l("about.github"))
-            linkRow(glyph: AnyView(BrandIcons.GitHubMark(size: 18)), title: l("about.githubProject"), subtitle: l("about.githubProject.subtitle"), url: repoURL)
-        }
-    }
-
     private var supportSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            SectionLabel(text: l("about.support"))
-            VStack(spacing: 8) {
-                linkRow(glyph: AnyView(BrandIcons.GitHubMark(size: 18)), title: l("about.sponsor"), subtitle: l("about.sponsor.subtitle"), url: "https://github.com/sponsors/beyondthecode-bc")
-                linkRow(glyph: AnyView(BrandIcons.CoffeeMark(size: 18)), title: l("about.coffee"), subtitle: l("about.coffee.subtitle"), url: "https://www.buymeacoffee.com/BEYONDTHECODE")
-            }
+        VStack(spacing: 6) {
+            linkRow(symbol: "heart.fill", tint: .pink, title: l("about.sponsor"), subtitle: l("about.sponsor.subtitle"), url: "https://github.com/sponsors/beyondthecode-bc")
+            linkRow(symbol: "cup.and.saucer.fill", tint: .yellow, title: l("about.coffee"), subtitle: l("about.coffee.subtitle"), url: "https://www.buymeacoffee.com/BEYONDTHECODE")
         }
     }
 
-    private func linkRow(glyph: AnyView, title: String, subtitle: String, url: String) -> some View {
+    /// GitHub, Translations, Report Issue: the portfolio's compact links row.
+    private var compactLinks: some View {
+        HStack(spacing: 6) {
+            compactLink(symbol: "chevron.left.forwardslash.chevron.right", title: "GitHub", url: repoURL)
+            compactLink(symbol: "globe", title: l("about.translations"), url: "\(repoURL)/tree/main/languages")
+            compactLink(symbol: "exclamationmark.bubble.fill", title: l("about.reportIssue"), url: "\(repoURL)/issues")
+        }
+    }
+
+    private func linkRow(symbol: String, tint: Color, title: String, subtitle: String, url: String) -> some View {
         Button {
             if let link = URL(string: url) { NSWorkspace.shared.open(link) }
         } label: {
-            HStack(spacing: 12) {
-                glyph.frame(width: 22, height: 22)
+            HStack(spacing: 10) {
+                Image(systemName: symbol)
+                    .font(.system(size: 12))
+                    .foregroundStyle(.white)
+                    .frame(width: 24, height: 24)
+                    .background(tint.gradient)
+                    .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
                 VStack(alignment: .leading, spacing: 1) {
                     Text(title).font(.system(size: 12, weight: .medium)).foregroundStyle(.primary)
                     Text(subtitle).font(.system(size: 10)).foregroundStyle(.secondary).lineLimit(1)
                 }
                 Spacer()
-                Image(systemName: "arrow.up.right").font(.system(size: 10, weight: .semibold)).foregroundStyle(.tertiary)
+                Image(systemName: "arrow.up.right").font(.system(size: 9, weight: .semibold)).foregroundStyle(.tertiary)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(DesignTokens.surfaceMuted))
-            .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).strokeBorder(DesignTokens.hairline, lineWidth: 0.5))
+            .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.secondary.opacity(0.06)))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func compactLink(symbol: String, title: String, url: String) -> some View {
+        Button {
+            if let link = URL(string: url) { NSWorkspace.shared.open(link) }
+        } label: {
+            VStack(spacing: 4) {
+                Image(systemName: symbol).font(.system(size: 11))
+                Text(title).font(.system(size: 9)).lineLimit(1)
+            }
+            .foregroundStyle(.secondary)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 6)
+            .background(RoundedRectangle(cornerRadius: 6, style: .continuous).fill(Color.secondary.opacity(0.06)))
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

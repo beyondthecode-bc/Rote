@@ -155,17 +155,12 @@
   <!-- About -->
   <string key="about.title">À propos</string>
   <string key="about.tagline">Le coach des raccourcis clavier pour votre Mac</string>
-  <string key="about.version">Version</string>
-  <string key="about.version.label">Rote</string>
-  <string key="about.github">GitHub</string>
-  <string key="about.githubProject">Rote sur GitHub</string>
-  <string key="about.githubProject.subtitle">Open source sous licence MIT</string>
-  <string key="about.support">Soutenir Rote</string>
   <string key="about.sponsor">GitHub Sponsors</string>
   <string key="about.sponsor.subtitle">Soutenir le développement continu</string>
   <string key="about.coffee">Buy Me a Coffee</string>
   <string key="about.coffee.subtitle">Un remerciement ponctuel</string>
-  <string key="update.title">Mises à jour</string>
+  <string key="about.translations">Traductions</string>
+  <string key="about.reportIssue">Signaler un problème</string>
   <string key="update.check">Vérifier maintenant</string>
   <string key="update.checking">Vérification…</string>
   <string key="update.upToDate">Rote est à jour</string>

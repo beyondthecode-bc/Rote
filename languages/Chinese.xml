@@ -155,17 +155,12 @@
   <!-- About -->
   <string key="about.title">关于</string>
   <string key="about.tagline">你的 Mac 键盘快捷键教练</string>
-  <string key="about.version">版本</string>
-  <string key="about.version.label">Rote</string>
-  <string key="about.github">GitHub</string>
-  <string key="about.githubProject">GitHub 上的 Rote</string>
-  <string key="about.githubProject.subtitle">基于 MIT 许可证开源</string>
-  <string key="about.support">支持 Rote</string>
   <string key="about.sponsor">GitHub Sponsors</string>
   <string key="about.sponsor.subtitle">支持持续开发</string>
   <string key="about.coffee">Buy Me a Coffee</string>
   <string key="about.coffee.subtitle">一次性致谢</string>
-  <string key="update.title">更新</string>
+  <string key="about.translations">翻译</string>
+  <string key="about.reportIssue">报告问题</string>
   <string key="update.check">立即检查</string>
   <string key="update.checking">正在检查…</string>
   <string key="update.upToDate">Rote 已是最新版本</string>

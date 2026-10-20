@@ -155,17 +155,12 @@
   <!-- About -->
   <string key="about.title">Sobre</string>
   <string key="about.tagline">O treinador de atalhos de teclado para o seu Mac</string>
-  <string key="about.version">Versão</string>
-  <string key="about.version.label">Rote</string>
-  <string key="about.github">GitHub</string>
-  <string key="about.githubProject">Rote no GitHub</string>
-  <string key="about.githubProject.subtitle">Código aberto sob a licença MIT</string>
-  <string key="about.support">Apoie o Rote</string>
   <string key="about.sponsor">GitHub Sponsors</string>
   <string key="about.sponsor.subtitle">Apoie o desenvolvimento contínuo</string>
   <string key="about.coffee">Buy Me a Coffee</string>
   <string key="about.coffee.subtitle">Um agradecimento único</string>
-  <string key="update.title">Atualizações</string>
+  <string key="about.translations">Traduções</string>
+  <string key="about.reportIssue">Reportar problema</string>
   <string key="update.check">Verificar agora</string>
   <string key="update.checking">Verificando…</string>
   <string key="update.upToDate">O Rote está atualizado</string>

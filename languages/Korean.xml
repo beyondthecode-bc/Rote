@@ -155,17 +155,12 @@
   <!-- About -->
   <string key="about.title">정보</string>
   <string key="about.tagline">Mac을 위한 키보드 단축키 코치</string>
-  <string key="about.version">버전</string>
-  <string key="about.version.label">Rote</string>
-  <string key="about.github">GitHub</string>
-  <string key="about.githubProject">GitHub의 Rote</string>
-  <string key="about.githubProject.subtitle">MIT 라이선스 오픈 소스</string>
-  <string key="about.support">Rote 후원하기</string>
   <string key="about.sponsor">GitHub Sponsors</string>
   <string key="about.sponsor.subtitle">지속적인 개발 후원</string>
   <string key="about.coffee">Buy Me a Coffee</string>
   <string key="about.coffee.subtitle">일회성 감사 표시</string>
-  <string key="update.title">업데이트</string>
+  <string key="about.translations">번역</string>
+  <string key="about.reportIssue">문제 보고</string>
   <string key="update.check">지금 확인</string>
   <string key="update.checking">확인 중…</string>
   <string key="update.upToDate">Rote가 최신 버전입니다</string>
