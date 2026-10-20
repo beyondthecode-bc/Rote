@@ -6,12 +6,17 @@ options:
   minimumXcodeGenVersion: "2.30.0"
   groupSortPosition: top
 
+# CODE_SIGN_IDENTITY lives in Config/Signing.xcconfig (ad hoc), which includes the optional, gitignored
+# Config/Signing.local.xcconfig. It must stay out of `settings`: project settings override the project's xcconfig.
+configFiles:
+  Debug: Config/Signing.xcconfig
+  Release: Config/Signing.xcconfig
+
 settings:
   base:
     SWIFT_VERSION: "6.0"
     MACOSX_DEPLOYMENT_TARGET: "14.0"
     CODE_SIGN_STYLE: Manual
-    CODE_SIGN_IDENTITY: "-"
     ENABLE_HARDENED_RUNTIME: YES
     PRODUCT_BUNDLE_IDENTIFIER: com.beyondthecode.rote
 

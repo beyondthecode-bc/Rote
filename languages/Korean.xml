@@ -108,6 +108,10 @@
   <string key="update.error.installDetail">업데이트를 설치할 수 없습니다. %1</string>
   <string key="update.error.installCancelled">설치가 취소되었습니다.</string>
 
+  <!-- macOS 27 permission pane -->
+  <string key="permission.waiting.macOS27">접근 권한을 기다리는 중… 개인정보 보호 및 보안 › 기기 제어 및 데이터 접근에서 Rote를 켜십시오</string>
+  <string key="onboarding.needsAccess.macOS27">데모를 사용하려면 먼저 손쉬운 사용 접근 권한이 필요합니다. 개인정보 보호 및 보안 › 기기 제어 및 데이터 접근에서 Rote를 켜면 여기에 데모가 나타납니다.</string>
+
   <!-- Settings -->
   <string key="settings.title">설정</string>
   <string key="settings.general">일반</string>

@@ -108,6 +108,10 @@
   <string key="update.error.installDetail">Não foi possível instalar a atualização. %1</string>
   <string key="update.error.installCancelled">A instalação foi cancelada.</string>
 
+  <!-- macOS 27 permission pane -->
+  <string key="permission.waiting.macOS27">Aguardando acesso… ative o Rote em Privacidade e Segurança › Controle do Dispositivo e Acesso a Dados</string>
+  <string key="onboarding.needsAccess.macOS27">A demonstração precisa primeiro de acesso à Acessibilidade. Ative o Rote em Privacidade e Segurança › Controle do Dispositivo e Acesso a Dados, e a demonstração aparecerá aqui.</string>
+
   <!-- Settings -->
   <string key="settings.title">Ajustes</string>
   <string key="settings.general">Geral</string>

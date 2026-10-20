@@ -1,0 +1,13 @@
+// Code signing for every build configuration (project.yml: configFiles).
+//
+// The default signs ad hoc, so building needs no certificate. macOS ties Rote's Accessibility grant
+// to its code identity, and an ad-hoc signature changes on every rebuild: each rebuild then loses
+// the grant while System Settings still shows Rote switched on.
+//
+// To keep the grant across rebuilds, copy Signing.local.xcconfig.example to Signing.local.xcconfig
+// next to this file (it is gitignored) and fill in your own identity and team. Settings passed on
+// the xcodebuild command line, as CI and release.sh do, override both files.
+
+CODE_SIGN_IDENTITY = -
+
+#include? "Signing.local.xcconfig"

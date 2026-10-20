@@ -16,7 +16,7 @@ struct PermissionStepView: View {
             HStack(spacing: 8) {
                 Image(systemName: granted ? "checkmark.circle.fill" : "clock")
                     .foregroundStyle(granted ? DesignTokens.learned : .secondary)
-                Text(granted ? l("permission.granted") : l("permission.waiting"))
+                Text(granted ? l("permission.granted") : l(PermissionPane.key("permission.waiting")))
                     .font(.system(size: 11))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)

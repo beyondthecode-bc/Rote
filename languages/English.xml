@@ -108,6 +108,10 @@
   <string key="update.error.installDetail">Could not install the update. %1</string>
   <string key="update.error.installCancelled">The installation was cancelled.</string>
 
+  <!-- macOS 27 permission pane -->
+  <string key="permission.waiting.macOS27">Waiting for access… turn on Rote under Privacy &amp; Security › Device Control and Data Access</string>
+  <string key="onboarding.needsAccess.macOS27">The demo needs Accessibility access first. Turn on Rote under Privacy &amp; Security › Device Control and Data Access, and the demo appears here.</string>
+
   <!-- Settings -->
   <string key="settings.title">Settings</string>
   <string key="settings.general">General</string>

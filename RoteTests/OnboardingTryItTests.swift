@@ -11,8 +11,13 @@ final class OnboardingTryItTests: XCTestCase {
         return LocalizationManager(defaults: testDefaults.defaults, bundle: .main)
     }
 
-    private func text(_ trigger: AppSettings.OverlayTrigger, granted: Bool = true, _ strings: LocalizationManager) -> String {
-        OnboardingView.tryItText(trigger: trigger, accessGranted: granted, strings: strings)
+    private func text(
+        _ trigger: AppSettings.OverlayTrigger,
+        granted: Bool = true,
+        macOS majorVersion: Int = PermissionPane.systemMajorVersion,
+        _ strings: LocalizationManager
+    ) -> String {
+        OnboardingView.tryItText(trigger: trigger, accessGranted: granted, strings: strings, majorVersion: majorVersion)
     }
 
     func testStepThreeSendsTheUserToAnotherAppAndNamesTheChosenTrigger() {
@@ -26,8 +31,26 @@ final class OnboardingTryItTests: XCTestCase {
         let english = strings("en")
         for trigger in AppSettings.OverlayTrigger.allCases {
             XCTAssertEqual(
-                text(trigger, granted: false, english),
+                text(trigger, granted: false, macOS: 26, english),
                 "The demo needs Accessibility access first. Turn on Rote under Privacy & Security › Accessibility, and the demo appears here.",
+                "\(trigger)"
+            )
+        }
+    }
+
+    /// macOS 27 lists apps with Accessibility access under Privacy & Security › Device Control and Data Access.
+    func testWithoutAccessStepThreeNamesTheMacOS27PaneOnMacOS27() {
+        let english = strings("en")
+        let french = strings("fr")
+        for trigger in AppSettings.OverlayTrigger.allCases {
+            XCTAssertEqual(
+                text(trigger, granted: false, macOS: 27, english),
+                "The demo needs Accessibility access first. Turn on Rote under Privacy & Security › Device Control and Data Access, and the demo appears here.",
+                "\(trigger)"
+            )
+            XCTAssertEqual(
+                text(trigger, granted: false, macOS: 27, french),
+                "La démo a d’abord besoin de l’accès Accessibilité. Activez Rote dans Confidentialité et sécurité › Contrôle de l’appareil et accès aux données, et la démo apparaîtra ici.",
                 "\(trigger)"
             )
         }

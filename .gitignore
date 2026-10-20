@@ -15,3 +15,5 @@ settings.local.json
 *.xcodeproj/
 # Local signing configuration for release.sh (see release.env.example)
 release.env
+# Local code signing identity for development builds (see Config/Signing.local.xcconfig.example)
+Config/Signing.local.xcconfig

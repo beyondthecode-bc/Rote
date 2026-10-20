@@ -54,7 +54,7 @@ brew install --cask beyondthecode-bc/tap/rote
 
 **Direct download**
 
-Download `Rote-vX.Y.Z.zip` from [Releases](https://github.com/beyondthecode-bc/Rote/releases/latest), unzip, move `Rote.app` to Applications, and launch. A short onboarding explains what Rote does and asks for Accessibility access. Builds are Developer ID signed and notarized by Apple; every release lists its VirusTotal result and SHA-256.
+Download `Rote-vX.Y.Z.zip` from [Releases](https://github.com/beyondthecode-bc/Rote/releases/latest), unzip, move `Rote.app` to Applications, and launch. A short onboarding explains what Rote does and asks for Accessibility access, which you turn on in System Settings › Privacy & Security › Accessibility (on macOS 27: Privacy & Security › Device Control and Data Access). Builds are Developer ID signed and notarized by Apple; every release lists its VirusTotal result and SHA-256.
 
 **Updating**
 
@@ -62,7 +62,7 @@ Click the Rote menu bar icon → **About** → **Check Now** → **Download** �
 
 ## Permissions and privacy
 
-Rote asks for one permission: **Accessibility**. It needs it to read app menus, to notice which menu item you picked and to recognise a shortcut when you press it. It never records what you type and has no analytics. Its only network requests go to GitHub: the update check against GitHub Releases (at launch, which you can turn off, and when you click Check Now) and the download of an update you ask for. Everything it remembers lives in `~/Library/Application Support/Rote/state.json` and in its preferences; Settings › Data can export the state as JSON or reset the statistics. See [PRIVACY.md](PRIVACY.md).
+Rote asks for one permission: **Accessibility**, which macOS 27 lists in System Settings as Privacy & Security › Device Control and Data Access. It needs it to read app menus, to notice which menu item you picked and to recognise a shortcut when you press it. It never records what you type and has no analytics. Its only network requests go to GitHub: the update check against GitHub Releases (at launch, which you can turn off, and when you click Check Now) and the download of an update you ask for. Everything it remembers lives in `~/Library/Application Support/Rote/state.json` and in its preferences; Settings › Data can export the state as JSON or reset the statistics. See [PRIVACY.md](PRIVACY.md).
 
 Rote cannot be sandboxed, because the Accessibility API is unavailable to sandboxed apps, so it is not on the Mac App Store.
 
@@ -83,7 +83,7 @@ Rote cannot be sandboxed, because the Accessibility API is unavailable to sandbo
 |---|---|
 | macOS | 14 Sonoma or later |
 | Chip | Apple Silicon or Intel |
-| Permission | Accessibility |
+| Permission | Accessibility (Device Control and Data Access on macOS 27) |
 
 ## Building from source
 
@@ -108,7 +108,7 @@ xcodebuild build -project Rote.xcodeproj -scheme Rote -configuration Release -de
   -derivedDataPath build/derived CODE_SIGN_IDENTITY="-"
 ```
 
-Debug builds are signed ad hoc, so every rebuild looks like a new app to macOS and loses Accessibility access even while System Settings still shows Rote switched on. After a rebuild, remove Rote from System Settings › Privacy & Security › Accessibility and add the new build, or run `tccutil reset Accessibility com.beyondthecode.rote` and grant access again. See [CONTRIBUTING.md](CONTRIBUTING.md).
+Builds are signed ad hoc unless you add a local signing file, so no certificate is needed. An ad-hoc build, though, looks like a new app to macOS after every rebuild and silently loses Accessibility access while System Settings still shows Rote switched on. To keep access across rebuilds, copy `Config/Signing.local.xcconfig.example` to `Config/Signing.local.xcconfig` (gitignored) and fill in your own signing identity and team ID; `Config/Signing.xcconfig` includes it for Debug and Release. Commands that pass `CODE_SIGN_IDENTITY="-"`, like the ones above, still sign ad hoc. Without the file, fix access after a rebuild as [Troubleshooting](#troubleshooting) describes. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Translations
 
@@ -117,10 +117,12 @@ Rote ships in English, French, German, Spanish, Japanese, Korean, Portuguese (Br
 ## Troubleshooting
 
 - **The menu bar icon is missing (macOS 27).** If you don’t see the keycap icon in the menu bar, macOS may have hidden it with other menu bar items. Click the button with two left-pointing arrows (“Show Hidden Menu Bar Items”) at the left end of the icons on the right side of the menu bar to reveal it.
-- **No nudges appear.** Check System Settings › Privacy & Security › Accessibility: Rote must be enabled. If you replaced the app, remove the old entry and add the new one. Also check that coaching is not paused (the popover's header says so) and that the app is not in Settings › Apps.
+- **Accessibility is not under Privacy & Security (macOS 27).** macOS 27 renamed the list: open System Settings › Privacy & Security › Device Control and Data Access. The Accessibility item in the sidebar holds VoiceOver, Zoom and other assistive settings, not app permissions. Rote's Open System Settings button opens the right list.
+- **Rote says access is missing, but its switch is on.** macOS ties the grant to the app's signature, so a build signed differently, such as a rebuilt ad-hoc Debug build, keeps the switch on while the grant no longer applies. In System Settings › Privacy & Security › Accessibility (on macOS 27: Privacy & Security › Device Control and Data Access), select Rote, remove it with the minus (−) button, add it again with the plus (+) button and turn it on. Or run `tccutil reset Accessibility com.beyondthecode.rote` in Terminal and grant access again.
+- **No nudges appear.** Check System Settings › Privacy & Security › Accessibility (on macOS 27: Privacy & Security › Device Control and Data Access): Rote must be enabled. If you replaced the app, remove the old entry and add the new one. Also check that coaching is not paused (the popover's header says so) and that the app is not in Settings › Apps.
 - **The sheet does not appear when holding ⌘.** The hold is cancelled by any other key or a click, so hold ⌘ alone; the sheet also stays away while a menu is open. Check the trigger and the hold delay in Settings › Overlay.
 - **An app shows few shortcuts.** Some apps fill in their menus only when you open them. Open the menus once, switch to another app and back after a minute, and hold ⌘ again.
-- **Rebuilt from source and nothing works.** An ad-hoc signed build loses Accessibility access on every rebuild; see [Building from source](#building-from-source).
+- **Rebuilt from source and nothing works.** An ad-hoc signed build loses Accessibility access on every rebuild. Remove Rote from the list and add it again as above, or sign your builds with your own certificate through `Config/Signing.local.xcconfig` to keep access; see [Building from source](#building-from-source).
 
 ## Support
 
