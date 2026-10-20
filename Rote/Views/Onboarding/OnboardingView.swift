@@ -87,9 +87,17 @@ struct OnboardingView: View {
         }
     }
 
-    /// Step 3's instruction for `trigger`, or, while Accessibility is missing, the note that the demo needs it.
-    static func tryItText(trigger: AppSettings.OverlayTrigger, accessGranted: Bool, strings: LocalizationManager = .shared) -> String {
-        guard accessGranted else { return strings.string(for: "onboarding.needsAccess") }
+    /// Step 3's instruction for `trigger`, or, while Accessibility is missing, the note that the demo
+    /// needs it, which names System Settings' list as `majorVersion` of macOS calls it.
+    static func tryItText(
+        trigger: AppSettings.OverlayTrigger,
+        accessGranted: Bool,
+        strings: LocalizationManager = .shared,
+        majorVersion: Int = PermissionPane.systemMajorVersion
+    ) -> String {
+        guard accessGranted else {
+            return strings.string(for: PermissionPane.key("onboarding.needsAccess", majorVersion: majorVersion))
+        }
         let action: String
         switch trigger {
         case .holdCommand: action = strings.string(for: "onboarding.trigger.command")

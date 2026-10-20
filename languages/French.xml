@@ -108,6 +108,10 @@
   <string key="update.error.installDetail">Impossible d’installer la mise à jour. %1</string>
   <string key="update.error.installCancelled">L’installation a été annulée.</string>
 
+  <!-- macOS 27 permission pane -->
+  <string key="permission.waiting.macOS27">En attente de l’accès… activez Rote dans Confidentialité et sécurité › Contrôle de l’appareil et accès aux données</string>
+  <string key="onboarding.needsAccess.macOS27">La démo a d’abord besoin de l’accès Accessibilité. Activez Rote dans Confidentialité et sécurité › Contrôle de l’appareil et accès aux données, et la démo apparaîtra ici.</string>
+
   <!-- Settings -->
   <string key="settings.title">Réglages</string>
   <string key="settings.general">Général</string>

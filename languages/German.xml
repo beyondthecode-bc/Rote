@@ -108,6 +108,10 @@
   <string key="update.error.installDetail">Das Update konnte nicht installiert werden. %1</string>
   <string key="update.error.installCancelled">Die Installation wurde abgebrochen.</string>
 
+  <!-- macOS 27 permission pane -->
+  <string key="permission.waiting.macOS27">Warten auf Zugriff … Aktivieren Sie Rote unter Datenschutz &amp; Sicherheit › Gerätesteuerung und Datenzugriff</string>
+  <string key="onboarding.needsAccess.macOS27">Die Demo benötigt zuerst Zugriff auf die Bedienungshilfen. Aktivieren Sie Rote unter Datenschutz &amp; Sicherheit › Gerätesteuerung und Datenzugriff, dann erscheint die Demo hier.</string>
+
   <!-- Settings -->
   <string key="settings.title">Einstellungen</string>
   <string key="settings.general">Allgemein</string>

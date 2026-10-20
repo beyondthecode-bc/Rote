@@ -108,6 +108,10 @@
   <string key="update.error.installDetail">无法安装更新。%1</string>
   <string key="update.error.installCancelled">安装已取消。</string>
 
+  <!-- macOS 27 permission pane -->
+  <string key="permission.waiting.macOS27">正在等待访问权限…请在“隐私与安全” › “设备控制和数据访问”中打开 Rote</string>
+  <string key="onboarding.needsAccess.macOS27">演示需要先获得辅助功能访问权限。请在“隐私与安全” › “设备控制和数据访问”中打开 Rote，演示随后会显示在这里。</string>
+
   <!-- Settings -->
   <string key="settings.title">设置</string>
   <string key="settings.general">通用</string>

@@ -108,6 +108,10 @@
   <string key="update.error.installDetail">アップデートをインストールできませんでした。%1</string>
   <string key="update.error.installCancelled">インストールはキャンセルされました。</string>
 
+  <!-- macOS 27 permission pane -->
+  <string key="permission.waiting.macOS27">アクセスを待っています…「プライバシーとセキュリティ」›「デバイスの制御とデータへのアクセス」でRoteをオンにしてください</string>
+  <string key="onboarding.needsAccess.macOS27">デモを試すには、まずアクセシビリティへのアクセスが必要です。「プライバシーとセキュリティ」›「デバイスの制御とデータへのアクセス」でRoteをオンにすると、ここにデモが表示されます。</string>
+
   <!-- Settings -->
   <string key="settings.title">設定</string>
   <string key="settings.general">一般</string>

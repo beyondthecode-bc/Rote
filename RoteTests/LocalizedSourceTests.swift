@@ -53,6 +53,30 @@ final class LocalizedSourceTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(plural, 8)
     }
 
+    /// A text that names System Settings' list of apps with Accessibility access picks its key
+    /// through `PermissionPane.key`, so English needs the key and its macOS 27 form, and every
+    /// macOS 27 form is one the app asks for.
+    func testEveryKeyThatNamesThePermissionPaneHasItsMacOS27Form() throws {
+        let testDefaults = TestDefaults()
+        addTeardownBlock { testDefaults.remove() }
+        testDefaults.defaults.set("en", forKey: "rote.language")
+        let english = LocalizationManager(defaults: testDefaults.defaults, bundle: .main).strings
+        let call = #/PermissionPane\.key\(\s*"(?<key>[^"\\]+)"/#
+
+        var called: Set<String> = []
+        for (name, text) in try sources() {
+            for match in text.matches(of: call) {
+                let key = String(match.output.key)
+                called.insert(key)
+                XCTAssertNotNil(english[key], "\(name): \(key)")
+                XCTAssertNotNil(english[key + ".macOS27"], "\(name): \(key).macOS27")
+            }
+        }
+        XCTAssertEqual(called, ["permission.waiting", "onboarding.needsAccess"])
+        let macOS27Forms = Set(english.keys.filter { $0.hasSuffix(".macOS27") })
+        XCTAssertEqual(macOS27Forms, Set(called.map { $0 + ".macOS27" }))
+    }
+
     func testShortcutsAreSpokenOnlyThroughTheTranslatedKeyNames() throws {
         let english = "GlyphFormatter.spokenDescription"
         let uses = try sources().flatMap { file in
