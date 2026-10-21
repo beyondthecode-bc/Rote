@@ -109,6 +109,13 @@ done
 VT_LINK="https://www.virustotal.com/gui/file/${SHA256}"
 # The first public release has nobody to update yet: say so, and present the update path for later versions.
 EARLIER_TAGS="$(git ls-remote --tags origin 'refs/tags/v*' | awk '{print $2}' | grep -v -x -F -e "refs/tags/${TAG}" -e "refs/tags/${TAG}^{}" || true)"
+# Optional per-release notes, shown after the heading: release-notes/<tag>.md (committed with the release).
+WHATS_NEW=""
+if [ -f "release-notes/${TAG}.md" ]; then
+  WHATS_NEW="$(cat "release-notes/${TAG}.md")
+
+"
+fi
 if [ -z "${EARLIER_TAGS}" ]; then
   LEAD="First public release of Rote, the keyboard shortcut coach for your Mac.
 
@@ -122,7 +129,7 @@ fi
 echo "==> 8/9 GitHub release"
 NOTES="## Rote ${VERSION}
 
-${LEAD}**${UPDATE_LABEL}:** click the Rote menu bar icon → **About** → **Download** → **Install and Relaunch** (if no update is listed yet, click **Check Now** first; macOS asks for an administrator password to replace the app). Homebrew: \`brew upgrade --cask rote\`.
+${LEAD}${WHATS_NEW}**${UPDATE_LABEL}:** click the Rote menu bar icon → **About** → **Download** → **Install and Relaunch** (if no update is listed yet, click **Check Now** first). Rote checks the download against the SHA-256 published here and verifies the app's Developer ID signature before installing it. When \`Rote.app\` belongs to your user (a Homebrew install, or an app you dragged to Applications) it is replaced without a password; an app owned by another account asks for an administrator password. Homebrew: \`brew upgrade --cask rote\`.
 
 **New install:** download \`${ASSET_NAME}\` below, unzip, move **Rote.app** to Applications, launch, and grant Accessibility when asked. Or \`brew install --cask beyondthecode-bc/tap/rote\`.
 
