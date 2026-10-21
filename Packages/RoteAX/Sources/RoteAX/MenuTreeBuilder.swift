@@ -15,8 +15,9 @@ public enum MenuTreeBuilder {
         var partial = snapshot.isPartial
         var nodes = 0
         for (index, bar) in snapshot.barItems.enumerated() where bar.role == "AXMenuBarItem" {
-            let isApple = index == 0 && (bar.title == "Apple" || bar.title.isEmpty)
-            let menuTitle = isApple ? "Apple" : bar.title
+            let barTitle = MenuTitleSanitizer.sanitize(bar.title)
+            let isApple = index == 0 && (barTitle == "Apple" || barTitle.isEmpty)
+            let menuTitle = isApple ? "Apple" : barTitle
             var items: [MenuItemRecord] = []
             var cutShort = false
             for menu in bar.children where menu.role == "AXMenu" {
@@ -34,7 +35,7 @@ public enum MenuTreeBuilder {
         for node in menu.children where node.role == "AXMenuItem" {
             guard nodes < maxNodes else { cutShort = true; return }
             nodes += 1
-            let title = node.title.trimmingCharacters(in: .whitespacesAndNewlines)
+            let title = MenuTitleSanitizer.sanitize(node.title)
             if title.isEmpty { continue }                       // separator
             if let submenu = node.children.first(where: { $0.role == "AXMenu" }) {
                 collect(submenu, path: path + [title], bundleID: bundleID, into: &items, nodes: &nodes, cutShort: &cutShort)

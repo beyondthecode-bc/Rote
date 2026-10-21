@@ -175,6 +175,22 @@ final class MenuItemResolverTests: XCTestCase {
         XCTAssertNil(record)
     }
 
+    /// Audit L4, on the selection path: the item's own title and every parent title are cleaned
+    /// the way the scan cleans them, so the selection lands on the scanned record.
+    func testTitlesAreCappedAndStrippedOnSelection() throws {
+        var source = RecordedItemSource(try fixture())
+        let hostile = "\u{202E}" + String(repeating: "x", count: 1_000) + "\u{07}"
+        source.add("sub", role: "AXMenuItem", title: "\u{2066}Sub\u{2069}\t", parent: "2/0")          // inside File
+        source.add("subMenu", role: "AXMenu", parent: "sub")
+        source.add(AXMenuNode(role: "AXMenuItem", title: hostile, isEnabled: true, cmdChar: "X", cmdModifiers: 0), id: "leaf", parent: "subMenu")
+        let record = try XCTUnwrap(resolve("leaf", in: source))
+        XCTAssertEqual(record.path.dropLast(), ["File", "Sub"])
+        XCTAssertEqual(record.title, String(repeating: "x", count: MenuTitleSanitizer.maxScalars))
+        let node = AXMenuNode(role: "AXMenuItem", title: hostile, isEnabled: true, cmdChar: "X", cmdModifiers: 0)
+        let scanned = MenuTreeBuilder.record(for: node, path: ["File", "Sub", MenuTitleSanitizer.sanitize(hostile)], bundleID: "com.apple.Safari")
+        XCTAssertEqual(record.identity, scanned.identity)
+    }
+
     func testDisabledItemKeepsItsStateAndShortcut() throws {
         let source = RecordedItemSource(try fixture())
         let record = try XCTUnwrap(resolve("2/0/2", in: source))

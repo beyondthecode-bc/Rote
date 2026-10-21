@@ -33,6 +33,7 @@ public final class FrontmostAppTracker {
     /// Reads only fixed properties of a Sendable value, so it needs no actor.
     nonisolated public static func identity(for app: NSRunningApplication) -> AppIdentity? {
         guard let bundleID = app.bundleIdentifier else { return nil }
-        return AppIdentity(pid: app.processIdentifier, bundleID: bundleID, name: app.localizedName ?? bundleID)
+        let name = MenuTitleSanitizer.sanitize(app.localizedName ?? "")
+        return AppIdentity(pid: app.processIdentifier, bundleID: bundleID, name: name.isEmpty ? bundleID : name)
     }
 }

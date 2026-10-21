@@ -296,7 +296,7 @@ enum MenuItemResolver {
     static func record<Source: MenuItemSource>(for element: Source.Element, source: Source, bundleID: String, isExpired: () -> Bool = { false }) -> MenuItemRecord? {
         let values = source.attributes(of: element, attributes)
         guard (values[kAXRoleAttribute] as? String) == "AXMenuItem" else { return nil }
-        let title = (values[kAXTitleAttribute] as? String ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let title = MenuTitleSanitizer.sanitize(values[kAXTitleAttribute] as? String ?? "")
         guard !title.isEmpty else { return nil }
 
         var path = [title]
@@ -307,7 +307,7 @@ enum MenuItemResolver {
             depth += 1
             let parentValues = source.attributes(of: parent, [kAXRoleAttribute, kAXTitleAttribute])
             let role = parentValues[kAXRoleAttribute] as? String ?? ""
-            let parentTitle = parentValues[kAXTitleAttribute] as? String ?? ""
+            let parentTitle = MenuTitleSanitizer.sanitize(parentValues[kAXTitleAttribute] as? String ?? "")
             if role == "AXMenuBarItem" {
                 // A status-item menu also ends in an AXMenuBarItem, under the app's extras bar.
                 guard !isExpired(), let bar = source.parent(of: parent), source.isMainMenuBar(bar) else { return nil }
@@ -315,9 +315,8 @@ enum MenuItemResolver {
                 reachedMenuBar = true
                 break
             }
-            if role == "AXMenuItem" {
-                let trimmed = parentTitle.trimmingCharacters(in: .whitespacesAndNewlines)
-                if !trimmed.isEmpty { path.insert(trimmed, at: 0) }
+            if role == "AXMenuItem", !parentTitle.isEmpty {
+                path.insert(parentTitle, at: 0)
             }
             if role == "AXMenuBar" || role == "AXApplication" { break }
             current = parent

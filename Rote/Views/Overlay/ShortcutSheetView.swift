@@ -63,7 +63,7 @@ struct ShortcutSheetView: View {
     private var footer: some View {
         HStack(spacing: 10) {
             Image(nsImage: appIcon).resizable().frame(width: 18, height: 18)
-            Text(tree.appName).fontWeight(.semibold)
+            Text(tree.appName).fontWeight(.semibold).lineLimit(1).truncationMode(.middle)
             Text("·").foregroundStyle(.tertiary)
             Text(l("overlay.count", count: shortcutCount, number(shortcutCount)))
             if tree.isPartial {
@@ -101,6 +101,8 @@ struct MenuColumnView: View {
                 .font(.system(size: 11, weight: .semibold))
                 .tracking(0.66)
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .truncationMode(.middle)
                 .padding(.bottom, 6)
             // Keyed by position: two windows named "Untitled" share an identity.
             ForEach(Array(rows.enumerated()), id: \.offset) { _, item in
@@ -121,6 +123,8 @@ struct MenuColumnView: View {
                     Text(item.parentPath.joined(separator: " › ") + " ›")
                         .font(.system(size: 10))
                         .foregroundStyle(.tertiary)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
                 }
                 Text(item.title)
                     .font(.system(size: 13))
