@@ -107,6 +107,9 @@
   <string key="update.error.install">Impossible d’installer la mise à jour.</string>
   <string key="update.error.installDetail">Impossible d’installer la mise à jour. %1</string>
   <string key="update.error.installCancelled">L’installation a été annulée.</string>
+  <string key="update.error.checksum">Le téléchargement n’a pas pu être vérifié avec la somme de contrôle publiée avec la version.</string>
+  <string key="update.error.signature">L’app téléchargée n’est pas signée par le développeur de Rote.</string>
+  <string key="update.error.notNewer">L’app téléchargée n’est pas plus récente que celle installée.</string>
 
   <!-- macOS 27 permission pane -->
   <string key="permission.waiting.macOS27">En attente de l’accès… activez Rote dans Confidentialité et sécurité › Contrôle de l’appareil et accès aux données</string>
@@ -171,6 +174,7 @@
   <string key="update.downloading">Téléchargement…</string>
   <string key="update.ready">Prêt pour l’installation</string>
   <string key="update.install">Installer et relancer</string>
+  <string key="update.viewRelease">Voir la version</string>
   <string key="update.installing">Installation…</string>
   <string key="update.error">Échec de la recherche de mises à jour</string>
   <string key="update.retry">Réessayer</string>

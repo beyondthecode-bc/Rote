@@ -18,7 +18,7 @@ Settings › Data exports the state file as JSON and resets the statistics (item
 
 ## Network
 
-Rote makes one kind of request: it asks the GitHub Releases API (`https://api.github.com/repos/beyondthecode-bc/Rote/releases/latest`) whether a newer version exists, when the app launches and when you click Check Now in Settings › About. Turn off "Check for updates on launch" in Settings › General to stop the launch check. Only when you click Download does Rote fetch the release's zip from GitHub. These requests carry no account, identifier or usage data; as with any website, GitHub sees your IP address and the standard user agent macOS adds (the app's name and build number and the system's networking version). The About tab's GitHub, GitHub Sponsors and Buy Me a Coffee links open in your browser only when you click them.
+Rote makes one kind of request: it asks the GitHub Releases API (`https://api.github.com/repos/beyondthecode-bc/Rote/releases/latest`) whether a newer version exists, when the app launches and when you click Check Now in Settings › About. Turn off "Check for updates on launch" in Settings › General to stop the launch check. Only when you click Download does Rote fetch the release's zip and its `.sha256` checksum file from GitHub; it installs the zip only if its checksum matches and the app inside is signed by BeyondTheCode's Developer ID. These requests carry no account, identifier or usage data; as with any website, GitHub sees your IP address and the standard user agent macOS adds (the app's name and build number and the system's networking version). The About tab's GitHub, GitHub Sponsors and Buy Me a Coffee links open in your browser only when you click them.
 
 ## Permissions
 

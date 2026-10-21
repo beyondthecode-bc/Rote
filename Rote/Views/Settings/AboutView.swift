@@ -5,9 +5,9 @@ enum UpdateCheckState: Equatable {
     case idle
     case checking
     case upToDate
-    case available(version: String, downloadURL: URL)
+    case available(GitHubUpdateChecker.AvailableUpdate)
     case downloading
-    case downloaded(path: String)
+    case downloaded(GitHubUpdateChecker.DownloadedUpdate)
     case installing
     case error(UpdateFailure)
 }
@@ -52,8 +52,11 @@ enum UpdateErrorMessage {
         case .invalidResponse: return UpdateFailure(key: "update.error.invalidResponse")
         case .noDownloadAsset: return UpdateFailure(key: "update.error.noDownload")
         case .downloadFailed: return UpdateFailure(key: "update.error.download")
+        case .checksumMismatch: return UpdateFailure(key: "update.error.checksum")
         case .extractFailed: return UpdateFailure(key: "update.error.extract")
         case .noAppInArchive: return UpdateFailure(key: "update.error.noApp")
+        case .signatureInvalid: return UpdateFailure(key: "update.error.signature")
+        case .notNewer: return UpdateFailure(key: "update.error.notNewer")
         case .installFailed(let reason):
             // The checker's own reasons are English literals; anything else is the system's
             // message from the administrator prompt or the copy, shown after Rote's sentence.
@@ -142,20 +145,27 @@ struct AboutView: View {
                     Button(l("update.recheck")) { checkForUpdates() }
                         .buttonStyle(.borderless).controlSize(.small)
                 }
-            case .available(let version, let url):
+            case .available(let update):
                 HStack {
-                    Text(l("update.version", version)).font(.system(size: 12, weight: .medium))
+                    Text(l("update.version", update.version)).font(.system(size: 12, weight: .medium))
                     Spacer()
-                    Button(l("update.download")) { download(from: url) }
-                        .buttonStyle(.borderedProminent).controlSize(.small).tint(DesignTokens.accent)
+                    switch update.source {
+                    case .download(let download):
+                        Button(l("update.download")) { self.download(download) }
+                            .buttonStyle(.borderedProminent).controlSize(.small).tint(DesignTokens.accent)
+                    case .page(let pageURL):
+                        // The release lacks the pinned zip and checksum, so Rote cannot verify it: the browser takes over.
+                        Button(l("update.viewRelease")) { NSWorkspace.shared.open(pageURL) }
+                            .buttonStyle(.borderedProminent).controlSize(.small).tint(DesignTokens.accent)
+                    }
                 }
             case .downloading:
                 progressRow(l("update.downloading"))
-            case .downloaded(let path):
+            case .downloaded(let update):
                 HStack {
                     Text(l("update.ready")).font(.system(size: 12))
                     Spacer()
-                    Button(l("update.install")) { install(from: path) }
+                    Button(l("update.install")) { install(update) }
                         .buttonStyle(.borderedProminent).controlSize(.small).tint(DesignTokens.accent)
                 }
             case .installing:
@@ -275,7 +285,7 @@ struct AboutView: View {
     /// with its Download button instead of asking the user to check again.
     private func showUpdateFoundAtLaunch() {
         guard updateState == .idle, let update = container.updateAvailable else { return }
-        updateState = .available(version: update.version, downloadURL: update.url)
+        updateState = .available(update)
     }
 
     private func checkForUpdates() {
@@ -285,8 +295,8 @@ struct AboutView: View {
                 switch try await GitHubUpdateChecker.checkForUpdate(currentVersion: shortVersion) {
                 case .upToDate:
                     updateState = .upToDate
-                case .available(let version, let url):
-                    updateState = .available(version: version, downloadURL: url)
+                case .available(let update):
+                    updateState = .available(update)
                 }
             } catch {
                 updateState = .error(UpdateErrorMessage.failure(for: error, during: .check))
@@ -295,15 +305,15 @@ struct AboutView: View {
     }
 
     /// Like `checkForUpdates`, each step changes the state before its first await, so its button
-    /// is gone before a second click can start it again: a second install would delete the folder
-    /// the first one copies from and ask for the administrator password again. The download
+    /// is gone before a second click can start it again: a second install would race the first
+    /// one's rename swap and could ask for the administrator password again. The download
     /// reports progress only when it ends, so it shows a spinner rather than a bar.
-    private func download(from url: URL) {
+    private func download(_ download: GitHubUpdateChecker.ReleaseDownload) {
         updateState = .downloading
         Task {
             do {
-                let path = try await GitHubUpdateChecker.downloadUpdate(from: url) { @Sendable _ in }
-                updateState = .downloaded(path: path)
+                let update = try await GitHubUpdateChecker.downloadUpdate(download) { @Sendable _ in }
+                updateState = .downloaded(update)
             } catch {
                 updateState = .error(UpdateErrorMessage.failure(for: error, during: .download))
             }
@@ -311,11 +321,11 @@ struct AboutView: View {
     }
 
     /// On success the installer relaunches Rote, so `.installing` stays until the app quits.
-    private func install(from path: String) {
+    private func install(_ update: GitHubUpdateChecker.DownloadedUpdate) {
         updateState = .installing
         Task {
             do {
-                try await GitHubUpdateChecker.installUpdate(fromZip: path)
+                try await GitHubUpdateChecker.installUpdate(update)
             } catch {
                 updateState = .error(UpdateErrorMessage.failure(for: error, during: .install))
             }

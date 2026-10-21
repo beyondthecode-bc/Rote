@@ -107,6 +107,9 @@
   <string key="update.error.install">无法安装更新。</string>
   <string key="update.error.installDetail">无法安装更新。%1</string>
   <string key="update.error.installCancelled">安装已取消。</string>
+  <string key="update.error.checksum">无法用发布版本公布的校验和验证下载的文件。</string>
+  <string key="update.error.signature">下载的应用未由 Rote 的开发者签名。</string>
+  <string key="update.error.notNewer">下载的应用不比已安装的版本更新。</string>
 
   <!-- macOS 27 permission pane -->
   <string key="permission.waiting.macOS27">正在等待访问权限…请在“隐私与安全” › “设备控制和数据访问”中打开 Rote</string>
@@ -171,6 +174,7 @@
   <string key="update.downloading">正在下载…</string>
   <string key="update.ready">已准备好安装</string>
   <string key="update.install">安装并重新启动</string>
+  <string key="update.viewRelease">查看发布版本</string>
   <string key="update.installing">正在安装…</string>
   <string key="update.error">检查更新失败</string>
   <string key="update.retry">重试</string>

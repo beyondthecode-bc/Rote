@@ -107,6 +107,9 @@
   <string key="update.error.install">No se ha podido instalar la actualización.</string>
   <string key="update.error.installDetail">No se ha podido instalar la actualización. %1</string>
   <string key="update.error.installCancelled">Se ha cancelado la instalación.</string>
+  <string key="update.error.checksum">No se pudo comprobar la descarga con la suma de verificación publicada con la versión.</string>
+  <string key="update.error.signature">La app descargada no está firmada por el desarrollador de Rote.</string>
+  <string key="update.error.notNewer">La app descargada no es más reciente que la instalada.</string>
 
   <!-- macOS 27 permission pane -->
   <string key="permission.waiting.macOS27">Esperando acceso… active Rote en Privacidad y seguridad › Control de dispositivos y acceso a datos</string>
@@ -171,6 +174,7 @@
   <string key="update.downloading">Descargando…</string>
   <string key="update.ready">Lista para instalar</string>
   <string key="update.install">Instalar y reabrir</string>
+  <string key="update.viewRelease">Ver la versión</string>
   <string key="update.installing">Instalando…</string>
   <string key="update.error">No se han podido buscar actualizaciones</string>
   <string key="update.retry">Reintentar</string>

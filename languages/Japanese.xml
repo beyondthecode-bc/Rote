@@ -107,6 +107,9 @@
   <string key="update.error.install">アップデートをインストールできませんでした。</string>
   <string key="update.error.installDetail">アップデートをインストールできませんでした。%1</string>
   <string key="update.error.installCancelled">インストールはキャンセルされました。</string>
+  <string key="update.error.checksum">ダウンロードしたファイルをリリースで公開されたチェックサムで確認できませんでした。</string>
+  <string key="update.error.signature">ダウンロードしたアプリは Rote の開発者によって署名されていません。</string>
+  <string key="update.error.notNewer">ダウンロードしたアプリはインストール済みのものより新しくありません。</string>
 
   <!-- macOS 27 permission pane -->
   <string key="permission.waiting.macOS27">アクセスを待っています…「プライバシーとセキュリティ」›「デバイスの制御とデータへのアクセス」でRoteをオンにしてください</string>
@@ -171,6 +174,7 @@
   <string key="update.downloading">ダウンロード中…</string>
   <string key="update.ready">インストールの準備ができました</string>
   <string key="update.install">インストールして再起動</string>
+  <string key="update.viewRelease">リリースを表示</string>
   <string key="update.installing">インストール中…</string>
   <string key="update.error">アップデートを確認できませんでした</string>
   <string key="update.retry">再試行</string>

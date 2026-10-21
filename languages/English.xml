@@ -107,6 +107,9 @@
   <string key="update.error.install">Could not install the update.</string>
   <string key="update.error.installDetail">Could not install the update. %1</string>
   <string key="update.error.installCancelled">The installation was cancelled.</string>
+  <string key="update.error.checksum">The download could not be verified against the checksum published with the release.</string>
+  <string key="update.error.signature">The downloaded app is not signed by the developer of Rote.</string>
+  <string key="update.error.notNewer">The downloaded app is not newer than the installed one.</string>
 
   <!-- macOS 27 permission pane -->
   <string key="permission.waiting.macOS27">Waiting for access… turn on Rote under Privacy &amp; Security › Device Control and Data Access</string>
@@ -171,6 +174,7 @@
   <string key="update.downloading">Downloading…</string>
   <string key="update.ready">Ready to install</string>
   <string key="update.install">Install and Relaunch</string>
+  <string key="update.viewRelease">View Release</string>
   <string key="update.installing">Installing…</string>
   <string key="update.error">Update check failed</string>
   <string key="update.retry">Retry</string>

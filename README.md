@@ -65,7 +65,7 @@ Download `Rote-vX.Y.Z.zip` from [Releases](https://github.com/beyondthecode-bc/R
 
 **Updating**
 
-Click the Rote menu bar icon → **About** → **Download** → **Install and Relaunch** (if no update is listed yet, click **Check Now** first). macOS asks for an administrator password to replace the app. Homebrew users can run `brew upgrade --cask rote` instead. If the in-app update fails, quit Rote, download the zip from [Releases](https://github.com/beyondthecode-bc/Rote/releases/latest) and replace `/Applications/Rote.app` with the unzipped app.
+Click the Rote menu bar icon → **About** → **Download** → **Install and Relaunch** (if no update is listed yet, click **Check Now** first). Before installing, Rote checks the download against the SHA-256 published with the release and verifies that the app inside carries BeyondTheCode's Developer ID signature; it refuses anything else. When `Rote.app` belongs to your user (a Homebrew install, or an app you dragged to Applications), it is replaced without a password; only an app owned by another account, such as one installed by a different administrator, asks for an administrator password. Homebrew users can run `brew upgrade --cask rote` instead. If the in-app update fails, quit Rote, download the zip from [Releases](https://github.com/beyondthecode-bc/Rote/releases/latest) and replace `/Applications/Rote.app` with the unzipped app.
 
 ## Permissions and privacy
 

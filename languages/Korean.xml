@@ -107,6 +107,9 @@
   <string key="update.error.install">업데이트를 설치할 수 없습니다.</string>
   <string key="update.error.installDetail">업데이트를 설치할 수 없습니다. %1</string>
   <string key="update.error.installCancelled">설치가 취소되었습니다.</string>
+  <string key="update.error.checksum">다운로드한 파일을 릴리스에 게시된 체크섬으로 확인할 수 없습니다.</string>
+  <string key="update.error.signature">다운로드한 앱은 Rote 개발자가 서명하지 않았습니다.</string>
+  <string key="update.error.notNewer">다운로드한 앱이 설치된 앱보다 새롭지 않습니다.</string>
 
   <!-- macOS 27 permission pane -->
   <string key="permission.waiting.macOS27">접근 권한을 기다리는 중… 개인정보 보호 및 보안 › 기기 제어 및 데이터 접근에서 Rote를 켜십시오</string>
@@ -171,6 +174,7 @@
   <string key="update.downloading">다운로드 중…</string>
   <string key="update.ready">설치 준비 완료</string>
   <string key="update.install">설치 후 다시 시작</string>
+  <string key="update.viewRelease">릴리스 보기</string>
   <string key="update.installing">설치 중…</string>
   <string key="update.error">업데이트 확인 실패</string>
   <string key="update.retry">재시도</string>

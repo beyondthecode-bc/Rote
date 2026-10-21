@@ -16,7 +16,7 @@ final class AppContainer {
     let nudges: NudgeController
     let overlay: OverlayController
 
-    var updateAvailable: (version: String, url: URL)?
+    var updateAvailable: GitHubUpdateChecker.AvailableUpdate?
     @ObservationIgnored private(set) var started = false
 
     private init() {
@@ -68,8 +68,8 @@ final class AppContainer {
     private func checkForUpdates() async {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
         do {
-            if case .available(let newVersion, let url) = try await GitHubUpdateChecker.checkForUpdate(currentVersion: version) {
-                updateAvailable = (newVersion, url)
+            if case .available(let update) = try await GitHubUpdateChecker.checkForUpdate(currentVersion: version) {
+                updateAvailable = update
             }
         } catch {
             Logger.updater.info("Update check skipped: \(error.localizedDescription, privacy: .public)")

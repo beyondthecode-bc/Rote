@@ -107,6 +107,9 @@
   <string key="update.error.install">Das Update konnte nicht installiert werden.</string>
   <string key="update.error.installDetail">Das Update konnte nicht installiert werden. %1</string>
   <string key="update.error.installCancelled">Die Installation wurde abgebrochen.</string>
+  <string key="update.error.checksum">Der Download konnte nicht mit der zur Version veröffentlichten Prüfsumme bestätigt werden.</string>
+  <string key="update.error.signature">Die geladene App ist nicht vom Entwickler von Rote signiert.</string>
+  <string key="update.error.notNewer">Die geladene App ist nicht neuer als die installierte.</string>
 
   <!-- macOS 27 permission pane -->
   <string key="permission.waiting.macOS27">Warten auf Zugriff … Aktivieren Sie Rote unter Datenschutz &amp; Sicherheit › Gerätesteuerung und Datenzugriff</string>
@@ -171,6 +174,7 @@
   <string key="update.downloading">Wird geladen …</string>
   <string key="update.ready">Bereit zur Installation</string>
   <string key="update.install">Installieren und neu starten</string>
+  <string key="update.viewRelease">Version anzeigen</string>
   <string key="update.installing">Wird installiert …</string>
   <string key="update.error">Suche nach Updates fehlgeschlagen</string>
   <string key="update.retry">Erneut versuchen</string>
