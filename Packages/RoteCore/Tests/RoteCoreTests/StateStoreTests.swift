@@ -163,6 +163,67 @@ final class StateStoreTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: directory.appendingPathComponent(name).path))
     }
 
+    /// Audit M1: a file with `Int.max` counters on two records of one identity trapped the start-up
+    /// merge on every launch. The store moves it aside like any unreadable file and Rote starts fresh.
+    func testTamperedCountersAreQuarantined() async throws {
+        let item = """
+        {"bundleID":"com.apple.Safari","path":["View","Reload Page"],"shortcut":{"key":{"character":{"_0":"R"}},"modifiers":8}}
+        """
+        let json = """
+        {"schemaVersion":1,"items":{
+        "a":{"item":\(item),"phase":"coaching","nudgeCount":\(Int.max),"regressions":\(Int.max),"menuUsesSinceLastNudge":\(Int.max)},
+        "b":{"item":\(item),"phase":"learned","nudgeCount":\(Int.max),"regressions":\(Int.max),"shortcutUsesSinceCoaching":\(Int.max)}},
+        "nudgesByDay":{"2026-10-18":\(Int.max)}}
+        """
+        try json.write(to: fileURL, atomically: true, encoding: .utf8)
+        let store = StateStore(fileURL: fileURL)
+        let result = await store.load()
+        guard case .recovered(let name) = result else { return XCTFail("expected recovery, got \(result)") }
+        XCTAssertFalse(FileManager.default.fileExists(atPath: fileURL.path))
+        XCTAssertEqual(try String(contentsOf: directory.appendingPathComponent(name), encoding: .utf8), json, "the file is kept intact for inspection")
+        // What the engine does next with a fresh state: re-key, prune, handle; none of it traps.
+        var state = CoachState()
+        state.rekeyItems()
+        let coach = Coach(policy: .default, calendar: CoachFixtures.calendar)
+        coach.prune(state: &state, now: Date())
+        XCTAssertEqual(coach.handle(CoachFixtures.menu(CoachFixtures.reload, at: 0), state: &state, context: CoachFixtures.ctx), .record)
+        let again = await store.load()
+        XCTAssertEqual(again, .fresh)
+    }
+
+    func testOutOfRangeCollectionsAreQuarantined() async throws {
+        let days = (0..<(CoachState.maxDecodedCollectionCount + 1)).map { "\"d\($0)\":1" }.joined(separator: ",")
+        try "{\"schemaVersion\":1,\"nudgesByDay\":{\(days)}}".write(to: fileURL, atomically: true, encoding: .utf8)
+        let result = await StateStore(fileURL: fileURL).load()
+        guard case .recovered = result else { return XCTFail("expected recovery, got \(result)") }
+    }
+
+    /// A file past the size cap is moved aside unread: no parse, however many entries it holds.
+    func testOversizedFileIsQuarantinedWithoutParsing() async throws {
+        try await StateStore(fileURL: fileURL).saveNow(sampleState())
+        let size = try XCTUnwrap(FileManager.default.attributesOfItem(atPath: fileURL.path)[.size] as? Int)
+        let strict = StateStore(fileURL: fileURL, maxFileSize: size - 1)
+        guard case .recovered = await strict.load() else { return XCTFail("expected recovery") }
+        XCTAssertFalse(FileManager.default.fileExists(atPath: fileURL.path))
+        try await StateStore(fileURL: fileURL).saveNow(sampleState())
+        let exact = StateStore(fileURL: fileURL, maxFileSize: size)
+        let atCap = await exact.load()
+        XCTAssertEqual(atCap, .loaded(sampleState()), "a file at the cap still loads")
+        XCTAssertGreaterThanOrEqual(StateStore.defaultMaxFileSize, 64 * 1024 * 1024)
+    }
+
+    /// Long use lists and logs from an earlier build are trimmed to the caps, not quarantined.
+    func testLegacyLongListsLoadTrimmed() async throws {
+        var state = sampleState()
+        var record = try XCTUnwrap(state.items.values.first)
+        record.menuUses = (0..<(ItemRecord.maxMenuUses + 20)).map { Date(timeIntervalSince1970: 1_792_000_000 + Double($0)) }
+        state.items[record.identity] = record
+        try await StateStore(fileURL: fileURL).saveNow(state)
+        guard case .loaded(let loaded) = await StateStore(fileURL: fileURL).load() else { return XCTFail("expected a load") }
+        XCTAssertEqual(loaded.items[record.identity]?.menuUses.count, ItemRecord.maxMenuUses)
+        XCTAssertEqual(loaded.items[record.identity]?.menuUses.last, record.menuUses.last)
+    }
+
     func testNewerSchemaIsQuarantined() async throws {
         let store = StateStore(fileURL: fileURL)
         try await store.saveNow(sampleState())

@@ -37,6 +37,9 @@ public struct Coach: Sendable {
         switch event.kind {
         case .menuUsed:
             record.menuUses.append(now)
+            if record.menuUses.count > ItemRecord.maxMenuUses {
+                record.menuUses.removeFirst(record.menuUses.count - ItemRecord.maxMenuUses)
+            }
             record.menuUsesSinceLastNudge += 1
             let decision = evaluateNudge(&record, state: &state, now: now, context: context)
             state.items[item.identity] = record

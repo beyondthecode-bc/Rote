@@ -8,17 +8,23 @@ public actor StateStore {
         case recovered(corruptFileName: String)
     }
 
+    /// Bytes a `state.json` may have before it is moved aside unread. A heavy year of use is a
+    /// few megabytes; a file this size was not written by Rote (audit M1).
+    public static let defaultMaxFileSize = 64 * 1024 * 1024
+
     private let fileURL: URL
     private let debounce: Duration
+    private let maxFileSize: Int
     private let onWriteFailure: @Sendable (any Error) -> Void
     private var pending: Task<Void, Never>?
     private var latest: CoachState?
 
     /// `onWriteFailure` hears about every debounced or flushed write that fails. The state stays
     /// in memory, so the next change or `flush()` tries again; `saveNow` throws instead.
-    public init(fileURL: URL, debounce: Duration = .seconds(2), onWriteFailure: @escaping @Sendable (any Error) -> Void = { _ in }) {
+    public init(fileURL: URL, debounce: Duration = .seconds(2), maxFileSize: Int = StateStore.defaultMaxFileSize, onWriteFailure: @escaping @Sendable (any Error) -> Void = { _ in }) {
         self.fileURL = fileURL
         self.debounce = debounce
+        self.maxFileSize = maxFileSize
         self.onWriteFailure = onWriteFailure
     }
 
@@ -29,12 +35,19 @@ public actor StateStore {
         return base.appendingPathComponent("Rote", isDirectory: true).appendingPathComponent("state.json")
     }
 
+    /// A file that is unreadable, from a newer build, over `maxFileSize`, or carries a value Rote
+    /// never writes (see `CoachStateDecodingReport`) is moved aside and the result is `.recovered`.
     public func load() -> LoadResult {
         guard FileManager.default.fileExists(atPath: fileURL.path) else { return .fresh }
         do {
+            let size = try FileManager.default.attributesOfItem(atPath: fileURL.path)[.size] as? Int ?? 0
+            guard size <= maxFileSize else { return quarantine() }
             let data = try Data(contentsOf: fileURL)
-            let state = try Self.makeDecoder().decode(CoachState.self, from: data)
-            guard state.schemaVersion <= CoachState.currentSchemaVersion else { return quarantine() }
+            let report = CoachStateDecodingReport()
+            let decoder = Self.makeDecoder()
+            decoder.userInfo[CoachState.decodingReportKey] = report
+            let state = try decoder.decode(CoachState.self, from: data)
+            guard state.schemaVersion <= CoachState.currentSchemaVersion, report.isEmpty else { return quarantine() }
             return .loaded(state)
         } catch {
             return quarantine()
