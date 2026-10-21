@@ -3,26 +3,41 @@ import RoteCore
 
 /// Pure transformation from a recorded snapshot to the model the app uses (spec §5.1).
 public enum MenuTreeBuilder {
+    /// Longest path (menu titles down to the item) a record may have. `MenuScanner` already stops
+    /// at its own depth cap; this one guards replayed snapshots, so `collect` cannot recurse
+    /// without bound either (audit M3).
+    static let maxDepth = 12
+    /// Menu item nodes visited in one build, over every menu. Past it the tree is partial.
+    static let maxNodes = 5_000
+
     public static func build(_ snapshot: MenuSnapshot) -> MenuTree {
         var menus: [MenuTree.Menu] = []
+        var partial = snapshot.isPartial
+        var nodes = 0
         for (index, bar) in snapshot.barItems.enumerated() where bar.role == "AXMenuBarItem" {
             let isApple = index == 0 && (bar.title == "Apple" || bar.title.isEmpty)
             let menuTitle = isApple ? "Apple" : bar.title
             var items: [MenuItemRecord] = []
+            var cutShort = false
             for menu in bar.children where menu.role == "AXMenu" {
-                collect(menu, path: [menuTitle], bundleID: snapshot.bundleID, into: &items)
+                collect(menu, path: [menuTitle], bundleID: snapshot.bundleID, into: &items, nodes: &nodes, cutShort: &cutShort)
             }
-            menus.append(MenuTree.Menu(title: menuTitle, isAppleMenu: isApple, items: items, isComplete: index < snapshot.completeBarItemCount))
+            if cutShort { partial = true }
+            menus.append(MenuTree.Menu(title: menuTitle, isAppleMenu: isApple, items: items, isComplete: index < snapshot.completeBarItemCount && !cutShort))
         }
-        return MenuTree(bundleID: snapshot.bundleID, appName: snapshot.appName, menus: menus, scannedAt: snapshot.takenAt, isPartial: snapshot.isPartial)
+        return MenuTree(bundleID: snapshot.bundleID, appName: snapshot.appName, menus: menus, scannedAt: snapshot.takenAt, isPartial: partial)
     }
 
-    private static func collect(_ menu: AXMenuNode, path: [String], bundleID: String, into items: inout [MenuItemRecord]) {
+    /// `cutShort` is set when the depth or node cap left items of this menu out.
+    private static func collect(_ menu: AXMenuNode, path: [String], bundleID: String, into items: inout [MenuItemRecord], nodes: inout Int, cutShort: inout Bool) {
+        guard path.count < maxDepth else { cutShort = true; return }
         for node in menu.children where node.role == "AXMenuItem" {
+            guard nodes < maxNodes else { cutShort = true; return }
+            nodes += 1
             let title = node.title.trimmingCharacters(in: .whitespacesAndNewlines)
             if title.isEmpty { continue }                       // separator
             if let submenu = node.children.first(where: { $0.role == "AXMenu" }) {
-                collect(submenu, path: path + [title], bundleID: bundleID, into: &items)
+                collect(submenu, path: path + [title], bundleID: bundleID, into: &items, nodes: &nodes, cutShort: &cutShort)
                 continue
             }
             items.append(record(for: node, path: path + [title], bundleID: bundleID))

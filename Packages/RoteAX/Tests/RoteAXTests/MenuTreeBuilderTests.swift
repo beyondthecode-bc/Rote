@@ -94,6 +94,38 @@ final class MenuTreeBuilderTests: XCTestCase {
         XCTAssertEqual(try tree().shortcutCount, 15)
     }
 
+    // MARK: Hostile snapshots (audit M3)
+
+    func testDeepSubmenusStopAtTheDepthCap() {
+        let tree = MenuTreeBuilder.build(MenuScannerTests.nested(levels: 40))
+        XCTAssertTrue(tree.isPartial)
+        XCTAssertEqual(tree.menus.count, 1)
+        XCTAssertFalse(tree.menus[0].isComplete)
+        XCTAssertTrue(tree.menus[0].items.isEmpty, "the only item lies past the cap")
+        let shallow = MenuTreeBuilder.build(MenuScannerTests.nested(levels: 4))
+        XCTAssertFalse(shallow.isPartial)
+        XCTAssertEqual(shallow.menus[0].items.map(\.path), [["Deep", "Level 1", "Level 2", "Level 3", "Level 4", "Deepest"]])
+    }
+
+    func testSubmenusAtTheCapAreCollected() {
+        let tree = MenuTreeBuilder.build(MenuScannerTests.nested(levels: MenuTreeBuilder.maxDepth - 2))
+        XCTAssertFalse(tree.isPartial)
+        XCTAssertEqual(tree.menus[0].items.first?.path.count, MenuTreeBuilder.maxDepth)
+        let over = MenuTreeBuilder.build(MenuScannerTests.nested(levels: MenuTreeBuilder.maxDepth - 1))
+        XCTAssertTrue(over.isPartial)
+        XCTAssertTrue(over.menus[0].items.isEmpty)
+    }
+
+    func testNodeCapMarksTheTreePartial() {
+        let tree = MenuTreeBuilder.build(MenuScannerTests.flat(count: MenuTreeBuilder.maxNodes + 1_000))
+        XCTAssertTrue(tree.isPartial)
+        XCTAssertFalse(tree.menus[0].isComplete)
+        XCTAssertEqual(tree.menus[0].items.count, MenuTreeBuilder.maxNodes)
+        let wide = MenuTreeBuilder.build(MenuScannerTests.flat(count: MenuTreeBuilder.maxNodes))
+        XCTAssertFalse(wide.isPartial)
+        XCTAssertEqual(wide.menus[0].items.count, MenuTreeBuilder.maxNodes)
+    }
+
     func testPartialFlagPropagates() throws {
         var snapshot = try loadFixture()
         snapshot.isPartial = true
