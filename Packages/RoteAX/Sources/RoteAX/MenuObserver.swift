@@ -15,13 +15,22 @@ public enum MenuObserverError: Error, Equatable {
 
 /// The Accessibility calls the observer makes for one app. Production wraps an `AXObserver`;
 /// tests script busy and failing apps (spec §11).
+@MainActor
 protocol MenuNotificationConnection: AnyObject {
     func add(_ notification: String) -> AXError
     func remove(_ notification: String)
-    /// Resolves the element a selection notification carries.
-    func record(for element: AXUIElement, bundleID: String) -> MenuItemRecord?
+    /// Resolves the element a selection notification carries. Production reads the app off the
+    /// main actor within a deadline (audit L1); nil when the item cannot be placed in time.
+    func record(for element: AXUIElement, bundleID: String) async -> MenuItemRecord?
     /// Stops delivery by taking the observer off the main run loop.
     func close()
+}
+
+/// An `AXUIElement` on its way to another isolation domain. The type is a thread-safe CoreFoundation
+/// handle whose calls are IPC to the app; it is not marked Sendable because it is imported from C.
+struct UncheckedAXElement: @unchecked Sendable {
+    let value: AXUIElement
+    init(_ value: AXUIElement) { self.value = value }
 }
 
 /// Listens to one app's menu notifications (spec §4.3). Attach on activation, detach on deactivation.
@@ -35,6 +44,19 @@ public final class MenuObserver {
     private var registered: [String] = []
     private var app: AppIdentity?
     private(set) var retryTask: Task<Void, Never>?
+    /// Events in notification order. An open or close is ready at once; a selection waits for its
+    /// resolution, and everything behind it waits too, so the engine's open/close count still
+    /// classifies the selection (spec §4.3).
+    private var queue: [QueuedEvent] = []
+    private var nextQueueID = 0
+    /// Bumped by `detach`, so a resolution that finishes for an app no longer attached is dropped.
+    private var generation = 0
+
+    private struct QueuedEvent {
+        let id: Int
+        var event: MenuObserverEvent?
+        var isReady: Bool
+    }
 
     /// Registration order. A busy app can leave only the first few registered for a while, and the
     /// engine classifies a selection by the open/close count (spec §4.3): an open seen without its
@@ -86,7 +108,12 @@ public final class MenuObserver {
         connection = nil
         registered = []
         app = nil
+        queue.removeAll()
+        generation += 1
     }
+
+    /// True while a selection is still resolving, or events wait behind one.
+    var hasQueuedEvents: Bool { !queue.isEmpty }
 
     /// Registers `names` in order. After a `.cannotComplete` the busy app is not messaged again on
     /// this try, so one try blocks the main actor for one messaging timeout at most.
@@ -134,23 +161,73 @@ public final class MenuObserver {
     func handle(_ name: String, element: AXUIElement) {
         switch name {
         case kAXMenuOpenedNotification:
-            onEvent?(.menuOpened)
+            enqueue(.menuOpened)
         case kAXMenuClosedNotification:
-            onEvent?(.menuClosed)
+            enqueue(.menuClosed)
         case kAXMenuItemSelectedNotification:
-            guard let app, let record = connection?.record(for: element, bundleID: app.bundleID) else { return }
-            onEvent?(.itemSelected(record))
+            guard let app, let connection else { return }
+            let id = nextQueueID
+            nextQueueID += 1
+            queue.append(QueuedEvent(id: id, event: nil, isReady: false))
+            let generation = generation
+            let bundleID = app.bundleID
+            nonisolated(unsafe) let element = element
+            Task { [weak self] in
+                let record = await connection.record(for: element, bundleID: bundleID)
+                guard let self, self.generation == generation else { return }
+                self.resolved(id, record.map(MenuObserverEvent.itemSelected))
+            }
         default:
             break
         }
     }
+
+    private func enqueue(_ event: MenuObserverEvent) {
+        queue.append(QueuedEvent(id: nextQueueID, event: event, isReady: true))
+        nextQueueID += 1
+        flush()
+    }
+
+    private func resolved(_ id: Int, _ event: MenuObserverEvent?) {
+        guard let index = queue.firstIndex(where: { $0.id == id }) else { return }
+        queue[index].event = event
+        queue[index].isReady = true
+        flush()
+    }
+
+    /// Emits ready events from the head of the queue, stopping at the first one still resolving.
+    private func flush() {
+        while let first = queue.first, first.isReady {
+            queue.removeFirst()
+            if let event = first.event { onEvent?(event) }
+        }
+    }
+}
+
+/// Resolves selection notifications off the main actor, each within `budget` seconds, the way
+/// `MenuScanner` bounds its walk (audit L1). A hostile app that answers every parent read at the
+/// 0.25 s messaging timeout costs one read past the deadline, not 32 of them on the main run loop.
+actor MenuSelectionResolver {
+    private let budget: TimeInterval
+
+    init(budget: TimeInterval = 0.3) {
+        self.budget = budget
+    }
+
+    func resolve(_ element: UncheckedAXElement, application: UncheckedAXElement, bundleID: String) -> MenuItemRecord? {
+        let clock = ContinuousClock()
+        let deadline = clock.now.advanced(by: .seconds(budget))
+        return MenuItemResolver.record(for: element.value, source: AXMenuItemSource(application: application.value), bundleID: bundleID) { clock.now > deadline }
+    }
 }
 
 /// `MenuNotificationConnection` over a live `AXObserver` whose callbacks arrive on the main run loop.
+@MainActor
 final class AXMenuNotificationConnection: MenuNotificationConnection {
     private let observer: AXObserver
     private let application: AXUIElement
     private let refcon: UnsafeMutableRawPointer
+    private let resolver = MenuSelectionResolver()
 
     init(pid: pid_t, callback: AXObserverCallback, refcon: UnsafeMutableRawPointer) throws {
         var created: AXObserver?
@@ -170,8 +247,8 @@ final class AXMenuNotificationConnection: MenuNotificationConnection {
         AXObserverRemoveNotification(observer, application, notification as CFString)
     }
 
-    func record(for element: AXUIElement, bundleID: String) -> MenuItemRecord? {
-        MenuItemResolver.record(for: element, source: AXMenuItemSource(application: application), bundleID: bundleID)
+    func record(for element: AXUIElement, bundleID: String) async -> MenuItemRecord? {
+        await resolver.resolve(UncheckedAXElement(element), application: UncheckedAXElement(application), bundleID: bundleID)
     }
 
     func close() {
@@ -214,7 +291,9 @@ enum MenuItemResolver {
         kAXMenuItemCmdVirtualKeyAttribute, kAXMenuItemCmdGlyphAttribute,
     ]
 
-    static func record<Source: MenuItemSource>(for element: Source.Element, source: Source, bundleID: String) -> MenuItemRecord? {
+    /// `isExpired` is checked before every parent read; past the deadline the item is not placed and
+    /// the answer is nil.
+    static func record<Source: MenuItemSource>(for element: Source.Element, source: Source, bundleID: String, isExpired: () -> Bool = { false }) -> MenuItemRecord? {
         let values = source.attributes(of: element, attributes)
         guard (values[kAXRoleAttribute] as? String) == "AXMenuItem" else { return nil }
         let title = (values[kAXTitleAttribute] as? String ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
@@ -224,14 +303,14 @@ enum MenuItemResolver {
         var current = element
         var depth = 0
         var reachedMenuBar = false
-        while depth < 32, let parent = source.parent(of: current) {
+        while depth < 32, !isExpired(), let parent = source.parent(of: current) {
             depth += 1
             let parentValues = source.attributes(of: parent, [kAXRoleAttribute, kAXTitleAttribute])
             let role = parentValues[kAXRoleAttribute] as? String ?? ""
             let parentTitle = parentValues[kAXTitleAttribute] as? String ?? ""
             if role == "AXMenuBarItem" {
                 // A status-item menu also ends in an AXMenuBarItem, under the app's extras bar.
-                guard let bar = source.parent(of: parent), source.isMainMenuBar(bar) else { return nil }
+                guard !isExpired(), let bar = source.parent(of: parent), source.isMainMenuBar(bar) else { return nil }
                 path.insert(parentTitle.isEmpty || parentTitle == "Apple" ? "Apple" : parentTitle, at: 0)
                 reachedMenuBar = true
                 break
