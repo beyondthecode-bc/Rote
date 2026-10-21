@@ -1,0 +1,10 @@
+# Files that decide what ships signed and notarized, or how it is built, tested and released.
+# Pull requests that touch them request the owner's review; release.sh also diffs them against the previous release tag.
+/project.yml                             @beyondthecode-bc
+/Config/                                 @beyondthecode-bc
+/Rote/App/Rote.entitlements              @beyondthecode-bc
+/Rote/App/Info.plist                     @beyondthecode-bc
+/Rote/Engine/GitHubUpdateChecker.swift   @beyondthecode-bc
+/release.sh                              @beyondthecode-bc
+/scripts/                                @beyondthecode-bc
+/.github/                                @beyondthecode-bc
