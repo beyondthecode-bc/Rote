@@ -48,6 +48,19 @@ final class CoachTests: XCTestCase {
         XCTAssertEqual(state.items[Fx.reload.identity]?.menuUses.count, 3)
     }
 
+    /// Menu uses are kept like shortcut uses: the latest `maxMenuUses`, so one item's history
+    /// cannot grow the state file, and a file Rote wrote never needs trimming on load.
+    func testMenuUsesAreCappedLikeShortcutUses() {
+        var state = CoachState()
+        var paused = Fx.ctx
+        paused.isPaused = true
+        Fx.use(Fx.reload, times: ItemRecord.maxMenuUses + 10, from: 0, coach: Fx.coach(), state: &state, context: paused)
+        let record = state.items[Fx.reload.identity]
+        XCTAssertEqual(record?.menuUses.count, ItemRecord.maxMenuUses)
+        XCTAssertEqual(record?.menuUses.first, Fx.base.addingTimeInterval(100), "the oldest uses are dropped")
+        XCTAssertEqual(record?.menuUsesSinceLastNudge, ItemRecord.maxMenuUses + 10, "the counter still counts every use")
+    }
+
     func testNudgeOnScreenOrOverlayBlocks() {
         var state = CoachState()
         var busy = Fx.ctx

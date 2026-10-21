@@ -121,10 +121,11 @@ actor FakeScanner: MenuScanning {
 }
 
 /// Stands in for a live AXObserver: every registration succeeds and nothing reaches Accessibility.
+@MainActor
 final class FakeMenuConnection: MenuNotificationConnection {
     func add(_ notification: String) -> AXError { .success }
     func remove(_ notification: String) {}
-    func record(for element: AXUIElement, bundleID: String) -> MenuItemRecord? { nil }
+    func record(for element: AXUIElement, bundleID: String) async -> MenuItemRecord? { nil }
     func close() {}
 }
 

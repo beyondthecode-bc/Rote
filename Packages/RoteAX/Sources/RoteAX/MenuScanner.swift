@@ -33,6 +33,13 @@ struct AXMenuElementSource: MenuElementSource {
 
 /// Walks an app's menu bar through Accessibility off the main thread (spec §5.1).
 public actor MenuScanner: MenuScanning {
+    /// Levels below a bar item the walk descends. Real menus are bar item › menu › item › menu › item,
+    /// five submenus at most; a hostile app answering with a deeper or cyclic `AXChildren` would
+    /// otherwise recurse until the 512 KB cooperative-pool stack ran out (audit M3).
+    static let maxDepth = 12
+    /// Elements read in one walk, over every bar item. Past it the tree is partial.
+    static let maxNodes = 5_000
+
     private let budget: TimeInterval
 
     /// - Parameter budget: seconds before the walk stops and the tree is marked partial.
@@ -52,16 +59,19 @@ public actor MenuScanner: MenuScanning {
         return Self.snapshot(of: source, app: app) { clock.now > deadline }
     }
 
-    /// The walk. Stops at the first failed read or once `isExpired`, marking the snapshot partial.
+    /// The walk. Stops at the first failed read, once `isExpired`, past `maxDepth` levels or
+    /// `maxNodes` elements, marking the snapshot partial.
     static func snapshot<Source: MenuElementSource>(of source: Source, app: AppIdentity, isExpired: () -> Bool) -> MenuSnapshot {
         var partial = false
         var barItems: [AXMenuNode] = []
         var complete = 0
+        var nodes = 0
         do {
             if let menuBar = try source.menuBar().get() {
                 for bar in try source.children(of: menuBar).get() {
                     guard !partial, !isExpired() else { partial = true; break }
-                    barItems.append(node(for: bar, source: source, isExpired: isExpired, partial: &partial))
+                    guard nodes < maxNodes else { partial = true; break }
+                    barItems.append(node(for: bar, source: source, depth: 0, nodes: &nodes, isExpired: isExpired, partial: &partial))
                     if !partial { complete += 1 }
                 }
             }
@@ -78,7 +88,10 @@ public actor MenuScanner: MenuScanning {
         kAXMenuItemCmdVirtualKeyAttribute, kAXMenuItemCmdGlyphAttribute,
     ]
 
-    private static func node<Source: MenuElementSource>(for element: Source.Element, source: Source, isExpired: () -> Bool, partial: inout Bool) -> AXMenuNode {
+    /// Reads one element. `depth` is 0 for a bar item; `nodes` counts the elements read so far
+    /// and the caller checks it before each call, so a node is never read past `maxNodes`.
+    private static func node<Source: MenuElementSource>(for element: Source.Element, source: Source, depth: Int, nodes: inout Int, isExpired: () -> Bool, partial: inout Bool) -> AXMenuNode {
+        nodes += 1
         let attributes: [String: AnyObject]
         switch source.attributes(of: element, itemAttributes) {
         case .success(let values):
@@ -100,11 +113,16 @@ public actor MenuScanner: MenuScanning {
             partial = true
             return result
         }
+        guard depth < maxDepth else {
+            partial = true                              // deeper than any real menu: not descended
+            return result
+        }
         switch source.children(of: element) {
         case .success(let children):
             for child in children {
                 guard !partial, !isExpired() else { partial = true; break }
-                result.children.append(node(for: child, source: source, isExpired: isExpired, partial: &partial))
+                guard nodes < maxNodes else { partial = true; break }
+                result.children.append(node(for: child, source: source, depth: depth + 1, nodes: &nodes, isExpired: isExpired, partial: &partial))
             }
         case .failure:
             partial = true

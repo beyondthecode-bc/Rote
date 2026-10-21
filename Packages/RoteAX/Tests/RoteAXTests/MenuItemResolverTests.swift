@@ -52,6 +52,30 @@ private struct RecordedItemSource: MenuItemSource {
     func isMainMenuBar(_ element: String) -> Bool { element == mainMenuBar }
 }
 
+/// Wraps a source so each parent read takes `delay`, like a frontmost app answering slowly, and
+/// counts the reads.
+private final class SlowItemSource<Base: MenuItemSource>: MenuItemSource, @unchecked Sendable {
+    typealias Element = Base.Element
+    let base: Base
+    let delay: TimeInterval
+    private(set) var parentReads = 0
+
+    init(_ base: Base, delay: TimeInterval) {
+        self.base = base
+        self.delay = delay
+    }
+
+    func attributes(of element: Element, _ names: [String]) -> [String: AnyObject] { base.attributes(of: element, names) }
+
+    func parent(of element: Element) -> Element? {
+        parentReads += 1
+        Thread.sleep(forTimeInterval: delay)
+        return base.parent(of: element)
+    }
+
+    func isMainMenuBar(_ element: Element) -> Bool { base.isMainMenuBar(element) }
+}
+
 final class MenuItemResolverTests: XCTestCase {
     private func fixture() throws -> MenuSnapshot {
         let url = try XCTUnwrap(Bundle.module.url(forResource: "safari-mini", withExtension: "json", subdirectory: "Fixtures"))
@@ -117,6 +141,54 @@ final class MenuItemResolverTests: XCTestCase {
         let record = try XCTUnwrap(resolve("plain", in: source))
         XCTAssertEqual(record.path, ["File", "Plain"])
         XCTAssertTrue(record.isEnabled)
+    }
+
+    // MARK: Deadline (audit L1)
+
+    /// The walk up to the menu bar checks its deadline before every parent read: an app that
+    /// answers slowly costs one read past the deadline, never the 32 reads at 0.25 s each that
+    /// used to stall the main run loop.
+    func testResolutionStopsAtItsDeadline() throws {
+        let slow = SlowItemSource(RecordedItemSource(try fixture()), delay: 0.05)
+        let clock = ContinuousClock()
+        let deadline = clock.now.advanced(by: .milliseconds(100))
+        let record = MenuItemResolver.record(for: "3/0/1/0/1", source: slow, bundleID: "com.apple.Safari") { clock.now > deadline }   // Edit › Find › Find Next
+        XCTAssertNil(record, "an item not placed within the deadline is not reported")
+        XCTAssertLessThanOrEqual(slow.parentReads, 4)
+        XCTAssertGreaterThan(slow.parentReads, 0, "the first read is always attempted")
+    }
+
+    func testResolutionWithinTheDeadlineResolves() throws {
+        let slow = SlowItemSource(RecordedItemSource(try fixture()), delay: 0)
+        var checks = 0
+        let record = MenuItemResolver.record(for: "3/0/1/0/1", source: slow, bundleID: "com.apple.Safari") { checks += 1; return false }
+        XCTAssertEqual(record?.path, ["Edit", "Find", "Find Next"])
+        XCTAssertEqual(checks, slow.parentReads, "the deadline is checked before each parent read")
+    }
+
+    /// The production resolver runs off the main actor. Without Accessibility trust, or on an
+    /// element that is no menu item, it answers nil and never blocks the caller.
+    func testBackgroundResolverAnswersNilForANonMenuItem() async {
+        let resolver = MenuSelectionResolver(budget: 0.3)
+        let app = AXUIElementCreateApplication(getpid())
+        let record = await resolver.resolve(UncheckedAXElement(app), application: UncheckedAXElement(app), bundleID: "com.example.test")
+        XCTAssertNil(record)
+    }
+
+    /// Audit L4, on the selection path: the item's own title and every parent title are cleaned
+    /// the way the scan cleans them, so the selection lands on the scanned record.
+    func testTitlesAreCappedAndStrippedOnSelection() throws {
+        var source = RecordedItemSource(try fixture())
+        let hostile = "\u{202E}" + String(repeating: "x", count: 1_000) + "\u{07}"
+        source.add("sub", role: "AXMenuItem", title: "\u{2066}Sub\u{2069}\t", parent: "2/0")          // inside File
+        source.add("subMenu", role: "AXMenu", parent: "sub")
+        source.add(AXMenuNode(role: "AXMenuItem", title: hostile, isEnabled: true, cmdChar: "X", cmdModifiers: 0), id: "leaf", parent: "subMenu")
+        let record = try XCTUnwrap(resolve("leaf", in: source))
+        XCTAssertEqual(record.path.dropLast(), ["File", "Sub"])
+        XCTAssertEqual(record.title, String(repeating: "x", count: MenuTitleSanitizer.maxScalars))
+        let node = AXMenuNode(role: "AXMenuItem", title: hostile, isEnabled: true, cmdChar: "X", cmdModifiers: 0)
+        let scanned = MenuTreeBuilder.record(for: node, path: ["File", "Sub", MenuTitleSanitizer.sanitize(hostile)], bundleID: "com.apple.Safari")
+        XCTAssertEqual(record.identity, scanned.identity)
     }
 
     func testDisabledItemKeepsItsStateAndShortcut() throws {

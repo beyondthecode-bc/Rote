@@ -94,6 +94,56 @@ final class MenuTreeBuilderTests: XCTestCase {
         XCTAssertEqual(try tree().shortcutCount, 15)
     }
 
+    // MARK: Hostile snapshots (audit M3)
+
+    func testDeepSubmenusStopAtTheDepthCap() {
+        let tree = MenuTreeBuilder.build(MenuScannerTests.nested(levels: 40))
+        XCTAssertTrue(tree.isPartial)
+        XCTAssertEqual(tree.menus.count, 1)
+        XCTAssertFalse(tree.menus[0].isComplete)
+        XCTAssertTrue(tree.menus[0].items.isEmpty, "the only item lies past the cap")
+        let shallow = MenuTreeBuilder.build(MenuScannerTests.nested(levels: 4))
+        XCTAssertFalse(shallow.isPartial)
+        XCTAssertEqual(shallow.menus[0].items.map(\.path), [["Deep", "Level 1", "Level 2", "Level 3", "Level 4", "Deepest"]])
+    }
+
+    func testSubmenusAtTheCapAreCollected() {
+        let tree = MenuTreeBuilder.build(MenuScannerTests.nested(levels: MenuTreeBuilder.maxDepth - 2))
+        XCTAssertFalse(tree.isPartial)
+        XCTAssertEqual(tree.menus[0].items.first?.path.count, MenuTreeBuilder.maxDepth)
+        let over = MenuTreeBuilder.build(MenuScannerTests.nested(levels: MenuTreeBuilder.maxDepth - 1))
+        XCTAssertTrue(over.isPartial)
+        XCTAssertTrue(over.menus[0].items.isEmpty)
+    }
+
+    func testNodeCapMarksTheTreePartial() {
+        let tree = MenuTreeBuilder.build(MenuScannerTests.flat(count: MenuTreeBuilder.maxNodes + 1_000))
+        XCTAssertTrue(tree.isPartial)
+        XCTAssertFalse(tree.menus[0].isComplete)
+        XCTAssertEqual(tree.menus[0].items.count, MenuTreeBuilder.maxNodes)
+        let wide = MenuTreeBuilder.build(MenuScannerTests.flat(count: MenuTreeBuilder.maxNodes))
+        XCTAssertFalse(wide.isPartial)
+        XCTAssertEqual(wide.menus[0].items.count, MenuTreeBuilder.maxNodes)
+    }
+
+    /// Audit L4: titles are capped and cleaned where they enter Rote, so neither the state file
+    /// nor the sheet sees a bidi override or a title of unbounded length.
+    func testTitlesAreCappedAndStrippedAtTheBoundary() {
+        let hostile = "\u{202E}" + String(repeating: "x", count: 1_000) + "\u{07}"
+        let item = AXMenuNode(role: "AXMenuItem", title: hostile, isEnabled: true, cmdChar: "X", cmdModifiers: 0)
+        let sub = AXMenuNode(role: "AXMenuItem", title: "\u{2066}Sub\u{2069}", isEnabled: true, children: [AXMenuNode(role: "AXMenu", title: "", isEnabled: true, children: [item])])
+        let bar = AXMenuNode(role: "AXMenuBarItem", title: "\u{202D}File\n", isEnabled: true, children: [AXMenuNode(role: "AXMenu", title: "", isEnabled: true, children: [item, sub])])
+        let tree = MenuTreeBuilder.build(MenuSnapshot(bundleID: "com.example.hostile", appName: "Hostile", barItems: [bar], isPartial: false, completeBarItemCount: 1, takenAt: Date()))
+        XCTAssertEqual(tree.menus.map(\.title), ["File"])
+        XCTAssertEqual(tree.menus[0].items.count, 2)
+        for record in tree.menus[0].items {
+            XCTAssertEqual(record.title, String(repeating: "x", count: MenuTitleSanitizer.maxScalars))
+            XCTAssertFalse(record.identity.unicodeScalars.contains { $0.properties.generalCategory == .format || $0.properties.generalCategory == .control })
+        }
+        XCTAssertEqual(tree.menus[0].items[1].path.dropLast(), ["File", "Sub"])
+        XCTAssertFalse(tree.isPartial)
+    }
+
     func testPartialFlagPropagates() throws {
         var snapshot = try loadFixture()
         snapshot.isPartial = true
