@@ -196,7 +196,7 @@ final class CoachEngine {
         do {
             try observer.attach(app)
         } catch {
-            Logger.ax.error("Could not observe \(app.bundleID, privacy: .public): \(String(describing: error), privacy: .public)")
+            Logger.ax.error("Could not observe \(app.bundleID, privacy: .private): \(String(describing: error), privacy: .public)")
         }
         ensureTree(for: app)
     }
@@ -225,7 +225,8 @@ final class CoachEngine {
             self.trees[app.bundleID] = tree
             self.touch(app.bundleID)
             if self.currentApp?.bundleID == app.bundleID { self.currentTree = tree }
-            Logger.ax.info("Scanned \(app.bundleID, privacy: .public): \(tree.shortcutCount) shortcuts in \(Int(Date().timeIntervalSince(started) * 1000)) ms, partial=\(tree.isPartial)")
+            // Bundle IDs are public at debug level only; they name the apps the user runs (audit M2).
+            Logger.ax.debug("Scanned \(app.bundleID, privacy: .public): \(tree.shortcutCount) shortcuts in \(Int(Date().timeIntervalSince(started) * 1000)) ms, partial=\(tree.isPartial)")
         }
     }
 
@@ -291,7 +292,9 @@ final class CoachEngine {
         switch decision {
         case .nudge(let record):
             nudgeOnScreen = true
-            Logger.engine.info("Nudge: \(record.item.title, privacy: .public)")
+            // A title can carry a document, volume or mailbox name; the unified log is readable by
+            // every admin and collected by sysdiagnose, so the title is private (audit M2).
+            Logger.engine.info("Nudge: \(record.item.title, privacy: .private)")
             onNudge?(record)
             persist()
         case .record:
